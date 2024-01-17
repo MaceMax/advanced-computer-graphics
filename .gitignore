@@ -2,5 +2,6 @@
 target/
 ```
 # Ignore .o and .d files
-*.o *.d
+**/*.o
+**/*.d
 ```
