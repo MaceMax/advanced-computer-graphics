@@ -1,3 +1,6 @@
 # Ignore target folder
 target/
 ```
+# Ignore .o and .d files
+*.o *.d
+```
