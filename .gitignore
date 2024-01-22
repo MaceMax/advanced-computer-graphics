@@ -1,7 +1,18 @@
-# Ignore target folder
-target/
-```
-# Ignore .o and .d files
-**/*.o
-**/*.d
-```
+installed
+*.vcxproj
+*.sln
+*.user
+CMakeCache.txt
+*.filters
+x64
+build
+*.tlog
+install_manifest.txt
+src/CMakeFiles
+CMakeFiles
+Release
+Debug
+RelWithDebInfo
+.vs
+cmake_install.cmake
+vrlib_version.h
