@@ -2,29 +2,34 @@
 #pragma once
 
 #include <memory>
-#include <vector>
 #include <sstream>
-#include "Node.h"
-#include "Light.h"
+#include <vector>
+
 #include "Camera.h"
+#include "Light.h"
+#include "Node.h"
 #include "vr/Shader.h"
 
-namespace vr
-{
+namespace vr {
 
-  class Scene;
+class Scene;
 
-  /**
-  Class that holds all mesh objects, lights and a camera
-  */
-  class Scene
-  {
-  public:
-
+/**
+Class that holds all mesh objects, lights and a camera
+*/
+class Scene {
+   public:
     /**
     Constructor
     */
-    Scene();
+    Scene(Scene& other) = delete;
+
+    /**
+     * Assignment operator. Singleton cannot be assigned.
+     */
+    void operator=(const Scene&) = delete;
+
+    static std::shared_ptr<Scene> getInstance();
 
     /**
     Initialize the vertex and fragment shader and a program.
@@ -45,7 +50,6 @@ namespace vr
     \return A vector of lightsources
     */
     const LightVector& getLights();
-
 
     /**
     Get the camera
@@ -100,13 +104,15 @@ namespace vr
     */
     void render();
 
-  private:
+   private:
     NodeVector m_nodes;
     LightVector m_lights;
     GLint m_uniform_numberOfLights;
 
-    std::shared_ptr<vr::Shader> m_shader;
+    Scene();
 
+    static std::shared_ptr<Scene> instance;
+    std::shared_ptr<vr::Shader> m_shader;
     std::shared_ptr<Camera> m_camera;
-  };
-}
+};
+}  // namespace vr

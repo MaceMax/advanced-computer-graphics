@@ -1,119 +1,104 @@
 #include <vr/Scene.h>
-#include <iostream>
 #include <vr/glErrorUtil.h>
+
+#include <iostream>
 
 using namespace vr;
 
-Scene::Scene() : m_uniform_numberOfLights(-1)
-{
-  m_camera = std::shared_ptr<Camera>(new Camera);
+Scene::Scene() : m_uniform_numberOfLights(-1) {
+    m_camera = std::shared_ptr<Camera>(new Camera);
 }
 
-bool Scene::initShaders(const std::string& vshader_filename, const std::string& fshader_filename)
-{
-
-  m_shader = std::make_shared<vr::Shader>(vshader_filename, fshader_filename);
-  if (!m_shader->valid())
-    return false;
-
-  return true;
+std::shared_ptr<Scene> Scene::getInstance() {
+    if (instance == nullptr) {
+        instance = std::shared_ptr<Scene>(new Scene());
+    }
+    return instance;
 }
 
-void Scene::add(std::shared_ptr<Light>& light)
-{
-  m_lights.push_back(light);
-  std::shared_ptr<Node> node = std::shared_ptr<Node>(new Node());
+bool Scene::initShaders(const std::string& vshader_filename, const std::string& fshader_filename) {
+    m_shader = std::make_shared<vr::Shader>(vshader_filename, fshader_filename);
+    if (!m_shader->valid())
+        return false;
 
-  node->add(light->m_mesh);
-  node->add(light->getMesh());
-
-  // Also add the mesh-node
-  add(node);
+    return true;
 }
 
-const LightVector& Scene::getLights()
-{
-  return
-    m_lights;
+void Scene::add(std::shared_ptr<Light>& light) {
+    m_lights.push_back(light);
+    std::shared_ptr<Node> node = std::shared_ptr<Node>(new Node());
+
+    node->add(light->m_mesh);
+    node->add(light->getMesh());
+
+    // Also add the mesh-node
+    add(node);
 }
 
-
-std::shared_ptr<Camera> Scene::getCamera()
-{
-  return
-    m_camera;
+const LightVector& Scene::getLights() {
+    return m_lights;
 }
 
-Scene::~Scene()
-{
-
+std::shared_ptr<Camera> Scene::getCamera() {
+    return m_camera;
 }
 
-void Scene::applyCamera()
-{
-  m_camera->apply(m_shader);
+Scene::~Scene() {
 }
 
-void Scene::useProgram()
-{
-  m_shader->use();
+void Scene::applyCamera() {
+    m_camera->apply(m_shader);
 }
 
-void Scene::add(std::shared_ptr<Node>& node)
-{
-  m_nodes.push_back(node);
-
-  for (auto m : node->getMeshes())
-  {
-    m->initShaders(m_shader);
-    m->upload();
-  }
+void Scene::useProgram() {
+    m_shader->use();
 }
 
-void Scene::resetTransform()
-{
-  for (auto n : m_nodes)
-    n->resetTransform();
+void Scene::add(std::shared_ptr<Node>& node) {
+    m_nodes.push_back(node);
+
+    for (auto m : node->getMeshes()) {
+        m->initShaders(m_shader);
+        m->upload();
+    }
 }
 
-const NodeVector& Scene::getNodes()
-{
-  return m_nodes;
+void Scene::resetTransform() {
+    for (auto n : m_nodes)
+        n->resetTransform();
 }
 
-
-std::shared_ptr<Node> Scene::getNode(size_t i)
-{
-  return m_nodes[i];
+const NodeVector& Scene::getNodes() {
+    return m_nodes;
 }
 
-BoundingBox Scene::calculateBoundingBox()
-{
-  BoundingBox box;
-  for (auto n : m_nodes)
-    box.expand(n->calculateBoundingBox());
-
-  return box;
+std::shared_ptr<Node> Scene::getNode(size_t i) {
+    return m_nodes[i];
 }
 
-void Scene::render()
-{
-  CHECK_GL_ERROR_LINE_FILE();
-  useProgram();
+BoundingBox Scene::calculateBoundingBox() {
+    BoundingBox box;
+    for (auto n : m_nodes)
+        box.expand(n->calculateBoundingBox());
 
-  CHECK_GL_ERROR_LINE_FILE();
+    return box;
+}
 
+void Scene::render() {
+    CHECK_GL_ERROR_LINE_FILE();
+    useProgram();
 
-  // Update number of lights
-  m_shader->setInt("numberOfLights", (GLint)m_lights.size());
+    CHECK_GL_ERROR_LINE_FILE();
 
-  // Apply lightsources
-  size_t i = 0;
-  for (auto l : m_lights)
-  {
-    l->apply(m_shader, i++);
-  }
+    // Update number of lights
+    m_shader->setInt("numberOfLights", (GLint)m_lights.size());
 
-  for (auto n : m_nodes)
-    n->render(m_shader);
+    // Apply lightsources
+    size_t i = 0;
+    for (auto l : m_lights) {
+        l->apply(m_shader, i++);
+    }
+
+    for (auto n : m_nodes)
+        n->render(m_shader);
 }
