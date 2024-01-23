@@ -1,75 +1,35 @@
 #pragma once
 
-#include <memory>
-
-#include "Material.h"
-#include "Mesh.h"
-#include "BoundingBox.h"
-#include <glm/glm.hpp>
 #include <vr/Shader.h>
 
-namespace vr
-{
-  /**
-  Simple class that store a number of meshes and draws it
-  */
-  class Node
-  {
+#include <glm/glm.hpp>
+#include <memory>
 
-  public:
-    /**
-    /Name of the node
-    */
-    std::string name;
+#include "BoundingBox.h"
+#include "Material.h"
+#include "Mesh.h"
+#include "NodeVisitor.h"
 
-    /**
-    Transformation for the nodes local coordinate system to the world
-    */
-    glm::mat4 object2world;
-
-    /**
-    Constructor
-    */
-    Node();
-
-    /**
-    Get all meshes
-
-    \return A vector of meshes
-    */
-    MeshVector& getMeshes();
-
-    /**
-    Add a mesh to the vector of meshes
-    \param mesh - A new mesh
-    */
-    void add(std::shared_ptr<Mesh>& mesh);
-
-    /**
-    Set an initial transformation that can be reset at a later point in time
-    \param m - transformation matrix
-    */
-    void setInitialTransform(const glm::mat4& m);
-
-    ~Node();
-
-    void resetTransform();
-
-
-    /**
-    Draw the node (all of its meshes)
-    \param program - The active program for which rendering will be performed
-    */
-    void render(std::shared_ptr<vr::Shader> shader);
+namespace vr {
+/**
+Simple class that store a number of meshes and draws it
+*/
+class Node {
+   public:
+    Node(const std::string& name = "Node", std::shared_ptr<Node> parent = nullptr) : m_name(name), m_parent(parent) {}
+    virtual void accept(NodeVisitor& visitor) = 0;
+    std::string getName() { return m_name; }
+    std::shared_ptr<Node> getParent() { return m_parent; }
 
     /// Calculate and return a bounding box for this Node based on its Mesh objects
     BoundingBox calculateBoundingBox();
 
-  private:
+   protected:
+    /**
+     /Name of the node
+     */
+    std::shared_ptr<Node> m_parent;
+    std::string m_name;
+};
 
-    MeshVector m_meshes;
-    glm::mat4 m_initialTransform;
-
-  };
-  typedef std::vector<std::shared_ptr<Node> > NodeVector;
-}
+}  // namespace vr
