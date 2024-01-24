@@ -16,6 +16,9 @@ class Group : public Node {
 
    protected:
     NodeVector m_children;
+
+    // NOTE: State should be inherited from parent i.e. Node
+
     std::shared_ptr<State> m_state;
 };
 
