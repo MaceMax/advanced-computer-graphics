@@ -1,9 +1,9 @@
-#include "Transform.h"
+#include <vr/Transform.h>
 
 using namespace vr;
 
 void Transform::accept(NodeVisitor& visitor) {
-    visitor.visit(*this);
+    Group::accept(visitor);
 }
 
 void Transform::setMatrix(const glm::mat4& matrix) {

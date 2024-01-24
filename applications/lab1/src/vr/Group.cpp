@@ -1,4 +1,4 @@
-#include "Group.h"
+#include <vr/Group.h>
 
 using namespace vr;
 
