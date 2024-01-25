@@ -24,12 +24,14 @@ bool Application::initResources(const std::string& model_filename, const std::st
     m_loadedFShader = fshader_filename;
     m_loadedFilename = model_filename;
 
-    m_sceneRoot = std::shared_ptr<Scene>(Scene::getInstance());
+    m_scene = std::shared_ptr<Scene>(Scene::getInstance());
+    std::shared_ptr<Group> m_sceneRoot = m_scene->getRoot();
 
-    if (!m_sceneRoot->initShaders(vshader_filename, fshader_filename))
+    if (!m_scene->initShaders(vshader_filename, fshader_filename))
         return false;
     getCamera()->setScreenSize(m_screenSize);
 
+    /*
     std::string ext = vr::FileSystem::getFileExtension(model_filename);
     std::shared_ptr<Node> node;
 
@@ -39,18 +41,18 @@ bool Application::initResources(const std::string& model_filename, const std::st
             return false;
         }
 
-        if (m_sceneRoot->getNodes().empty()) {
+        if (m_sceneRoot->getChildren().empty()) {
             std::cerr << "Empty scene, something when wrong when loading files" << std::endl;
             return false;
         }
-        // We want to be able to "rotate" one node lets take the first
-        node = m_sceneRoot->getNodes().front();
+
     } else {
-        node = load3DModelFile(model_filename);
-        if (!node)
+        load3DModelFile(model_filename, m_sceneRoot);
+        if (m_sceneRoot->getChildren().empty()) {
             return false;
-        m_sceneRoot->add(node);
+        }
     }
+    */
 
 #if 0
   std::shared_ptr<Mesh> ground(new Mesh);
@@ -83,7 +85,7 @@ bool Application::initResources(const std::string& model_filename, const std::st
     light1->specular = glm::vec4(1, 1, 1, 1);
     light1->position = glm::vec4(0.0, -2.0, 2.0, 0.0);
 
-    m_sceneRoot->add(light1);
+    m_scene->add(light1);
 
     return 1;
 }
@@ -99,7 +101,7 @@ void Application::setClearColor(const glm::f32vec4& clearColor) {
 
 void Application::initView() {
     // Compute a bounding box around the whole scene
-    BoundingBox box = m_sceneRoot->calculateBoundingBox();
+    BoundingBox box = m_scene->calculateBoundingBox();
     float radius = box.getRadius();
 
     // Compute the diagonal and a suitable distance so we can see the whole thing
@@ -108,12 +110,12 @@ void Application::initView() {
 
     glm::vec3 direction = glm::normalize(box.getCenter() - eye);
 
-    std::shared_ptr<Light> light = m_sceneRoot->getLights().front();
+    std::shared_ptr<Light> light = m_scene->getLights().front();
     glm::vec4 position;
     position = glm::vec4(eye + glm::vec3(3, 2, 0), 1);
     light->position = position;
 
-    m_sceneRoot->resetTransform();
+    m_scene->resetTransform();
 
     // Set the position/direction of the camera
     getCamera()->set(eye, direction, glm::vec3(0.0, 1.0, 0.0));
@@ -133,13 +135,13 @@ void Application::render(GLFWwindow* window) {
     glClearColor(m_clearColor[0], m_clearColor[1], m_clearColor[2], m_clearColor[3]);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    m_sceneRoot->applyCamera();
-    m_sceneRoot->render();
+    m_scene->applyCamera();
+    m_scene->render();
     m_fpsCounter->render(window);
 }
 
 void Application::update(GLFWwindow* window) {
-    m_sceneRoot->useProgram();
+    m_scene->useProgram();
 
     render(window);
 }
@@ -154,7 +156,7 @@ void Application::setScreenSize(unsigned int width, unsigned int height) {
 }
 
 std::shared_ptr<Camera> Application::getCamera() {
-    return m_sceneRoot->getCamera();
+    return m_scene->getCamera();
 }
 
 Application::~Application() {

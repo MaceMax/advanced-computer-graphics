@@ -1,4 +1,4 @@
-#include <stack>
+#pragma once
 
 #include "vr/NodeVisitor.h"
 
@@ -10,8 +10,6 @@ class RenderVisitor : public NodeVisitor {
 
    private:
     std::stack<glm::mat4> m_matrixStack;
-    StateStack m_stateStack;
 };
 
-typedef std::stack<std::shared_ptr<State>> StateStack;
 }  // namespace vr

@@ -13,3 +13,11 @@ void Group::addChild(std::shared_ptr<Node>& node) {
 NodeVector& Group::getChildren() {
     return m_children;
 }
+
+BoundingBox Group::calculateBoundingBox() {
+    BoundingBox bbox;
+    for (auto child : m_children) {
+        bbox.expand(child->calculateBoundingBox());
+    }
+    return bbox;
+}

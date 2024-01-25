@@ -9,6 +9,7 @@ class Transform : public Group {
     virtual void accept(NodeVisitor& visitor) override;
     void setMatrix(const glm::mat4& matrix);
     glm::mat4 getMatrix();
+    virtual BoundingBox calculateBoundingBox() override;
 
    private:
     glm::mat4 t_matrix;

@@ -16,10 +16,14 @@ class Geometry : public Node {
     ~Geometry();
     virtual void accept(NodeVisitor& visitor) override;
     bool initShader(std::shared_ptr<vr::Shader> shader);
+    void setInitialTransform(const glm::mat4& modelMatrix);
+    void resetTransform();
     void upload();
     void buildGeometry(std::vector<glm::vec4>& vertices, std::vector<glm::vec3>& normals,
                        std::vector<glm::vec2>& texCoords, std::vector<GLuint>& indices);
     void draw(std::shared_ptr<vr::Shader> shader, const glm::mat4& modelMatrix);
+
+    virtual BoundingBox calculateBoundingBox() override;
 
    private:
     std::vector<glm::vec4> m_vertices;
@@ -28,6 +32,7 @@ class Geometry : public Node {
 
     std::vector<GLuint> m_indices;
     glm::mat4 m_object2world;
+    glm::mat4 m_initialTransform;
 
     GLint m_attribute_v_coord;
     GLint m_attribute_v_normal;

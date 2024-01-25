@@ -21,7 +21,7 @@ class Node {
     std::shared_ptr<State> getState() { return m_state; }
 
     /// Calculate and return a bounding box for this Node based on its Mesh objects
-    BoundingBox calculateBoundingBox();
+    virtual BoundingBox calculateBoundingBox() = 0;
 
    protected:
     /**

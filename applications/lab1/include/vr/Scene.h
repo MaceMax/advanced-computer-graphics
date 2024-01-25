@@ -8,6 +8,7 @@
 #include "Camera.h"
 #include "Light.h"
 #include "Node.h"
+#include "vr/RenderVisitor.h"
 #include "vr/Shader.h"
 
 namespace vr {
@@ -70,21 +71,9 @@ class Scene {
     void useProgram();
 
     /**
-    Add a new node
-    \param node - A new node
-    */
-    void add(std::shared_ptr<Node>& node);
-
-    /**
     Reset all nodes transform to its initial value
     */
     void resetTransform();
-
-    /**
-    Get a all nodes
-    \return A vector containing all nodes
-    */
-    const NodeVector& getNodes();
 
     /**
     Get the i:th node
@@ -92,6 +81,8 @@ class Scene {
     \return A node
     */
     std::shared_ptr<Node> getNode(size_t i);
+
+    std::shared_ptr<Group> getRoot();
 
     /**
     Compute a bounding box for the whole scene
@@ -108,11 +99,13 @@ class Scene {
     NodeVector m_nodes;
     LightVector m_lights;
     GLint m_uniform_numberOfLights;
+    std::shared_ptr<RenderVisitor> m_renderVisitor;
 
     Scene();
 
     static std::shared_ptr<Scene> instance;
     std::shared_ptr<vr::Shader> m_shader;
     std::shared_ptr<Camera> m_camera;
+    std::shared_ptr<Group> m_root;
 };
 }  // namespace vr

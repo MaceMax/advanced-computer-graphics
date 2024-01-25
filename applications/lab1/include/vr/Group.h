@@ -11,6 +11,7 @@ class Group : public Node {
     Group(const std::string& name = "Group") : Node(name) {}
     virtual void accept(NodeVisitor& visitor) override;
     void addChild(std::shared_ptr<Node>& node);
+    virtual BoundingBox calculateBoundingBox() override;
 
     NodeVector& getChildren();
 
@@ -18,8 +19,6 @@ class Group : public Node {
     NodeVector m_children;
 
     // NOTE: State should be inherited from parent i.e. Node
-
-    std::shared_ptr<State> m_state;
 };
 
 }  // namespace vr

@@ -13,3 +13,7 @@ void Transform::setMatrix(const glm::mat4& matrix) {
 glm::mat4 Transform::getMatrix() {
     return t_matrix;
 }
+
+BoundingBox Group::calculateBoundingBox() {
+    Group::calculateBoundingBox();
+}

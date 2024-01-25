@@ -1,24 +1,22 @@
 #pragma once
 
 #include <memory>
-#include "Scene.h"
-#include "FPSCounter.h"
+
 #include "Camera.h"
+#include "FPSCounter.h"
+#include "Scene.h"
 
 namespace vr {
 
-  /**
-  Class that holds a scene and a camera.
-  */
-  class Application
-  {
-  public:
-
+/**
+Class that holds a scene and a camera.
+*/
+class Application {
+   public:
     /**
     Constructor
     */
     Application(unsigned int width, unsigned int height);
-
 
     /**
     Destructor
@@ -40,14 +38,14 @@ namespace vr {
     void processInput(GLFWwindow* window);
 
     void setClearColor(const glm::f32vec4& clearColor);
-  private:
 
+   private:
     // Parent of all to be rendered
-    std::shared_ptr<Scene> m_sceneRoot;
+    std::shared_ptr<Scene> m_scene;
 
     std::shared_ptr<FPSCounter> m_fpsCounter;
     std::string m_loadedFilename, m_loadedVShader, m_loadedFShader;
     glm::uvec2 m_screenSize;
     glm::f32vec4 m_clearColor;
-  };
-}
+};
+}  // namespace vr

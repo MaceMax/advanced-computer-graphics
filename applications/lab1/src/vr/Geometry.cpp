@@ -130,6 +130,14 @@ void Geometry::upload() {
     }
 }
 
+void Geometry::setInitialTransform(const glm::mat4& modelMatrix) {
+    m_object2world = m_initialTransform = modelMatrix;
+}
+
+void Geometry::resetTransform() {
+    m_object2world = m_initialTransform;
+}
+
 void Geometry::buildGeometry(std::vector<glm::vec4>& vertices, std::vector<glm::vec3>& normals,
                              std::vector<glm::vec2>& texCoords, std::vector<GLuint>& indices) {
     m_vertices = vertices;
@@ -145,15 +153,6 @@ void Geometry::draw(std::shared_ptr<vr::Shader> shader, const glm::mat4& modelMa
         CHECK_GL_ERROR_LINE_FILE();
     }
 
-    /*
-        if (normals.size() == 0) {
-            draw_bbox(shader);
-            return;
-        }
-
-        if (m_material)
-            m_material->apply(shader);
-    */
     CHECK_GL_ERROR_LINE_FILE();
 
     if (!m_useVAO) {
@@ -240,4 +239,13 @@ void Geometry::draw(std::shared_ptr<vr::Shader> shader, const glm::mat4& modelMa
 
     if (m_useVAO)
         glBindVertexArray(0);
+}
+
+BoundingBox Geometry::calculateBoundingBox() {
+    BoundingBox box;
+    for (auto v : m_vertices) {
+        glm::vec3 vTransformed = m_object2world * v;
+        box.expand(vTransformed);
+    }
+    return box;
 }
