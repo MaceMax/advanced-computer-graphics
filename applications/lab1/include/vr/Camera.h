@@ -1,8 +1,9 @@
 #pragma once
 
+// clang-format off
 #include <glm/glm.hpp>
-#include <GLFW/glfw3.h>
 #include <vr/Shader.h>
+#include <GLFW/glfw3.h>
 #include <memory>
 
 namespace vr

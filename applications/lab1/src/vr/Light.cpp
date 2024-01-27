@@ -1,4 +1,5 @@
 #include <vr/Light.h>
+#include <vr/glErrorUtil.h>
 
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
@@ -46,7 +47,11 @@ void Light::apply(std::shared_ptr<vr::Shader> shader, size_t idx) {
     uniform_name = prefix + "enabled";
 
     shader->setInt(uniform_name, enabled);
+    CHECK_GL_ERROR_LINE_FILE();
     shader->setVec4(prefix + "diffuse", this->diffuse);
+    CHECK_GL_ERROR_LINE_FILE();
     shader->setVec4(prefix + "specular", this->specular);
+    CHECK_GL_ERROR_LINE_FILE();
     shader->setVec4(prefix + "position", this->position);
+    CHECK_GL_ERROR_LINE_FILE();
 }

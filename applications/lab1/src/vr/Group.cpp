@@ -3,10 +3,11 @@
 using namespace vr;
 
 void Group::accept(NodeVisitor& visitor) {
-    visitor.visit(*this);
+    std::cerr << "Accept: " << m_name << std::endl;
+    visitor.visit(this);
 }
 
-void Group::addChild(std::shared_ptr<Node>& node) {
+void Group::addChild(std::shared_ptr<Node> node) {
     m_children.push_back(node);
 }
 

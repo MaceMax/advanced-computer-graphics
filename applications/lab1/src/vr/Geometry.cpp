@@ -1,5 +1,7 @@
-#include <glad/glad.h>
-#include <vr/Geometry.h>
+#pragma once
+
+#include "vr/Geometry.h"
+
 #include <vr/glErrorUtil.h>
 
 using namespace vr;
@@ -16,7 +18,8 @@ Geometry::~Geometry() {
 }
 
 void Geometry::accept(NodeVisitor& visitor) {
-    visitor.visit(*this);
+    std::cerr << "Accept: " << m_name << std::endl;
+    visitor.visit(this);
 }
 
 bool Geometry::initShader(std::shared_ptr<vr::Shader> shader) {
@@ -138,8 +141,8 @@ void Geometry::resetTransform() {
     m_object2world = m_initialTransform;
 }
 
-void Geometry::buildGeometry(std::vector<glm::vec4>& vertices, std::vector<glm::vec3>& normals,
-                             std::vector<glm::vec2>& texCoords, std::vector<GLuint>& indices) {
+void Geometry::buildGeometry(std::vector<glm::vec4> vertices, std::vector<glm::vec3> normals,
+                             std::vector<glm::vec2> texCoords, std::vector<GLuint> indices) {
     m_vertices = vertices;
     m_normals = normals;
     m_texCoords = texCoords;
@@ -147,6 +150,7 @@ void Geometry::buildGeometry(std::vector<glm::vec4>& vertices, std::vector<glm::
 }
 
 void Geometry::draw(std::shared_ptr<vr::Shader> shader, const glm::mat4& modelMatrix) {
+    shader->use();
     CHECK_GL_ERROR_LINE_FILE();
     if (m_useVAO) {
         glBindVertexArray(m_vao);
@@ -221,6 +225,7 @@ void Geometry::draw(std::shared_ptr<vr::Shader> shader, const glm::mat4& modelMa
         if (!m_useVAO)
             glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->m_ibo_elements);
 
+        std::cout << "Drawing " << this->m_indices.size() << " elements" << std::endl;
         GLuint size = GLuint(this->m_indices.size());
         glDrawElements(GL_TRIANGLES, size, GL_UNSIGNED_SHORT, 0);
         CHECK_GL_ERROR_LINE_FILE();

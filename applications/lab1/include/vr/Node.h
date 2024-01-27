@@ -1,13 +1,15 @@
 #pragma once
 
-#include <vr/BoundingBox.h>
-#include <vr/NodeVisitor.h>
-#include <vr/State.h>
-
 #include <glm/glm.hpp>
+#include <iostream>
 #include <memory>
 
+#include "vr/BoundingBox.h"
+#include "vr/State.h"
+
 namespace vr {
+
+class NodeVisitor;
 /**
 Simple class that store a number of meshes and draws it
 */
@@ -31,5 +33,7 @@ class Node {
     std::string m_name;
     std::shared_ptr<State> m_state;
 };
+
+typedef std::vector<std::shared_ptr<Node>> NodeVector;
 
 }  // namespace vr

@@ -5,9 +5,9 @@
 #include <sstream>
 #include <vector>
 
-#include "Camera.h"
-#include "Light.h"
-#include "Node.h"
+#include "vr/Camera.h"
+#include "vr/Light.h"
+#include "vr/Node.h"
 #include "vr/RenderVisitor.h"
 #include "vr/Shader.h"
 
@@ -108,4 +108,5 @@ class Scene {
     std::shared_ptr<Camera> m_camera;
     std::shared_ptr<Group> m_root;
 };
+
 }  // namespace vr

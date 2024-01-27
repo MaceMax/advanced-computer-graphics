@@ -1,4 +1,7 @@
 #include <vr/State.h>
+#include <vr/glErrorUtil.h>
+
+#include <iostream>
 
 using namespace vr;
 
@@ -73,10 +76,7 @@ bool State::CullFaceEnabled() {
 }
 
 void State::addLight(std::shared_ptr<Light>& light) {
-    if (!m_lights) {
-        m_lights = std::make_shared<LightVector>();
-    }
-    m_lights->push_back(light);
+    m_lights.get()->push_back(light);
 }
 
 void State::setLightEnabled(size_t idx, bool enabled) {
@@ -98,8 +98,10 @@ std::shared_ptr<Shader> const State::getShader() {
 void State::apply() {
     m_shader->use();
     // Update number of lights
-    m_shader->setInt("numberOfLights", m_lights->size());
+    m_shader->setInt("numberOfLights", m_lights.get()->size());
+    CHECK_GL_ERROR_LINE_FILE();
     m_shader->setBool("lightingEnabled", lightingEnabled);
+    CHECK_GL_ERROR_LINE_FILE();
 
     for (size_t i = 0; i < m_lights->size(); i++) {
         if (lightingEnabled) {

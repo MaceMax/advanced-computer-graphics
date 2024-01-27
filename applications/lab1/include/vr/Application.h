@@ -2,9 +2,9 @@
 
 #include <memory>
 
-#include "Camera.h"
-#include "FPSCounter.h"
-#include "Scene.h"
+#include "vr/Camera.h"
+#include "vr/FPSCounter.h"
+#include "vr/Scene.h"
 
 namespace vr {
 

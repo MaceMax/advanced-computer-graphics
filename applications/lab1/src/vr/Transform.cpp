@@ -14,6 +14,6 @@ glm::mat4 Transform::getMatrix() {
     return t_matrix;
 }
 
-BoundingBox Group::calculateBoundingBox() {
-    Group::calculateBoundingBox();
+BoundingBox Transform::calculateBoundingBox() {
+    return Group::calculateBoundingBox();
 }
