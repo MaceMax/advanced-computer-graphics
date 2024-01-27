@@ -36,13 +36,13 @@ class Geometry : public Node {
     glm::mat4 m_object2world;
     glm::mat4 m_initialTransform;
 
-    GLint m_attribute_v_coord;
-    GLint m_attribute_v_normal;
-    GLint m_attribute_v_texCoords;
+    GLint m_attribute_v_coord = -1;
+    GLint m_attribute_v_normal = -1;
+    GLint m_attribute_v_texCoords = -1;
 
     bool m_useVAO;
     GLuint m_vao;
-    GLuint m_vbo_vertices, m_vbo_normals, m_vbo_texCoords, m_ibo_elements = 0;
+    GLuint m_vbo_vertices = 0, m_vbo_normals = 0, m_vbo_texCoords = 0, m_ibo_elements = 0;
 };
 
 }  // namespace vr

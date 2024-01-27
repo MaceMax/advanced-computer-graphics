@@ -50,11 +50,36 @@ bool Scene::initShaders(const std::string& vshader_filename, const std::string& 
         4, 5, 1, 1, 0, 4   // bottom face
     };
 
-    std::vector<glm::vec3> normals;
+    std::vector<glm::vec3> normals = {
+        glm::vec3(0.0f, 0.0f, -1.0f),  // Front face
+        glm::vec3(0.0f, 0.0f, -1.0f),  // Front face
+        glm::vec3(0.0f, 0.0f, -1.0f),  // Front face
+        glm::vec3(0.0f, 0.0f, -1.0f),  // Front face
+        glm::vec3(1.0f, 0.0f, 0.0f),   // Right face
+        glm::vec3(1.0f, 0.0f, 0.0f),   // Right face
+        glm::vec3(1.0f, 0.0f, 0.0f),   // Right face
+        glm::vec3(1.0f, 0.0f, 0.0f),   // Right face
+        glm::vec3(0.0f, 0.0f, 1.0f),   // Back face
+        glm::vec3(0.0f, 0.0f, 1.0f),   // Back face
+        glm::vec3(0.0f, 0.0f, 1.0f),   // Back face
+        glm::vec3(0.0f, 0.0f, 1.0f),   // Back face
+        glm::vec3(-1.0f, 0.0f, 0.0f),  // Left face
+        glm::vec3(-1.0f, 0.0f, 0.0f),  // Left face
+        glm::vec3(-1.0f, 0.0f, 0.0f),  // Left face
+        glm::vec3(-1.0f, 0.0f, 0.0f),  // Left face
+        glm::vec3(0.0f, 1.0f, 0.0f),   // Top face
+        glm::vec3(0.0f, 1.0f, 0.0f),   // Top face
+        glm::vec3(0.0f, 1.0f, 0.0f),   // Top face
+        glm::vec3(0.0f, 1.0f, 0.0f),   // Top face
+        glm::vec3(0.0f, -1.0f, 0.0f),  // Bottom face
+        glm::vec3(0.0f, -1.0f, 0.0f),  // Bottom face
+        glm::vec3(0.0f, -1.0f, 0.0f),  // Bottom face
+        glm::vec3(0.0f, -1.0f, 0.0f),  // Bottom face
+    };
 
     std::vector<glm::vec2> texCoords;
-
     g->buildGeometry(vertices, normals, texCoords, indices);
+
     if (!g->initShader(m_shader))
         return false;
     g->upload();

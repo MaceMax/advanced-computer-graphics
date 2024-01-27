@@ -124,6 +124,7 @@ int main(int argc, char** argv) {
 
     if (!application->initResources(model_filename, v_shader_filename, f_shader_filename)) {
         cleanupWindows(window);
+        std::cerr << "Failed to load resources" << std::endl;
         return 1;
     }
 

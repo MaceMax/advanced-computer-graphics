@@ -78,41 +78,47 @@ void Geometry::upload() {
     }
 
     if (m_useVAO) {
-        glEnableVertexAttribArray(m_attribute_v_coord);
-        glBindBuffer(GL_ARRAY_BUFFER, m_vbo_vertices);
-        glVertexAttribPointer(
-            m_attribute_v_coord,  // attribute
-            4,                    // number of elements per vertex, here (x,y,z,w)
-            GL_FLOAT,             // the type of each element
-            GL_FALSE,             // take our values as-is
-            0,                    // no extra data between each position
-            0                     // offset of first element
-        );
-        glDisableVertexAttribArray(m_attribute_v_coord);
+        if (this->m_vbo_vertices != 0) {
+            glEnableVertexAttribArray(m_attribute_v_coord);
+            glBindBuffer(GL_ARRAY_BUFFER, this->m_vbo_vertices);
+            glVertexAttribPointer(
+                m_attribute_v_coord,  // attribute
+                4,                    // number of elements per vertex, here (x,y,z,w)
+                GL_FLOAT,             // the type of each element
+                GL_FALSE,             // take our values as-is
+                0,                    // no extra data between each position
+                0                     // offset of first element
+            );
+            glDisableVertexAttribArray(m_attribute_v_coord);
+        }
 
-        glEnableVertexAttribArray(m_attribute_v_normal);
-        glBindBuffer(GL_ARRAY_BUFFER, m_vbo_normals);
-        glVertexAttribPointer(
-            m_attribute_v_normal,  // attribute
-            3,                     // number of elements per vertex, here (x,y,z)
-            GL_FLOAT,              // the type of each element
-            GL_FALSE,              // take our values as-is
-            0,                     // no extra data between each position
-            0                      // offset of first element
-        );
-        glDisableVertexAttribArray(m_attribute_v_normal);
+        if (this->m_vbo_normals != 0) {
+            glEnableVertexAttribArray(m_attribute_v_normal);
+            glBindBuffer(GL_ARRAY_BUFFER, this->m_vbo_normals);
+            glVertexAttribPointer(
+                m_attribute_v_normal,  // attribute
+                3,                     // number of elements per vertex, here (x,y,z)
+                GL_FLOAT,              // the type of each element
+                GL_FALSE,              // take our values as-is
+                0,                     // no extra data between each position
+                0                      // offset of first element
+            );
+            glDisableVertexAttribArray(m_attribute_v_normal);
+        }
 
-        glEnableVertexAttribArray(m_attribute_v_texCoords);
-        glBindBuffer(GL_ARRAY_BUFFER, m_vbo_texCoords);
-        glVertexAttribPointer(
-            m_attribute_v_texCoords,  // attribute
-            2,                        // number of elements per vertex, here (x,y)
-            GL_FLOAT,                 // the type of each element
-            GL_FALSE,                 // take our values as-is
-            0,                        // no extra data between each position
-            0                         // offset of first element
-        );
-        glDisableVertexAttribArray(m_attribute_v_texCoords);
+        if (this->m_vbo_texCoords != 0) {
+            glEnableVertexAttribArray(m_attribute_v_texCoords);
+            glBindBuffer(GL_ARRAY_BUFFER, this->m_vbo_texCoords);
+            glVertexAttribPointer(
+                m_attribute_v_texCoords,  // attribute
+                2,                        // number of elements per vertex, here (x,y)
+                GL_FLOAT,                 // the type of each element
+                GL_FALSE,                 // take our values as-is
+                0,                        // no extra data between each position
+                0                         // offset of first element
+            );
+            glDisableVertexAttribArray(m_attribute_v_texCoords);
+        }
     }
 
     if (this->m_indices.size() > 0) {
@@ -225,9 +231,7 @@ void Geometry::draw(std::shared_ptr<vr::Shader> shader, const glm::mat4& modelMa
         if (!m_useVAO)
             glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->m_ibo_elements);
 
-        std::cout << "Drawing " << this->m_indices.size() << " elements" << std::endl;
-        GLuint size = GLuint(this->m_indices.size());
-        glDrawElements(GL_TRIANGLES, size, GL_UNSIGNED_SHORT, 0);
+        glDrawElements(GL_TRIANGLES, (GLsizei)this->m_indices.size(), GL_UNSIGNED_INT, 0);
         CHECK_GL_ERROR_LINE_FILE();
     } else {
         glDrawArrays(GL_TRIANGLES, 0, (GLsizei)this->m_vertices.size());
