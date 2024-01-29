@@ -71,5 +71,6 @@
         "variant": "cpp",
         "*.ipp": "cpp"
     },
-    "C_Cpp.errorSquiggles": "enabled"
+    "C_Cpp.errorSquiggles": "enabled",
+    "C_Cpp.default.compilerPath": "/usr/bin/gcc"
 }

@@ -52,6 +52,7 @@ void Light::apply(std::shared_ptr<vr::Shader> shader, size_t idx)
   uniform_name = prefix + "enabled";
 
   shader->setInt(uniform_name, enabled);
+  shader->setBool("lightingEnabled", true);
   shader->setVec4(prefix + "diffuse", this->diffuse);
   shader->setVec4(prefix + "specular", this->specular);
   shader->setVec4(prefix + "position", this->position);

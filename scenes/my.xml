@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Scene>
+    <!-- Group Node - Can contain any number of children nodes -->
+    <Group name="Group1">
+        
+        <!-- Transform Node - Can have attributes "transform", "rotation", "scale" -->
+        <Transform name="Transform1" translate="0 0 0" rotate="0 0 0" scale="1 1 1">
+            <!-- Child nodes go here -->
+            
+            <!-- State attributes for Transform -->
+            <State>
+                <Lighting enable="true" global="false">
+                    <!-- Individual light settings go here -->
+                    <Light id="1" enable="true"/>
+                    <Light id="2" enable="false"/>
+                </Lighting>
+                <CullFace enable="true"/>
+                <Shader filepath="/path/to/shader1.glsl"/>
+            </State>
+        </Transform>
+
+        <!-- Geometry Node - Must specify a filepath to a model, cannot have children -->
+        <Geometry name="Model1" filepath="/path/to/model1.obj">
+            <!-- State attributes for Geometry -->
+            <State>
+                <Lighting enable="true"/>
+                <CullFace enable="false"/>
+                <Shader filepath="/path/to/shader2.glsl"/>
+            </State>
+        </Geometry>
+    </Group>
+
+    <!-- Group Node - Another example of a group node -->
+    <Group name="Group2">
+        
+        <!-- Geometry Node - Another example of a geometry node -->
+        <Geometry name="Model2" filepath="/path/to/model2.obj">
+            <!-- State attributes for Geometry -->
+            <State>
+                <Lighting enable="true">
+                    <!-- Individual light settings go here -->
+                    <Light id="1" enable="true"/>
+                    <Light id="2" enable="true"/>
+                </Lighting>
+                <CullFace enable="true"/>
+                <Shader filepath="/path/to/shader3.glsl"/>
+            </State>
+        </Geometry>
+
+        <!-- Transform Node - Another example of a transform node -->
+        <Transform name="Transform2" translate="5 0 0" rotate="0 0 0" scale="1 1 1">
+            <!-- Child nodes go here -->
+
+            <!-- State attributes for Transform -->
+            <State>
+                <Lighting enable="false" global="true"/>
+                <CullFace enable="true"/>
+                <Shader filepath="/path/to/shader4.glsl"/>
+            </State>
+        </Transform>
+    </Group>
+</Scene>
+

@@ -11,10 +11,7 @@ class State {
     // Default constructor
     State(std::shared_ptr<Shader> shader = nullptr) : m_shader(shader),
                                                       lightingEnabled(true),
-                                                      cullFaceEnabled(false),
-                                                      m_lights(std::make_shared<LightVector>()),
-                                                      m_material(std::make_shared<Material>()),
-                                                      m_texture(std::make_shared<Texture>()) {}
+                                                      cullFaceEnabled(false) {}
     // + operator overload. Combines two states into one. Returns a shared pointer to the new state.
     std::shared_ptr<State> operator+(const State& other) const;
     State& operator+=(const State& other);
@@ -25,7 +22,7 @@ class State {
     void setCullFaceEnabled(bool enabled);
     bool CullFaceEnabled();
 
-    void addLight(std::shared_ptr<Light>& light);
+    void addLight(std::shared_ptr<Light> light);
     void setLightEnabled(size_t idx, bool enabled);
 
     void setMaterial(std::shared_ptr<Material> material);

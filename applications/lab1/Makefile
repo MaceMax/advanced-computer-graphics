@@ -439,30 +439,6 @@ src/vr/Material.cpp.s:
 	cd /home/macemax/University/advanced-computer-graphics && $(MAKE) $(MAKESILENT) -f applications/lab1/CMakeFiles/lab1.dir/build.make applications/lab1/CMakeFiles/lab1.dir/src/vr/Material.cpp.s
 .PHONY : src/vr/Material.cpp.s
 
-src/vr/Mesh.o: src/vr/Mesh.cpp.o
-.PHONY : src/vr/Mesh.o
-
-# target to build an object file
-src/vr/Mesh.cpp.o:
-	cd /home/macemax/University/advanced-computer-graphics && $(MAKE) $(MAKESILENT) -f applications/lab1/CMakeFiles/lab1.dir/build.make applications/lab1/CMakeFiles/lab1.dir/src/vr/Mesh.cpp.o
-.PHONY : src/vr/Mesh.cpp.o
-
-src/vr/Mesh.i: src/vr/Mesh.cpp.i
-.PHONY : src/vr/Mesh.i
-
-# target to preprocess a source file
-src/vr/Mesh.cpp.i:
-	cd /home/macemax/University/advanced-computer-graphics && $(MAKE) $(MAKESILENT) -f applications/lab1/CMakeFiles/lab1.dir/build.make applications/lab1/CMakeFiles/lab1.dir/src/vr/Mesh.cpp.i
-.PHONY : src/vr/Mesh.cpp.i
-
-src/vr/Mesh.s: src/vr/Mesh.cpp.s
-.PHONY : src/vr/Mesh.s
-
-# target to generate assembly for a file
-src/vr/Mesh.cpp.s:
-	cd /home/macemax/University/advanced-computer-graphics && $(MAKE) $(MAKESILENT) -f applications/lab1/CMakeFiles/lab1.dir/build.make applications/lab1/CMakeFiles/lab1.dir/src/vr/Mesh.cpp.s
-.PHONY : src/vr/Mesh.cpp.s
-
 src/vr/RenderVisitor.o: src/vr/RenderVisitor.cpp.o
 .PHONY : src/vr/RenderVisitor.o
 
@@ -749,9 +725,6 @@ help:
 	@echo "... src/vr/Material.o"
 	@echo "... src/vr/Material.i"
 	@echo "... src/vr/Material.s"
-	@echo "... src/vr/Mesh.o"
-	@echo "... src/vr/Mesh.i"
-	@echo "... src/vr/Mesh.s"
 	@echo "... src/vr/RenderVisitor.o"
 	@echo "... src/vr/RenderVisitor.i"
 	@echo "... src/vr/RenderVisitor.s"

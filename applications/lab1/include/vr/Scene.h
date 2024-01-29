@@ -44,7 +44,7 @@ class Scene {
     Add a lightsource
     \param light - A new light source<
     */
-    void add(std::shared_ptr<Light>& light);
+    void add(std::shared_ptr<Light> light);
 
     /**
     Get all light sources

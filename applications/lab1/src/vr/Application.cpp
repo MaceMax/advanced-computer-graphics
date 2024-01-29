@@ -1,7 +1,6 @@
 #include <vr/Application.h>
 #include <vr/FileSystem.h>
 #include <vr/Loader.h>
-#include <vr/Mesh.h>
 #include <vr/Scene.h>
 
 #include <glm/glm.hpp>
@@ -25,13 +24,13 @@ bool Application::initResources(const std::string& model_filename, const std::st
     m_loadedFilename = model_filename;
 
     m_scene = std::shared_ptr<Scene>(Scene::getInstance());
-    std::shared_ptr<Group>& m_sceneRoot = m_scene->getRoot();
 
     if (!m_scene->initShaders(vshader_filename, fshader_filename))
         return false;
     getCamera()->setScreenSize(m_screenSize);
 
     std::string ext = vr::FileSystem::getFileExtension(model_filename);
+    std::shared_ptr<Group>& m_sceneRoot = m_scene->getRoot();
 
     // Ok lets load this as our own "scene file format"
     if (ext == "xml" || ext == "XML") {

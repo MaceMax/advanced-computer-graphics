@@ -156,8 +156,8 @@ void parseNodes(aiNode* root_node, MaterialVector& materials, std::stack<glm::ma
 
     uint32_t num_meshes = root_node->mNumMeshes;
 
-    Mesh::vec3Vector tangents;
-    Mesh::vec2Vector tex_coords;
+    std::vector<glm::vec3> tangents;
+    std::vector<glm::vec2> tex_coords;
 
     for (uint32_t i = 0; i < num_meshes; i++) {
         aiMesh* mesh = aiScene->mMeshes[root_node->mMeshes[i]];
@@ -230,7 +230,7 @@ void parseNodes(aiNode* root_node, MaterialVector& materials, std::stack<glm::ma
     transformStack.pop();
 }
 
-bool vr::load3DModelFile(const std::string& filename, std::shared_ptr<Group>& node, const std::shared_ptr<Shader>& shader) {
+bool vr::load3DModelFile(const std::string& filename, std::shared_ptr<Group>& node, const std::shared_ptr<Shader>& shader, GeometryMap* geometryMap) {
     std::string filepath = vr::FileSystem::findFile(filename);
     if (filepath.empty()) {
         std::cerr << "The file " << filename << " does not exist" << std::endl;
@@ -260,7 +260,13 @@ bool vr::load3DModelFile(const std::string& filename, std::shared_ptr<Group>& no
     std::stack<glm::mat4> transformStack;
     transformStack.push(glm::mat4());
 
-    parseNodes(root_node, materials, transformStack, node, aiScene, shader);
+    std::shared_ptr<Group> meshGroup = std::make_shared<Group>(filename);
+    node->addChild(meshGroup);
+    parseNodes(root_node, materials, transformStack, meshGroup, aiScene, shader);
+
+    if (geometryMap != nullptr)
+        (*geometryMap)[filename] = meshGroup;
+
     transformStack.pop();
 
     if (node->getChildren().empty())
@@ -338,8 +344,90 @@ std::string getAttribute(rapidxml::xml_node<>* node, const std::string& attribut
     return attrib->value();
 }
 
+State parseState(std::vector<std::string> xmlpath, rapidxml::xml_node<>* state_node) {
+}
+
+// Parses XML nodes recursively
+void parseSceneNode(std::vector<std::string> xmlpath, rapidxml::xml_node<>* node_node, GeometryMap& geometryMap, std::shared_ptr<Group>& node, const std::shared_ptr<Shader>& shader) {
+    if (node_node->type() == rapidxml::node_comment || node_node->type() == rapidxml::node_doctype)
+        return;
+
+    rapidxml::xml_node<>* stateNode = node_node->first_node("State");
+    std::shared_ptr<State> state;
+    // Check if we have a state
+    if (stateNode) {
+        state = std::make_shared<State>(parseState(xmlpath, stateNode));
+    }
+
+    for (rapidxml::xml_node<>* child = node_node->first_node(); child; child = child->next_sibling()) {
+        xmlpath.push_back(child->name());
+        std::string name = std::string(child->name());
+
+        if (child->type() == rapidxml::node_comment || child->type() == rapidxml::node_doctype)
+            continue;
+
+        std::string nodeName = child->first_attribute("name")->value();
+
+        if (name == "Group") {
+            std::shared_ptr<Group> groupNode = std::make_shared<Group>(nodeName);
+            parseSceneNode(xmlpath, child, geometryMap, groupNode, shader);
+            if (state)
+                groupNode->setState(state);
+            node->addChild(groupNode);
+
+        } else if (name == "Transform") {
+            std::shared_ptr<Transform> transformNode = std::make_shared<Transform>(nodeName);
+            xmlpath.push_back("transform");
+
+            std::string translate = getAttribute(child, "translate");
+            glm::vec3 t_vec;
+            if (!getVec<glm::vec3>(t_vec, translate))
+                throw std::runtime_error("Node (" + name + ") Invalid translate in: " + pathToString(xmlpath));
+
+            std::string rotate = getAttribute(child, "rotate");
+            glm::vec3 r_vec;
+            if (!getVec<glm::vec3>(r_vec, rotate))
+                throw std::runtime_error("Node (" + name + ") Invalid rotate in: " + pathToString(xmlpath));
+
+            std::string scale = getAttribute(child, "scale");
+            glm::vec3 s_vec;
+            if (!getVec<glm::vec3>(s_vec, scale, glm::vec3(1)))
+                throw std::runtime_error("Node (" + name + ") Invalid scale in: " + pathToString(xmlpath));
+
+            glm::mat4 mt = glm::translate(glm::mat4(), t_vec);
+            glm::mat4 ms = glm::scale(glm::mat4(), s_vec);
+            glm::mat4 rx = glm::rotate(glm::mat4(), glm::radians(r_vec.x), glm::vec3(1, 0, 0));
+            glm::mat4 ry = glm::rotate(glm::mat4(), glm::radians(r_vec.y), glm::vec3(0, 1, 0));
+            glm::mat4 rz = glm::rotate(glm::mat4(), glm::radians(r_vec.z), glm::vec3(0, 0, 1));
+
+            auto t = mt * rz * ry * rx;
+            t = glm::scale(t, s_vec);
+            transformNode->setMatrix(t);
+
+            std::shared_ptr<Group> groupTransform = std::dynamic_pointer_cast<Group>(transformNode);
+
+            parseSceneNode(xmlpath, child, geometryMap, groupTransform, shader);
+
+            if (state)
+                transformNode->setState(state);
+            node->addChild(transformNode);
+
+        } else if (name == "Geometry") {
+            std::string filepath = child->first_attribute("filepath")->value();
+            if (filepath.empty())
+                throw std::runtime_error("Node (" + name + ") Invalid file in: " + pathToString(xmlpath));
+
+            // Check if we have a geometry with the filepath already in the map
+            if (geometryMap.find(filepath) != geometryMap.end()) {
+                node->addChild(geometryMap[filepath]);
+            } else if (!load3DModelFile(filepath, node, shader, &geometryMap))
+                throw std::runtime_error("Node (" + name + ") Invalid file in: " + pathToString(xmlpath));
+        }
+
+        xmlpath.pop_back();
+    }
+}
 bool vr::loadSceneFile(const std::string& sceneFile, std::shared_ptr<Scene>& scene) {
-    /*
     std::string filepath = sceneFile;
     bool exist = vr::FileSystem::exists(filepath);
 
@@ -366,74 +454,16 @@ bool vr::loadSceneFile(const std::string& sceneFile, std::shared_ptr<Scene>& sce
 
         doc.parse<rapidxml::parse_trim_whitespace | rapidxml::parse_normalize_whitespace | rapidxml::parse_full>(xmlFile.data());
 
-        root_node = doc.first_node("scene");
+        root_node = doc.first_node("Scene");
         if (!root_node)
             throw std::runtime_error("File missing scene/");
 
-        xmlpath.push_back("scene");
-        // Iterate over the nodes
-        for (rapidxml::xml_node<>* node_node = root_node->first_node("node"); node_node; node_node = node_node->next_sibling()) {
-            xmlpath.push_back("node");
+        xmlpath.push_back("Scene");
 
-            if (node_node->type() == rapidxml::node_comment || node_node->type() == rapidxml::node_doctype)
-                continue;
+        GeometryMap geometryMap;
 
-            std::string name = getAttribute(node_node, "name");
+        parseSceneNode(xmlpath, root_node, geometryMap, scene->getRoot(), scene->getRoot()->getState()->getShader());
 
-            rapidxml::xml_node<>* file = node_node->first_node("file");
-            if (!file)
-                throw std::runtime_error("Missing file: " + pathToString(xmlpath));
-
-            xmlpath.push_back("file");
-
-            std::string path = file->first_attribute("path")->value();
-            if (path.empty())
-                throw std::runtime_error("Empty path: " + pathToString(xmlpath));
-            xmlpath.pop_back();  // file
-
-            // Do we have a transform?
-            rapidxml::xml_node<>* transform = node_node->first_node("transform");
-            if (transform) {
-                xmlpath.push_back("transform");
-
-                std::string translate = getAttribute(transform, "translate");
-                glm::vec3 t_vec;
-                if (!getVec<glm::vec3>(t_vec, translate))
-                    throw std::runtime_error("Node (" + name + ") Invalid translate in: " + pathToString(xmlpath));
-
-                std::string rotate = getAttribute(transform, "rotate");
-                glm::vec3 r_vec;
-                if (!getVec<glm::vec3>(r_vec, rotate))
-                    throw std::runtime_error("Node (" + name + ") Invalid rotate in: " + pathToString(xmlpath));
-
-                std::string scale = getAttribute(transform, "scale");
-                glm::vec3 s_vec;
-                if (!getVec<glm::vec3>(s_vec, scale, glm::vec3(1)))
-                    throw std::runtime_error("Node (" + name + ") Invalid scale in: " + pathToString(xmlpath));
-
-                // Now create the node
-                std::shared_ptr<Node> loadedNode = vr::load3DModelFile(path);
-                if (!loadedNode)
-                    std::cerr << "Unable to load node \'" << name << "\' path: " << path << std::endl;
-                else {
-                    glm::mat4 mt = glm::translate(glm::mat4(), t_vec);
-                    glm::mat4 ms = glm::scale(glm::mat4(), s_vec);
-                    glm::mat4 rx = glm::rotate(glm::mat4(), glm::radians(r_vec.x), glm::vec3(1, 0, 0));
-                    glm::mat4 ry = glm::rotate(glm::mat4(), glm::radians(r_vec.y), glm::vec3(0, 1, 0));
-                    glm::mat4 rz = glm::rotate(glm::mat4(), glm::radians(r_vec.z), glm::vec3(0, 0, 1));
-
-                    auto t = mt * rz * ry * rx;
-                    t = glm::scale(t, s_vec);
-                    loadedNode->setInitialTransform(t);
-                    loadedNode->name = name;
-                    scene->add(loadedNode);
-                }
-
-                xmlpath.pop_back();  // transform
-            }
-
-            xmlpath.pop_back();  // node
-        }
         xmlpath.pop_back();  // scene
     } catch (rapidxml::parse_error& error) {
         std::cerr << "XML parse error: " << error.what() << std::endl;
@@ -442,6 +472,6 @@ bool vr::loadSceneFile(const std::string& sceneFile, std::shared_ptr<Scene>& sce
         std::cerr << "XML parse error: " << error.what() << std::endl;
         return false;
     }
-    */
+
     return true;
 }

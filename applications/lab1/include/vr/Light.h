@@ -6,8 +6,6 @@
 #include <memory>
 #include <vector>
 
-#include "Mesh.h"
-
 namespace vr {
 
 /// Simple class that store light properties and apply them to Uniforms
@@ -23,10 +21,10 @@ class Light {
 
    private:
     friend class Scene;
-    std::shared_ptr<Mesh> m_mesh;
+    // std::shared_ptr<Mesh> m_mesh;
 
     void createMesh();
-    std::shared_ptr<Mesh>& getMesh();
+    // std::shared_ptr<Mesh>& getMesh();
 };
 typedef std::vector<std::shared_ptr<Light> > LightVector;
 

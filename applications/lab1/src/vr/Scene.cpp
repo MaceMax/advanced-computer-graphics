@@ -11,7 +11,6 @@ std::shared_ptr<Scene> Scene::instance = nullptr;
 Scene::Scene() : m_uniform_numberOfLights(-1) {
     m_camera = std::make_shared<Camera>();
     m_renderVisitor = std::make_shared<RenderVisitor>();
-    m_root = std::shared_ptr<Group>(new Group("root"));
 }
 
 std::shared_ptr<Scene> Scene::getInstance() {
@@ -26,16 +25,18 @@ bool Scene::initShaders(const std::string& vshader_filename, const std::string& 
     if (!m_shader->valid())
         return false;
 
+    m_root = std::shared_ptr<Group>(new Group("root"));
     m_root->setState(std::make_shared<State>(m_shader));
+    m_lights.clear();
 
     if (!m_root->getState()->getShader()) {
         return false;
     }
 
-    return true;
+        return true;
 }
 
-void Scene::add(std::shared_ptr<Light>& light) {
+void Scene::add(std::shared_ptr<Light> light) {
     m_lights.push_back(light);
     m_root->getState()->addLight(light);
 }
@@ -84,7 +85,6 @@ BoundingBox Scene::calculateBoundingBox() {
 void Scene::render() {
     CHECK_GL_ERROR_LINE_FILE();
     useProgram();
-
     CHECK_GL_ERROR_LINE_FILE();
 
     m_renderVisitor->visit(m_root.get());
