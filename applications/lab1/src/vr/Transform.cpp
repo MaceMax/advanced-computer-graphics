@@ -3,7 +3,7 @@
 using namespace vr;
 
 void Transform::accept(NodeVisitor& visitor) {
-    Group::accept(visitor);
+    visitor.visit(this);
 }
 
 void Transform::setMatrix(const glm::mat4& matrix) {

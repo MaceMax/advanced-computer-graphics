@@ -9,12 +9,12 @@ namespace vr {
 class State {
    public:
     // Default constructor
-    State(std::shared_ptr<Shader> shader) : m_shader(shader),
-                                            lightingEnabled(true),
-                                            cullFaceEnabled(false),
-                                            m_lights(std::make_shared<LightVector>()),
-                                            m_material(std::make_shared<Material>()),
-                                            m_texture(std::make_shared<Texture>()) {}
+    State(std::shared_ptr<Shader> shader = nullptr) : m_shader(shader),
+                                                      lightingEnabled(true),
+                                                      cullFaceEnabled(false),
+                                                      m_lights(std::make_shared<LightVector>()),
+                                                      m_material(std::make_shared<Material>()),
+                                                      m_texture(std::make_shared<Texture>()) {}
     // + operator overload. Combines two states into one. Returns a shared pointer to the new state.
     std::shared_ptr<State> operator+(const State& other) const;
     State& operator+=(const State& other);
@@ -31,6 +31,7 @@ class State {
     void setMaterial(std::shared_ptr<Material> material);
     void setTexture(std::shared_ptr<Texture> texture);
 
+    void setShader(std::shared_ptr<Shader> shader);
     std::shared_ptr<Shader> const getShader();
 
     void apply();

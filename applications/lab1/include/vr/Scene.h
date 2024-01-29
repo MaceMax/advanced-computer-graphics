@@ -82,7 +82,7 @@ class Scene {
     */
     std::shared_ptr<Node> getNode(size_t i);
 
-    std::shared_ptr<Group> getRoot();
+    std::shared_ptr<Group>& getRoot();
 
     /**
     Compute a bounding box for the whole scene

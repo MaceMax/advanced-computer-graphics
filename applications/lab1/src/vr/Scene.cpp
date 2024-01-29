@@ -28,63 +28,9 @@ bool Scene::initShaders(const std::string& vshader_filename, const std::string& 
 
     m_root->setState(std::make_shared<State>(m_shader));
 
-    auto g = std::make_shared<Geometry>("Geometry");
-
-    std::vector<glm::vec4> vertices = {
-        glm::vec4(-1.0f, -1.0f, -1.0f, 1.0f),  // v0
-        glm::vec4(1.0f, -1.0f, -1.0f, 1.0f),   // v1
-        glm::vec4(1.0f, 1.0f, -1.0f, 1.0f),    // v2
-        glm::vec4(-1.0f, 1.0f, -1.0f, 1.0f),   // v3
-        glm::vec4(-1.0f, -1.0f, 1.0f, 1.0f),   // v4
-        glm::vec4(1.0f, -1.0f, 1.0f, 1.0f),    // v5
-        glm::vec4(1.0f, 1.0f, 1.0f, 1.0f),     // v6
-        glm::vec4(-1.0f, 1.0f, 1.0f, 1.0f)     // v7
-    };
-
-    std::vector<GLuint> indices = {
-        0, 1, 2, 2, 3, 0,  // front face
-        1, 5, 6, 6, 2, 1,  // right face
-        5, 4, 7, 7, 6, 5,  // back face
-        4, 0, 3, 3, 7, 4,  // left face
-        3, 2, 6, 6, 7, 3,  // top face
-        4, 5, 1, 1, 0, 4   // bottom face
-    };
-
-    std::vector<glm::vec3> normals = {
-        glm::vec3(0.0f, 0.0f, -1.0f),  // Front face
-        glm::vec3(0.0f, 0.0f, -1.0f),  // Front face
-        glm::vec3(0.0f, 0.0f, -1.0f),  // Front face
-        glm::vec3(0.0f, 0.0f, -1.0f),  // Front face
-        glm::vec3(1.0f, 0.0f, 0.0f),   // Right face
-        glm::vec3(1.0f, 0.0f, 0.0f),   // Right face
-        glm::vec3(1.0f, 0.0f, 0.0f),   // Right face
-        glm::vec3(1.0f, 0.0f, 0.0f),   // Right face
-        glm::vec3(0.0f, 0.0f, 1.0f),   // Back face
-        glm::vec3(0.0f, 0.0f, 1.0f),   // Back face
-        glm::vec3(0.0f, 0.0f, 1.0f),   // Back face
-        glm::vec3(0.0f, 0.0f, 1.0f),   // Back face
-        glm::vec3(-1.0f, 0.0f, 0.0f),  // Left face
-        glm::vec3(-1.0f, 0.0f, 0.0f),  // Left face
-        glm::vec3(-1.0f, 0.0f, 0.0f),  // Left face
-        glm::vec3(-1.0f, 0.0f, 0.0f),  // Left face
-        glm::vec3(0.0f, 1.0f, 0.0f),   // Top face
-        glm::vec3(0.0f, 1.0f, 0.0f),   // Top face
-        glm::vec3(0.0f, 1.0f, 0.0f),   // Top face
-        glm::vec3(0.0f, 1.0f, 0.0f),   // Top face
-        glm::vec3(0.0f, -1.0f, 0.0f),  // Bottom face
-        glm::vec3(0.0f, -1.0f, 0.0f),  // Bottom face
-        glm::vec3(0.0f, -1.0f, 0.0f),  // Bottom face
-        glm::vec3(0.0f, -1.0f, 0.0f),  // Bottom face
-    };
-
-    std::vector<glm::vec2> texCoords;
-    g->buildGeometry(vertices, normals, texCoords, indices);
-
-    if (!g->initShader(m_shader))
+    if (!m_root->getState()->getShader()) {
         return false;
-    g->upload();
-
-    m_root->addChild(g);
+    }
 
     return true;
 }
@@ -124,7 +70,7 @@ std::shared_ptr<Node> Scene::getNode(size_t i) {
     return m_nodes[i];
 }
 
-std::shared_ptr<Group> Scene::getRoot() {
+std::shared_ptr<Group>& Scene::getRoot() {
     return m_root;
 }
 

@@ -25,34 +25,37 @@ bool Application::initResources(const std::string& model_filename, const std::st
     m_loadedFilename = model_filename;
 
     m_scene = std::shared_ptr<Scene>(Scene::getInstance());
-    std::shared_ptr<Group> m_sceneRoot = m_scene->getRoot();
+    std::shared_ptr<Group>& m_sceneRoot = m_scene->getRoot();
 
     if (!m_scene->initShaders(vshader_filename, fshader_filename))
         return false;
     getCamera()->setScreenSize(m_screenSize);
 
-    /*
     std::string ext = vr::FileSystem::getFileExtension(model_filename);
-    std::shared_ptr<Node> node;
 
     // Ok lets load this as our own "scene file format"
     if (ext == "xml" || ext == "XML") {
-        if (!loadSceneFile(model_filename, m_sceneRoot)) {
+        if (!loadSceneFile(model_filename, m_scene)) {
             return false;
         }
 
-        if (m_sceneRoot->getChildren().empty()) {
+        if (m_scene->getRoot()->getChildren().empty()) {
             std::cerr << "Empty scene, something when wrong when loading files" << std::endl;
             return false;
         }
 
     } else {
-        load3DModelFile(model_filename, m_sceneRoot);
-        if (m_sceneRoot->getChildren().empty()) {
+        const std::shared_ptr<Shader>& root_shader = m_sceneRoot->getState()->getShader();
+
+        if (!root_shader) {
+            std::cerr << "No shader found" << std::endl;
+            return false;
+        }
+
+        if (!load3DModelFile(model_filename, m_sceneRoot, root_shader)) {
             return false;
         }
     }
-    */
 
 #if 0
   std::shared_ptr<Mesh> ground(new Mesh);

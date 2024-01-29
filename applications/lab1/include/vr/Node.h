@@ -19,8 +19,9 @@ class Node {
     virtual void accept(NodeVisitor& visitor) = 0;
     std::string getName() { return m_name; }
     bool hasState() { return m_state != nullptr; }
+    bool isRoot() { return m_name == "root"; }
     void setState(std::shared_ptr<State> state) { m_state = state; }
-    std::shared_ptr<State> getState() { return m_state; }
+    std::shared_ptr<State>& getState() { return m_state; }
 
     /// Calculate and return a bounding box for this Node based on its Mesh objects
     virtual BoundingBox calculateBoundingBox() = 0;

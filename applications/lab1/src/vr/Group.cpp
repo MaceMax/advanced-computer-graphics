@@ -3,7 +3,6 @@
 using namespace vr;
 
 void Group::accept(NodeVisitor& visitor) {
-    std::cerr << "Accept: " << m_name << std::endl;
     visitor.visit(this);
 }
 

@@ -7,8 +7,8 @@ namespace vr {
 class Geometry : public Node {
    public:
     Geometry(const std::string& name = "Geometry", bool useVAO = true) : Node(name), m_useVAO(useVAO) {}
-    Geometry(std::vector<glm::vec4>& vertices, std::vector<glm::vec3>& normals,
-             std::vector<glm::vec2>& texCoords, std::vector<GLuint>& indices,
+    Geometry(std::vector<glm::vec4> vertices, std::vector<glm::vec3> normals,
+             std::vector<glm::vec2> texCoords, std::vector<GLuint> indices,
              const std::string& name = "Geometry", bool useVAO = true) : Node(name),
                                                                          m_vertices(vertices),
                                                                          m_normals(normals),
@@ -17,7 +17,7 @@ class Geometry : public Node {
                                                                          m_useVAO(useVAO) {}
     ~Geometry();
     virtual void accept(NodeVisitor& visitor) override;
-    bool initShader(std::shared_ptr<vr::Shader> shader);
+    bool initShader(const std::shared_ptr<vr::Shader>& shader);
     void setInitialTransform(const glm::mat4& modelMatrix);
     void resetTransform();
     void upload();

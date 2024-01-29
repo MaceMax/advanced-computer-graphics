@@ -148,97 +148,93 @@ glm::mat4 assimpToGlmMatrix(const aiMatrix4x4& ai_matrix) {
     return glm_matrix;
 }
 
-void parseNodes(aiNode* root_node, MaterialVector& materials, std::stack<glm::mat4>& transformStack, std::shared_ptr<Node>& node, const aiScene* aiScene) {
-    /*
-  glm::mat4 transform = assimpToGlmMatrix(root_node->mTransformation);
+void parseNodes(aiNode* root_node, MaterialVector& materials, std::stack<glm::mat4>& transformStack, std::shared_ptr<Group>& node, const aiScene* aiScene, const std::shared_ptr<Shader>& shader) {
+    glm::mat4 transform = assimpToGlmMatrix(root_node->mTransformation);
 
-  glm::mat4 m = transformStack.top() * transform;
-  transformStack.push(m);
+    glm::mat4 m = transformStack.top() * transform;
+    transformStack.push(m);
 
-  uint32_t num_meshes = root_node->mNumMeshes;
+    uint32_t num_meshes = root_node->mNumMeshes;
 
-  Mesh::vec3Vector tangents;
-  Mesh::vec2Vector tex_coords;
+    Mesh::vec3Vector tangents;
+    Mesh::vec2Vector tex_coords;
 
-  for (uint32_t i = 0; i < num_meshes; i++)
-  {
-    std::shared_ptr<Mesh> loadedMesh(new Mesh());
+    for (uint32_t i = 0; i < num_meshes; i++) {
+        aiMesh* mesh = aiScene->mMeshes[root_node->mMeshes[i]];
+        uint32_t num_vertices = mesh->mNumVertices;
+        // Create a new mesh
 
-    aiMesh* mesh = aiScene->mMeshes[root_node->mMeshes[i]];
-    uint32_t num_vertices = mesh->mNumVertices;
+        std::shared_ptr<State> state = std::make_shared<State>();
 
-    loadedMesh->vertices.resize(num_vertices);
-    loadedMesh->normals.resize(num_vertices);
-    loadedMesh->texCoords.resize(num_vertices);
+        std::vector<glm::vec4> vertices(num_vertices);
+        std::vector<glm::vec3> normals(num_vertices);
+        std::vector<glm::vec2> texCoords(num_vertices);
+        std::vector<GLuint> elements;
 
-    //tangents.resize(num_vertices);
+        // tangents.resize(num_vertices);
 
-    for (uint32_t j = 0; j < num_vertices; j++)
-    {
-      loadedMesh->vertices[j] = glm::vec4(mesh->mVertices[j].x, mesh->mVertices[j].y, mesh->mVertices[j].z, 1);
-      loadedMesh->normals[j] = glm::vec3(mesh->mNormals[j].x, mesh->mNormals[j].y, mesh->mNormals[j].z);
+        for (uint32_t j = 0; j < num_vertices; j++) {
+            vertices[j] = glm::vec4(mesh->mVertices[j].x, mesh->mVertices[j].y, mesh->mVertices[j].z, 1);
+            normals[j] = glm::vec3(mesh->mNormals[j].x, mesh->mNormals[j].y, mesh->mNormals[j].z);
 
-      glm::vec3 tangent;
-      if (mesh->HasTangentsAndBitangents())
-      {
-        tangent.x = mesh->mTangents[j].x;
-        tangent.y = mesh->mTangents[j].y;
-        tangent.z = mesh->mTangents[j].z;
-      }
+            glm::vec3 tangent;
+            if (mesh->HasTangentsAndBitangents()) {
+                tangent.x = mesh->mTangents[j].x;
+                tangent.y = mesh->mTangents[j].y;
+                tangent.z = mesh->mTangents[j].z;
+            }
 
-      glm::vec2 tex_coord;
-      if (mesh->mTextureCoords[0])
-      {
-        tex_coord.x = mesh->mTextureCoords[0][j].x;
-        tex_coord.y = mesh->mTextureCoords[0][j].y;
+            glm::vec2 tex_coord;
+            if (mesh->mTextureCoords[0]) {
+                tex_coord.x = mesh->mTextureCoords[0][j].x;
+                tex_coord.y = mesh->mTextureCoords[0][j].y;
 
-        loadedMesh->texCoords[j] = tex_coord;
-      }
+                texCoords[j] = tex_coord;
+            }
 
-      // Ignore color
-      //       if (mesh->HasVertexColors(j))
-      //       {
-      //         vertex.color.x = mesh->mColors[j]->r;
-      //         vertex.color.y = mesh->mColors[j]->g;
-      //         vertex.color.z = mesh->mColors[j]->b;
-      //       }
+            // Ignore color
+            //       if (mesh->HasVertexColors(j))
+            //       {
+            //         vertex.color.x = mesh->mColors[j]->r;
+            //         vertex.color.y = mesh->mColors[j]->g;
+            //         vertex.color.z = mesh->mColors[j]->b;
+            //       }
+        }
 
+        uint32_t num_faces = mesh->mNumFaces;
+        elements.resize(0);
+        for (uint32_t j = 0; j < num_faces; j++) {
+            aiFace face = mesh->mFaces[j];
+            uint32_t num_indices = face.mNumIndices;
+            for (uint32_t k = 0; k < num_indices; k++) {
+                elements.push_back(face.mIndices[k]);
+            }
+        }
+
+        std::shared_ptr<Geometry> loadedMesh(new Geometry(vertices, normals, texCoords, elements, mesh->mName.C_Str()));
+        loadedMesh->setInitialTransform(transformStack.top());
+        loadedMesh->initShader(shader);
+        loadedMesh->upload();
+
+        if (!materials.empty())
+            state->setMaterial(materials[mesh->mMaterialIndex]);
+
+        loadedMesh->setState(state);
+
+        node->addChild(loadedMesh);
     }
 
-    uint32_t num_faces = mesh->mNumFaces;
-    loadedMesh->elements.resize(0);
-    for (uint32_t j = 0; j < num_faces; j++)
-    {
-      aiFace face = mesh->mFaces[j];
-      uint32_t num_indices = face.mNumIndices;
-      for (uint32_t k = 0; k < num_indices; k++)
-      {
-        loadedMesh->elements.push_back(face.mIndices[k]);
-      }
+    for (uint32_t i = 0; i < root_node->mNumChildren; i++) {
+        parseNodes(root_node->mChildren[i], materials, transformStack, node, aiScene, shader);
     }
-
-    loadedMesh->object2world = transformStack.top();
-
-    if (!materials.empty())
-      loadedMesh->setMaterial(materials[mesh->mMaterialIndex]);
-
-    node->add(loadedMesh);
-  }
-
-  for (uint32_t i = 0; i < root_node->mNumChildren; i++)
-  {
-    parseNodes(root_node->mChildren[i], materials, transformStack, node, aiScene);
-  }
-  transformStack.pop();
-  */
+    transformStack.pop();
 }
 
-std::shared_ptr<Node> vr::load3DModelFile(const std::string& filename) {
-    /*
+bool vr::load3DModelFile(const std::string& filename, std::shared_ptr<Group>& node, const std::shared_ptr<Shader>& shader) {
     std::string filepath = vr::FileSystem::findFile(filename);
     if (filepath.empty()) {
         std::cerr << "The file " << filename << " does not exist" << std::endl;
-        return nullptr;
+        return false;
     }
 
     MaterialVector materials;
@@ -253,7 +249,7 @@ std::shared_ptr<Node> vr::load3DModelFile(const std::string& filename) {
 
     if (!aiScene) {
         std::cerr << "Couldn't load model: " << filepath << " Error Importing Asset: " << importer.GetErrorString() << std::endl;
-        return nullptr;
+        return false;
     }
 
     aiNode* root_node = aiScene->mRootNode;
@@ -263,16 +259,14 @@ std::shared_ptr<Node> vr::load3DModelFile(const std::string& filename) {
 
     std::stack<glm::mat4> transformStack;
     transformStack.push(glm::mat4());
-    */
 
-    /*
-    parseNodes(root_node, materials, transformStack, node, aiScene);
-transformStack.pop();
+    parseNodes(root_node, materials, transformStack, node, aiScene, shader);
+    transformStack.pop();
 
-if (node->getMeshes().empty())
-    std::cerr << " File " << filepath << " did not contain any mesh data" << std::endl;
-*/
-    return nullptr;
+    if (node->getChildren().empty())
+        std::cerr << " File " << filepath << " did not contain any mesh data" << std::endl;
+
+    return true;
 }
 
 template <class T>

@@ -13,6 +13,12 @@ std::shared_ptr<State> State::operator+(const State& childState) const {
     newState->lightingEnabled = childState.lightingEnabled;
     newState->cullFaceEnabled = childState.cullFaceEnabled;
 
+    if (childState.m_shader) {
+        newState->m_shader = childState.m_shader;
+    } else {
+        newState->m_shader = m_shader;
+    }
+
     if (childState.m_lights) {
         newState->m_lights = childState.m_lights;
     } else {
@@ -37,6 +43,12 @@ std::shared_ptr<State> State::operator+(const State& childState) const {
 State& State::operator+=(const State& other) {
     lightingEnabled = other.lightingEnabled;
     cullFaceEnabled = other.cullFaceEnabled;
+
+    if (other.m_shader) {
+        m_shader = other.m_shader;
+    } else {
+        m_shader = m_shader;
+    }
 
     if (other.m_lights) {
         m_lights = other.m_lights;
@@ -91,6 +103,10 @@ void State::setTexture(std::shared_ptr<Texture> texture) {
     m_texture = texture;
 }
 
+void State::setShader(std::shared_ptr<Shader> shader) {
+    m_shader = shader;
+}
+
 std::shared_ptr<Shader> const State::getShader() {
     return m_shader;
 }
@@ -100,7 +116,7 @@ void State::apply() {
     // Update number of lights
     m_shader->setInt("numberOfLights", m_lights.get()->size());
     CHECK_GL_ERROR_LINE_FILE();
-    m_shader->setBool("lightingEnabled", lightingEnabled);
+    // m_shader->setBool("lightingEnabled", lightingEnabled);
     CHECK_GL_ERROR_LINE_FILE();
 
     for (size_t i = 0; i < m_lights->size(); i++) {
