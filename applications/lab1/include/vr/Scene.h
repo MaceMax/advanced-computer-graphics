@@ -95,6 +95,8 @@ class Scene {
     */
     void render();
 
+    void printSceneGraph();
+
    private:
     NodeVector m_nodes;
     LightVector m_lights;

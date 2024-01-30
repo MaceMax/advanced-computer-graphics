@@ -33,7 +33,7 @@ bool Scene::initShaders(const std::string& vshader_filename, const std::string& 
         return false;
     }
 
-        return true;
+    return true;
 }
 
 void Scene::add(std::shared_ptr<Light> light) {
@@ -88,4 +88,11 @@ void Scene::render() {
     CHECK_GL_ERROR_LINE_FILE();
 
     m_renderVisitor->visit(m_root.get());
+}
+
+void Scene::printSceneGraph() {
+    std::cout << "Scene graph:" << std::endl;
+    for (auto n : m_nodes) {
+        std::cout << n->getName() << std::endl;
+    }
 }
