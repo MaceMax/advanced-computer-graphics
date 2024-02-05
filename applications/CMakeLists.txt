@@ -2,7 +2,6 @@
 # This CMakeLists.txt will automatically add any subdirectory to the list of projects that should 
 # be built. Just copy one of the subdirectories (for example objViewer) to a new name
 
-
 # Macro that will make a list of all subdirectories
 MACRO(SUBDIRLIST result curdir)
   FILE(GLOB children RELATIVE ${curdir} ${curdir}/*)

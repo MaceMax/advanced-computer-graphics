@@ -24,12 +24,16 @@ class State {
 
     void addLight(std::shared_ptr<Light> light);
     void setLightEnabled(size_t idx, bool enabled);
+    LightVector const getLights();
 
     void setMaterial(std::shared_ptr<Material> material);
+    std::shared_ptr<Material> const getMaterial();
+
     void setTexture(std::shared_ptr<Texture> texture);
+    std::shared_ptr<Texture> const getTexture();
 
     void setShader(std::shared_ptr<Shader> shader);
-    std::shared_ptr<Shader> const getShader();
+    std::shared_ptr<Shader> const& getShader();
 
     void apply();
 
@@ -37,7 +41,7 @@ class State {
     bool lightingEnabled;
     bool cullFaceEnabled;
 
-    std::shared_ptr<LightVector> m_lights;
+    LightVector m_lights;
     std::shared_ptr<Material> m_material;
     std::shared_ptr<Texture> m_texture;
     std::shared_ptr<Shader> m_shader;

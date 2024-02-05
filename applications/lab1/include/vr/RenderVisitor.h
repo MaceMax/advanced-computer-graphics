@@ -13,9 +13,11 @@ class RenderVisitor : public NodeVisitor {
     void visit(Geometry* geometry) override;
     void visit(Transform* transform) override;
     void visit(Group* group) override;
+    int getSteps() { return steps; }
 
    private:
     std::stack<glm::mat4> m_matrixStack;
+    int steps = 0;
 };
 
 }  // namespace vr

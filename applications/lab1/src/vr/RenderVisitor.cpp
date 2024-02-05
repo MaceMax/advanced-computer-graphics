@@ -13,9 +13,9 @@ void RenderVisitor::visit(Geometry* geometry) {
         state = m_stateStack.top();
     }
 
-    state.get()->apply();
+    state->apply();
 
-    geometry->draw(state.get()->getShader(), m_matrixStack.empty() ? glm::mat4(1.0f) : m_matrixStack.top());
+    geometry->draw(state->getShader(), m_matrixStack.empty() ? glm::mat4(1.0f) : m_matrixStack.top());
 }
 
 void RenderVisitor::visit(Transform* transform) {

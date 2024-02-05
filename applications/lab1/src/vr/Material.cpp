@@ -52,7 +52,6 @@ void Material::apply(std::shared_ptr<vr::Shader> shader) {
             m_textures[i]->bind();
     }
 
-    CHECK_GL_ERROR_LINE_FILE();
     shader->setIntVector("material.textures", slots);
 
     shader->setIntVector("material.activeTextures", slotActive);

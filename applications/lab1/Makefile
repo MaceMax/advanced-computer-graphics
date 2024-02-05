@@ -223,6 +223,54 @@ src/glad.c.s:
 	cd /home/macemax/University/advanced-computer-graphics && $(MAKE) $(MAKESILENT) -f applications/lab1/CMakeFiles/lab1.dir/build.make applications/lab1/CMakeFiles/lab1.dir/src/glad.c.s
 .PHONY : src/glad.c.s
 
+src/vr/Animation/CircleAnimation.o: src/vr/Animation/CircleAnimation.cpp.o
+.PHONY : src/vr/Animation/CircleAnimation.o
+
+# target to build an object file
+src/vr/Animation/CircleAnimation.cpp.o:
+	cd /home/macemax/University/advanced-computer-graphics && $(MAKE) $(MAKESILENT) -f applications/lab1/CMakeFiles/lab1.dir/build.make applications/lab1/CMakeFiles/lab1.dir/src/vr/Animation/CircleAnimation.cpp.o
+.PHONY : src/vr/Animation/CircleAnimation.cpp.o
+
+src/vr/Animation/CircleAnimation.i: src/vr/Animation/CircleAnimation.cpp.i
+.PHONY : src/vr/Animation/CircleAnimation.i
+
+# target to preprocess a source file
+src/vr/Animation/CircleAnimation.cpp.i:
+	cd /home/macemax/University/advanced-computer-graphics && $(MAKE) $(MAKESILENT) -f applications/lab1/CMakeFiles/lab1.dir/build.make applications/lab1/CMakeFiles/lab1.dir/src/vr/Animation/CircleAnimation.cpp.i
+.PHONY : src/vr/Animation/CircleAnimation.cpp.i
+
+src/vr/Animation/CircleAnimation.s: src/vr/Animation/CircleAnimation.cpp.s
+.PHONY : src/vr/Animation/CircleAnimation.s
+
+# target to generate assembly for a file
+src/vr/Animation/CircleAnimation.cpp.s:
+	cd /home/macemax/University/advanced-computer-graphics && $(MAKE) $(MAKESILENT) -f applications/lab1/CMakeFiles/lab1.dir/build.make applications/lab1/CMakeFiles/lab1.dir/src/vr/Animation/CircleAnimation.cpp.s
+.PHONY : src/vr/Animation/CircleAnimation.cpp.s
+
+src/vr/AnimationCallback.o: src/vr/AnimationCallback.cpp.o
+.PHONY : src/vr/AnimationCallback.o
+
+# target to build an object file
+src/vr/AnimationCallback.cpp.o:
+	cd /home/macemax/University/advanced-computer-graphics && $(MAKE) $(MAKESILENT) -f applications/lab1/CMakeFiles/lab1.dir/build.make applications/lab1/CMakeFiles/lab1.dir/src/vr/AnimationCallback.cpp.o
+.PHONY : src/vr/AnimationCallback.cpp.o
+
+src/vr/AnimationCallback.i: src/vr/AnimationCallback.cpp.i
+.PHONY : src/vr/AnimationCallback.i
+
+# target to preprocess a source file
+src/vr/AnimationCallback.cpp.i:
+	cd /home/macemax/University/advanced-computer-graphics && $(MAKE) $(MAKESILENT) -f applications/lab1/CMakeFiles/lab1.dir/build.make applications/lab1/CMakeFiles/lab1.dir/src/vr/AnimationCallback.cpp.i
+.PHONY : src/vr/AnimationCallback.cpp.i
+
+src/vr/AnimationCallback.s: src/vr/AnimationCallback.cpp.s
+.PHONY : src/vr/AnimationCallback.s
+
+# target to generate assembly for a file
+src/vr/AnimationCallback.cpp.s:
+	cd /home/macemax/University/advanced-computer-graphics && $(MAKE) $(MAKESILENT) -f applications/lab1/CMakeFiles/lab1.dir/build.make applications/lab1/CMakeFiles/lab1.dir/src/vr/AnimationCallback.cpp.s
+.PHONY : src/vr/AnimationCallback.cpp.s
+
 src/vr/Application.o: src/vr/Application.cpp.o
 .PHONY : src/vr/Application.o
 
@@ -631,6 +679,30 @@ src/vr/Transform.cpp.s:
 	cd /home/macemax/University/advanced-computer-graphics && $(MAKE) $(MAKESILENT) -f applications/lab1/CMakeFiles/lab1.dir/build.make applications/lab1/CMakeFiles/lab1.dir/src/vr/Transform.cpp.s
 .PHONY : src/vr/Transform.cpp.s
 
+src/vr/UpdateVisitor.o: src/vr/UpdateVisitor.cpp.o
+.PHONY : src/vr/UpdateVisitor.o
+
+# target to build an object file
+src/vr/UpdateVisitor.cpp.o:
+	cd /home/macemax/University/advanced-computer-graphics && $(MAKE) $(MAKESILENT) -f applications/lab1/CMakeFiles/lab1.dir/build.make applications/lab1/CMakeFiles/lab1.dir/src/vr/UpdateVisitor.cpp.o
+.PHONY : src/vr/UpdateVisitor.cpp.o
+
+src/vr/UpdateVisitor.i: src/vr/UpdateVisitor.cpp.i
+.PHONY : src/vr/UpdateVisitor.i
+
+# target to preprocess a source file
+src/vr/UpdateVisitor.cpp.i:
+	cd /home/macemax/University/advanced-computer-graphics && $(MAKE) $(MAKESILENT) -f applications/lab1/CMakeFiles/lab1.dir/build.make applications/lab1/CMakeFiles/lab1.dir/src/vr/UpdateVisitor.cpp.i
+.PHONY : src/vr/UpdateVisitor.cpp.i
+
+src/vr/UpdateVisitor.s: src/vr/UpdateVisitor.cpp.s
+.PHONY : src/vr/UpdateVisitor.s
+
+# target to generate assembly for a file
+src/vr/UpdateVisitor.cpp.s:
+	cd /home/macemax/University/advanced-computer-graphics && $(MAKE) $(MAKESILENT) -f applications/lab1/CMakeFiles/lab1.dir/build.make applications/lab1/CMakeFiles/lab1.dir/src/vr/UpdateVisitor.cpp.s
+.PHONY : src/vr/UpdateVisitor.cpp.s
+
 src/vr/glErrorUtil.o: src/vr/glErrorUtil.cpp.o
 .PHONY : src/vr/glErrorUtil.o
 
@@ -698,6 +770,12 @@ help:
 	@echo "... src/glad.o"
 	@echo "... src/glad.i"
 	@echo "... src/glad.s"
+	@echo "... src/vr/Animation/CircleAnimation.o"
+	@echo "... src/vr/Animation/CircleAnimation.i"
+	@echo "... src/vr/Animation/CircleAnimation.s"
+	@echo "... src/vr/AnimationCallback.o"
+	@echo "... src/vr/AnimationCallback.i"
+	@echo "... src/vr/AnimationCallback.s"
 	@echo "... src/vr/Application.o"
 	@echo "... src/vr/Application.i"
 	@echo "... src/vr/Application.s"
@@ -749,6 +827,9 @@ help:
 	@echo "... src/vr/Transform.o"
 	@echo "... src/vr/Transform.i"
 	@echo "... src/vr/Transform.s"
+	@echo "... src/vr/UpdateVisitor.o"
+	@echo "... src/vr/UpdateVisitor.i"
+	@echo "... src/vr/UpdateVisitor.s"
 	@echo "... src/vr/glErrorUtil.o"
 	@echo "... src/vr/glErrorUtil.i"
 	@echo "... src/vr/glErrorUtil.s"

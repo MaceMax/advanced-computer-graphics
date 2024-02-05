@@ -1,3 +1,5 @@
+#include <vr/Animation/CircleAnimation.h>
+#include <vr/AnimationCallback.h>
 #include <vr/Application.h>
 #include <vr/FileSystem.h>
 #include <vr/Loader.h>
@@ -161,4 +163,5 @@ std::shared_ptr<Camera> Application::getCamera() {
 }
 
 Application::~Application() {
+    m_scene->cleanup();
 }

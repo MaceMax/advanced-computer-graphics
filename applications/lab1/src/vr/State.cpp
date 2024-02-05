@@ -18,7 +18,7 @@ std::shared_ptr<State> State::operator+(const State& childState) const {
         newState->setShader(m_shader);
     }
 
-    if (childState.m_lights != nullptr) {
+    if (!childState.m_lights.empty()) {
         newState->m_lights = childState.m_lights;
     } else {
         newState->m_lights = m_lights;
@@ -49,7 +49,7 @@ State& State::operator+=(const State& other) {
         m_shader = m_shader;
     }
 
-    if (other.m_lights != nullptr) {
+    if (!other.m_lights.empty()) {
         m_lights = other.m_lights;
     } else {
         m_lights = m_lights;
@@ -87,29 +87,38 @@ bool State::CullFaceEnabled() {
 }
 
 void State::addLight(std::shared_ptr<Light> light) {
-    if (m_lights == nullptr) {
-        m_lights = std::make_shared<LightVector>();
-    }
-    m_lights->push_back(light);
+    m_lights.push_back(light);
 }
 
 void State::setLightEnabled(size_t idx, bool enabled) {
-    m_lights->at(idx)->enabled = enabled;
+    m_lights[idx]->enabled = enabled;
+}
+
+LightVector const State::getLights() {
+    return m_lights;
 }
 
 void State::setMaterial(std::shared_ptr<Material> material) {
     m_material = material;
 }
 
+std::shared_ptr<Texture> const State::getTexture() {
+    return m_texture;
+}
+
 void State::setTexture(std::shared_ptr<Texture> texture) {
     m_texture = texture;
+}
+
+std::shared_ptr<Material> const State::getMaterial() {
+    return m_material;
 }
 
 void State::setShader(std::shared_ptr<Shader> shader) {
     m_shader = shader;
 }
 
-std::shared_ptr<Shader> const State::getShader() {
+std::shared_ptr<Shader> const& State::getShader() {
     return m_shader;
 }
 
@@ -119,17 +128,15 @@ void State::apply() {
 
     m_shader->use();
     // Update number of lights
-    // std::cout << "Number of lights: " << m_lights->size() << std::endl;
-    m_shader->setInt("numberOfLights", m_lights->size());
-    CHECK_GL_ERROR_LINE_FILE();
+    m_shader->setInt("numberOfLights", m_lights.size());
     m_shader->setBool("lightingEnabled", lightingEnabled);
-    CHECK_GL_ERROR_LINE_FILE();
 
-    if (m_lights != nullptr) {
-        for (size_t i = 0; i < m_lights->size(); i++) {
-            if (lightingEnabled) {
-                m_lights->at(i)->apply(m_shader, i);
-            }
+    // Apply lightsources
+    size_t i = 0;
+    if (m_lights.size() != 0) {
+        for (auto l : m_lights) {
+            l->apply(m_shader, i);
+            i++;
         }
     }
 

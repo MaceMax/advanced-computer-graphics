@@ -10,6 +10,7 @@
 #include "vr/Node.h"
 #include "vr/RenderVisitor.h"
 #include "vr/Shader.h"
+#include "vr/UpdateVisitor.h"
 
 namespace vr {
 
@@ -25,11 +26,16 @@ class Scene {
     */
     Scene(Scene& other) = delete;
 
+    void cleanup();
+
     /**
      * Assignment operator. Singleton cannot be assigned.
      */
     void operator=(const Scene&) = delete;
 
+    /**
+     * Method to get the instance of the singleton.
+     */
     static std::shared_ptr<Scene> getInstance();
 
     /**
@@ -57,8 +63,6 @@ class Scene {
     \return The camera
     */
     std::shared_ptr<Camera> getCamera();
-
-    ~Scene();
 
     /**
     Apply the camera
@@ -98,12 +102,13 @@ class Scene {
     void printSceneGraph();
 
    private:
+    Scene();
+
     NodeVector m_nodes;
     LightVector m_lights;
     GLint m_uniform_numberOfLights;
     std::shared_ptr<RenderVisitor> m_renderVisitor;
-
-    Scene();
+    std::shared_ptr<UpdateVisitor> m_updateVisitor;
 
     static std::shared_ptr<Scene> instance;
     std::shared_ptr<vr::Shader> m_shader;

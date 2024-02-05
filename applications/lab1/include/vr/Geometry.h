@@ -23,7 +23,7 @@ class Geometry : public Node {
     void upload();
     void buildGeometry(std::vector<glm::vec4> vertices, std::vector<glm::vec3> normals,
                        std::vector<glm::vec2> texCoords, std::vector<GLuint> indices);
-    void draw(std::shared_ptr<vr::Shader> shader, const glm::mat4& modelMatrix);
+    void draw(std::shared_ptr<vr::Shader> const& shader, const glm::mat4& modelMatrix);
 
     virtual BoundingBox calculateBoundingBox() override;
 

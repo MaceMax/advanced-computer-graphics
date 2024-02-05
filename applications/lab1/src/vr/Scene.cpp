@@ -1,3 +1,4 @@
+#include <vr/Animation/CircleAnimation.h>
 #include <vr/Scene.h>
 #include <vr/glErrorUtil.h>
 
@@ -11,6 +12,7 @@ std::shared_ptr<Scene> Scene::instance = nullptr;
 Scene::Scene() : m_uniform_numberOfLights(-1) {
     m_camera = std::make_shared<Camera>();
     m_renderVisitor = std::make_shared<RenderVisitor>();
+    m_updateVisitor = std::make_shared<UpdateVisitor>();
 }
 
 std::shared_ptr<Scene> Scene::getInstance() {
@@ -26,7 +28,9 @@ bool Scene::initShaders(const std::string& vshader_filename, const std::string& 
         return false;
 
     m_root = std::shared_ptr<Group>(new Group("root"));
-    m_root->setState(std::make_shared<State>(m_shader));
+    std::shared_ptr<State> state = std::make_shared<State>(m_shader);
+    state->setMaterial(std::make_shared<Material>());
+    m_root->setState(state);
     m_lights.clear();
 
     if (!m_root->getState()->getShader()) {
@@ -49,7 +53,18 @@ std::shared_ptr<Camera> Scene::getCamera() {
     return m_camera;
 }
 
-Scene::~Scene() {
+void Scene::cleanup() {
+    if (m_shader) {
+        m_shader = nullptr;
+    }
+
+    if (m_camera) {
+        m_camera = nullptr;
+    }
+
+    if (m_root) {
+        m_root = nullptr;
+    }
 }
 
 void Scene::applyCamera() {
@@ -83,10 +98,7 @@ BoundingBox Scene::calculateBoundingBox() {
 }
 
 void Scene::render() {
-    CHECK_GL_ERROR_LINE_FILE();
-    useProgram();
-    CHECK_GL_ERROR_LINE_FILE();
-
+    m_updateVisitor->visit(m_root.get());
     m_renderVisitor->visit(m_root.get());
 }
 

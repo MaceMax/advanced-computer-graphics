@@ -4,19 +4,28 @@
 
 #include <vr/glErrorUtil.h>
 
-#include <glm/gtx/string_cast.hpp>
-
 using namespace vr;
 
 Geometry::~Geometry() {
-    if (m_vbo_vertices != 0)
+    if (m_useVAO && m_vao != 0) {
+        glDeleteVertexArrays(1, &m_vao);
+        m_vao = 0;
+    }
+
+    if (m_vbo_vertices != 0) {
         glDeleteBuffers(1, &m_vbo_vertices);
+        m_vbo_vertices = 0;
+    }
 
-    if (m_vbo_normals != 0)
+    if (m_vbo_normals != 0) {
         glDeleteBuffers(1, &m_vbo_normals);
+        m_vbo_normals = 0;
+    }
 
-    if (m_ibo_elements != 0)
-        glDeleteBuffers(1, &m_ibo_elements);
+    if (m_vbo_texCoords != 0) {
+        glDeleteBuffers(1, &m_vbo_texCoords);
+        m_vbo_texCoords = 0;
+    }
 }
 
 void Geometry::accept(NodeVisitor& visitor) {
@@ -156,16 +165,11 @@ void Geometry::buildGeometry(std::vector<glm::vec4> vertices, std::vector<glm::v
     m_indices = indices;
 }
 
-void Geometry::draw(std::shared_ptr<vr::Shader> shader, const glm::mat4& modelMatrix) {
-    shader->use();
-
-    CHECK_GL_ERROR_LINE_FILE();
+void Geometry::draw(std::shared_ptr<vr::Shader> const& shader, const glm::mat4& modelMatrix) {
     if (m_useVAO) {
         glBindVertexArray(m_vao);
         CHECK_GL_ERROR_LINE_FILE();
     }
-
-    CHECK_GL_ERROR_LINE_FILE();
 
     if (!m_useVAO) {
         if (this->m_vbo_vertices != 0) {
@@ -214,7 +218,6 @@ void Geometry::draw(std::shared_ptr<vr::Shader> shader, const glm::mat4& modelMa
             glEnableVertexAttribArray(m_attribute_v_texCoords);
         CHECK_GL_ERROR_LINE_FILE();
     }
-    CHECK_GL_ERROR_LINE_FILE();
 
     /* Apply object's transformation matrix */
     glm::mat4 obj2World = modelMatrix * m_object2world;
@@ -230,7 +233,8 @@ void Geometry::draw(std::shared_ptr<vr::Shader> shader, const glm::mat4& modelMa
     if (this->m_ibo_elements != 0) {
         if (!m_useVAO)
             glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->m_ibo_elements);
-        glDrawElements(GL_TRIANGLES, (GLsizei)this->m_indices.size(), GL_UNSIGNED_INT, 0);
+        GLuint size = GLuint(this->m_indices.size());
+        glDrawElements(GL_TRIANGLES, size, GL_UNSIGNED_INT, 0);
         CHECK_GL_ERROR_LINE_FILE();
     } else {
         glDrawArrays(GL_TRIANGLES, 0, (GLsizei)this->m_vertices.size());
