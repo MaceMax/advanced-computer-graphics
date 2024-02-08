@@ -7,7 +7,7 @@ using namespace vr;
 
 // Parent state + child state = new state
 std::shared_ptr<State> State::operator+(const State& childState) const {
-    std::shared_ptr<State> newState = std::make_shared<State>(m_shader);
+    std::shared_ptr<State> newState = std::make_shared<State>();
     // Child state has precedence. If child state has a value, use it. Otherwise, use parent state's value.
     newState->lightingEnabled = childState.lightingEnabled;
     newState->cullFaceEnabled = childState.cullFaceEnabled;
@@ -129,20 +129,17 @@ void State::apply() {
     m_shader->use();
     // Update number of lights
     m_shader->setInt("numberOfLights", m_lights.size());
-    m_shader->setBool("lightingEnabled", lightingEnabled);
-
     // Apply lightsources
     size_t i = 0;
-    if (m_lights.size() != 0) {
+    if (m_lights.size() != 0 && lightingEnabled) {
         for (auto l : m_lights) {
             l->apply(m_shader, i);
             i++;
         }
     }
 
-    if (m_material != nullptr) {
+    if (m_material != nullptr)
         m_material->apply(m_shader);
-    }
 
     if (cullFaceEnabled) {
         glEnable(GL_CULL_FACE);

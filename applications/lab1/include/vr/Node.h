@@ -18,6 +18,7 @@ class Node {
    public:
     Node(const std::string& name = "Node") : m_name(name), m_updateCallback(nullptr) {}
     virtual void accept(NodeVisitor& visitor) = 0;
+    virtual BoundingBox calculateBoundingBox(glm::mat4 t_mat) = 0;
     std::string getName() { return m_name; }
     bool hasState() { return m_state != nullptr; }
     bool hasCallback() { return m_updateCallback != nullptr; }
@@ -27,14 +28,7 @@ class Node {
     void setState(std::shared_ptr<State> state) { m_state = state; }
     std::shared_ptr<State>& getState() { return m_state; }
 
-    /// Calculate and return a bounding box for this Node based on its Mesh objects
-    virtual BoundingBox calculateBoundingBox() = 0;
-
    protected:
-    /**
-     /Name of the node
-     */
-
     UpdateCallback* m_updateCallback;
     std::string m_name;
     std::shared_ptr<State> m_state;

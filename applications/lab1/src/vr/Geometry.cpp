@@ -4,6 +4,8 @@
 
 #include <vr/glErrorUtil.h>
 
+#include <glm/gtx/transform.hpp>
+
 using namespace vr;
 
 Geometry::~Geometry() {
@@ -171,6 +173,11 @@ void Geometry::draw(std::shared_ptr<vr::Shader> const& shader, const glm::mat4& 
         CHECK_GL_ERROR_LINE_FILE();
     }
 
+    if (m_normals.size() == 0) {
+        draw_bbox(shader);
+        return;
+    }
+
     if (!m_useVAO) {
         if (this->m_vbo_vertices != 0) {
             glEnableVertexAttribArray(m_attribute_v_coord);
@@ -253,10 +260,119 @@ void Geometry::draw(std::shared_ptr<vr::Shader> const& shader, const glm::mat4& 
         glBindVertexArray(0);
 }
 
-BoundingBox Geometry::calculateBoundingBox() {
+void Geometry::draw_bbox(std::shared_ptr<vr::Shader> shader) {
+    shader->use();
+    if (this->m_vertices.size() == 0)
+        return;
+
+    // Cube 1x1x1, centered on origin
+    GLfloat vertices[] = {
+        -0.5,
+        -0.5,
+        -0.5,
+        1.0,
+        0.5,
+        -0.5,
+        -0.5,
+        1.0,
+        0.5,
+        0.5,
+        -0.5,
+        1.0,
+        -0.5,
+        0.5,
+        -0.5,
+        1.0,
+        -0.5,
+        -0.5,
+        0.5,
+        1.0,
+        0.5,
+        -0.5,
+        0.5,
+        1.0,
+        0.5,
+        0.5,
+        0.5,
+        1.0,
+        -0.5,
+        0.5,
+        0.5,
+        1.0,
+    };
+
+    GLuint vbo_vertices;
+    glGenBuffers(1, &vbo_vertices);
+    glBindBuffer(GL_ARRAY_BUFFER, vbo_vertices);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    GLushort elements[] = {
+        0, 1, 2, 3,
+        4, 5, 6, 7,
+        0, 4, 1, 5, 2, 6, 3, 7};
+
+    GLuint ibo_elements;
+    glGenBuffers(1, &ibo_elements);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo_elements);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(elements), elements, GL_STATIC_DRAW);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+    GLfloat
+        min_x,
+        max_x,
+        min_y, max_y,
+        min_z, max_z;
+
+    min_x = max_x = this->m_vertices[0].x;
+    min_y = max_y = this->m_vertices[0].y;
+    min_z = max_z = this->m_vertices[0].z;
+    for (unsigned int i = 0; i < this->m_vertices.size(); i++) {
+        if (this->m_vertices[i].x < min_x) min_x = this->m_vertices[i].x;
+        if (this->m_vertices[i].x > max_x) max_x = this->m_vertices[i].x;
+        if (this->m_vertices[i].y < min_y) min_y = this->m_vertices[i].y;
+        if (this->m_vertices[i].y > max_y) max_y = this->m_vertices[i].y;
+        if (this->m_vertices[i].z < min_z) min_z = this->m_vertices[i].z;
+        if (this->m_vertices[i].z > max_z) max_z = this->m_vertices[i].z;
+    }
+
+    glm::vec3 size = glm::vec3(max_x - min_x, max_y - min_y, max_z - min_z);
+    glm::vec3 center = glm::vec3((min_x + max_x) / 2, (min_y + max_y) / 2, (min_z + max_z) / 2);
+    glm::mat4 transform = glm::scale(glm::mat4(1), size) * glm::translate(glm::mat4(1), center);
+
+    /* Apply object's transformation matrix */
+    glm::mat4 m = this->m_object2world * transform;
+    shader->setMat4("m", m);
+
+    CHECK_GL_ERROR_LINE_FILE();
+
+    glBindBuffer(GL_ARRAY_BUFFER, vbo_vertices);
+    glEnableVertexAttribArray(m_attribute_v_coord);
+    glVertexAttribPointer(
+        m_attribute_v_coord,  // attribute
+        4,                    // number of elements per vertex, here (x,y,z,w)
+        GL_FLOAT,             // the type of each element
+        GL_FALSE,             // take our values as-is
+        0,                    // no extra data between each position
+        0                     // offset of first element
+    );
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo_elements);
+    glDrawElements(GL_LINE_LOOP, 4, GL_UNSIGNED_SHORT, 0);
+    glDrawElements(GL_LINE_LOOP, 4, GL_UNSIGNED_SHORT, (GLvoid*)(4 * sizeof(GLushort)));
+    glDrawElements(GL_LINES, 8, GL_UNSIGNED_SHORT, (GLvoid*)(8 * sizeof(GLushort)));
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+    glDisableVertexAttribArray(m_attribute_v_coord);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+    glDeleteBuffers(1, &vbo_vertices);
+    glDeleteBuffers(1, &ibo_elements);
+    CHECK_GL_ERROR_LINE_FILE();
+}
+
+BoundingBox Geometry::calculateBoundingBox(glm::mat4 t_mat) {
     BoundingBox box;
     for (auto v : m_vertices) {
-        glm::vec3 vTransformed = m_object2world * v;
+        glm::vec3 vTransformed = t_mat * v;
         box.expand(vTransformed);
     }
     return box;

@@ -1,5 +1,6 @@
 #include <vr/Geometry.h>
 #include <vr/Group.h>
+#include <vr/LodNode.h>
 #include <vr/Transform.h>
 #include <vr/UpdateVisitor.h>
 
@@ -29,4 +30,12 @@ void UpdateVisitor::visit(Group* group) {
     for (auto& child : group->getChildren()) {
         child->accept(*this);
     }
+}
+
+void UpdateVisitor::visit(LodNode* lodNode) {
+    if (lodNode->hasCallback()) {
+        lodNode->getUpdateCallback()->execute(*lodNode);
+    }
+
+    lodNode->getChild(m_cameraPosition).accept(*this);
 }

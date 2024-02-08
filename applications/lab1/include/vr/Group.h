@@ -9,7 +9,7 @@ class Group : public Node {
     Group(const std::string& name = "Group") : Node(name) {}
     virtual void accept(NodeVisitor& visitor) override;
     void addChild(std::shared_ptr<Node> node);
-    virtual BoundingBox calculateBoundingBox() override;
+    virtual BoundingBox calculateBoundingBox(glm::mat4 t_mat) override;
 
     NodeVector& getChildren();
 

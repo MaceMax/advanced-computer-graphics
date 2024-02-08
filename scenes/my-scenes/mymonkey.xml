@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Scene>
+    <Transform name="Transform1" translate="0 0 0" rotate="0 0 0" scale="2 2 2">
+        <Geometry name="Monkey1" filepath="models/monkey.obj"/>
+    </Transform>
+    <Transform name="Transform2" translate="2 1 0" rotate="0 0 0">
+        <Geometry name="Monkey2" filepath="models/monkey.obj"/>
+    </Transform>
+    <Transform name="Transform3" translate="-2 -1 0" rotate="0 45 0">
+        <Geometry name="Monkey3" filepath="models/monkey.obj"/>
+    </Transform>
+</Scene>

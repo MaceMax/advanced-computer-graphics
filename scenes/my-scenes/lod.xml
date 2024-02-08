@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<Scene>
+    <Transform name="Transform 1" translate="-500 0 0">
+    <LOD name="LOD" maxDistance="1000.0">
+        <Geometry name="cow1" filepath="models/cow/cow_0.99.obj"/>
+        <Geometry name="cow2" filepath="models/cow/cow_0.5.obj"/>
+        <Geometry name="cow3" filepath="models/cow/cow_0.3.obj"/>
+        <Geometry name="cow4" filepath="models/cow/cow_0.1.obj"/>
+        <Geometry name="cow5" filepath="models/cow/cow_0.05.obj"/>
+        <Geometry name="cow6" filepath="models/cow/cow_0.01.obj"/>
+    </LOD>
+    </Transform>
+    <Transform name="Transform 1" translate="500 0 0">
+        <LOD name="LOD">
+            <Geometry name="cow7" distance="500.0" filepath="models/cow/cow_0.99.obj"/>
+            <Geometry name="cow8" distance="1000.0" filepath="models/cow/cow_0.5.obj"/>
+            <Geometry name="cow9" distance="2000.0" filepath="models/cow/cow_0.3.obj"/>
+            <Geometry name="cow10" distance="4000.0" filepath="models/cow/cow_0.1.obj"/>
+            <Geometry name="cow11" distance="8000.0" filepath="models/cow/cow_0.05.obj"/>
+            <Geometry name="cow12" distance="10000.0" filepath="models/cow/cow_0.01.obj"/>
+        </LOD>
+    </Transform>
+</Scene>

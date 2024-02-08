@@ -1,4 +1,9 @@
+#include <vr/Geometry.h>
+#include <vr/Group.h>
+#include <vr/LodNode.h>
 #include <vr/RenderVisitor.h>
+#include <vr/Transform.h>
+#include <vr/UpdateCallback.h>
 
 #include <glm/gtx/string_cast.hpp>
 #include <iostream>
@@ -7,14 +12,13 @@ using namespace vr;
 
 void RenderVisitor::visit(Geometry* geometry) {
     std::shared_ptr<State> state = nullptr;
-    if (geometry->getState()) {
+    if (geometry->hasState()) {
         state = *(m_stateStack.top()) + *(geometry->getState());
     } else {
         state = m_stateStack.top();
     }
 
     state->apply();
-
     geometry->draw(state->getShader(), m_matrixStack.empty() ? glm::mat4(1.0f) : m_matrixStack.top());
 }
 
@@ -26,7 +30,7 @@ void RenderVisitor::visit(Transform* transform) {
     }
 
     // Push the current matrix onto the stack
-    if (transform->getState()) {
+    if (transform->hasState()) {
         m_stateStack.push(*(m_stateStack.top()) + *(transform->getState()));
     }
 
@@ -35,15 +39,15 @@ void RenderVisitor::visit(Transform* transform) {
     }
 
     m_matrixStack.pop();
-    if (transform->getState()) {
+    if (transform->hasState()) {
         m_stateStack.pop();
     }
 }
 
 void RenderVisitor::visit(Group* group) {
-    if (group->isRoot() && group->getState()) {
+    if (group->isRoot()) {
         m_stateStack.push(group->getState());
-    } else if (group->getState()) {
+    } else if (group->hasState()) {
         m_stateStack.push(*(m_stateStack.top()) + *(group->getState()));
     }
 
@@ -51,7 +55,24 @@ void RenderVisitor::visit(Group* group) {
         child->accept(*this);
     }
 
-    if (group->getState()) {
+    if (group->hasState()) {
         m_stateStack.pop();
     }
+}
+
+void RenderVisitor::visit(LodNode* lodNode) {
+    if (lodNode->hasState()) {
+        m_stateStack.push(*(m_stateStack.top()) + *(lodNode->getState()));
+    }
+
+    lodNode->applyTransformation(m_matrixStack.empty() ? glm::mat4(1.0f) : m_matrixStack.top());
+    lodNode->getChild(m_cameraPosition).accept(*this);
+
+    if (lodNode->hasState()) {
+        m_stateStack.pop();
+    }
+}
+
+void RenderVisitor::setCameraPosition(const glm::vec4& cameraPosition) {
+    m_cameraPosition = cameraPosition;
 }

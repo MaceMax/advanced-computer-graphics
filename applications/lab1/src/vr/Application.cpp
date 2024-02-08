@@ -52,9 +52,11 @@ bool Application::initResources(const std::string& model_filename, const std::st
             std::cerr << "No shader found" << std::endl;
             return false;
         }
-
-        if (!load3DModelFile(model_filename, m_sceneRoot, root_shader)) {
+        std::shared_ptr<Group> geometryGroup = std::make_shared<Group>(model_filename);
+        if (!load3DModelFile(model_filename, geometryGroup, root_shader)) {
             return false;
+        } else {
+            m_sceneRoot->addChild(geometryGroup);
         }
     }
 

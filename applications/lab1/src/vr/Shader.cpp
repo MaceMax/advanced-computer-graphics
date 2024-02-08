@@ -94,7 +94,12 @@ Shader::Shader(const std::string& vertexPath, const std::string& fragmentPath, c
 }
 
 void Shader::use() {
-    glUseProgram(m_programID);
+    GLint prog = 0;
+
+    glGetIntegerv(GL_CURRENT_PROGRAM, &prog);
+
+    if (prog != m_programID)
+        glUseProgram(m_programID);
 }
 
 GLint getLocation(GLuint program, const char* name) {

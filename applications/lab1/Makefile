@@ -463,6 +463,30 @@ src/vr/Loader.cpp.s:
 	cd /home/macemax/University/advanced-computer-graphics && $(MAKE) $(MAKESILENT) -f applications/lab1/CMakeFiles/lab1.dir/build.make applications/lab1/CMakeFiles/lab1.dir/src/vr/Loader.cpp.s
 .PHONY : src/vr/Loader.cpp.s
 
+src/vr/LodNode.o: src/vr/LodNode.cpp.o
+.PHONY : src/vr/LodNode.o
+
+# target to build an object file
+src/vr/LodNode.cpp.o:
+	cd /home/macemax/University/advanced-computer-graphics && $(MAKE) $(MAKESILENT) -f applications/lab1/CMakeFiles/lab1.dir/build.make applications/lab1/CMakeFiles/lab1.dir/src/vr/LodNode.cpp.o
+.PHONY : src/vr/LodNode.cpp.o
+
+src/vr/LodNode.i: src/vr/LodNode.cpp.i
+.PHONY : src/vr/LodNode.i
+
+# target to preprocess a source file
+src/vr/LodNode.cpp.i:
+	cd /home/macemax/University/advanced-computer-graphics && $(MAKE) $(MAKESILENT) -f applications/lab1/CMakeFiles/lab1.dir/build.make applications/lab1/CMakeFiles/lab1.dir/src/vr/LodNode.cpp.i
+.PHONY : src/vr/LodNode.cpp.i
+
+src/vr/LodNode.s: src/vr/LodNode.cpp.s
+.PHONY : src/vr/LodNode.s
+
+# target to generate assembly for a file
+src/vr/LodNode.cpp.s:
+	cd /home/macemax/University/advanced-computer-graphics && $(MAKE) $(MAKESILENT) -f applications/lab1/CMakeFiles/lab1.dir/build.make applications/lab1/CMakeFiles/lab1.dir/src/vr/LodNode.cpp.s
+.PHONY : src/vr/LodNode.cpp.s
+
 src/vr/Material.o: src/vr/Material.cpp.o
 .PHONY : src/vr/Material.o
 
@@ -800,6 +824,9 @@ help:
 	@echo "... src/vr/Loader.o"
 	@echo "... src/vr/Loader.i"
 	@echo "... src/vr/Loader.s"
+	@echo "... src/vr/LodNode.o"
+	@echo "... src/vr/LodNode.i"
+	@echo "... src/vr/LodNode.s"
 	@echo "... src/vr/Material.o"
 	@echo "... src/vr/Material.i"
 	@echo "... src/vr/Material.s"

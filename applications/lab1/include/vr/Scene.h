@@ -56,7 +56,7 @@ class Scene {
     Get all light sources
     \return A vector of lightsources
     */
-    const LightVector& getLights();
+    const LightVector getLights();
 
     /**
     Get the camera
@@ -105,7 +105,6 @@ class Scene {
     Scene();
 
     NodeVector m_nodes;
-    LightVector m_lights;
     GLint m_uniform_numberOfLights;
     std::shared_ptr<RenderVisitor> m_renderVisitor;
     std::shared_ptr<UpdateVisitor> m_updateVisitor;

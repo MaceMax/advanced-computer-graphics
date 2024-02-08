@@ -3,8 +3,15 @@
 #include <assimp/scene.h>
 #include <glad/glad.h>
 #include <vr/FileSystem.h>
+#include <vr/Geometry.h>
+#include <vr/Group.h>
 #include <vr/Loader.h>
+#include <vr/LodNode.h>
+#include <vr/Material.h>
 #include <vr/Scene.h>
+#include <vr/Shader.h>
+#include <vr/Texture.h>
+#include <vr/Transform.h>
 
 #include <assimp/Importer.hpp>
 #include <fstream>
@@ -260,12 +267,10 @@ bool vr::load3DModelFile(const std::string& filename, std::shared_ptr<Group>& no
     std::stack<glm::mat4> transformStack;
     transformStack.push(glm::mat4());
 
-    std::shared_ptr<Group> meshGroup = std::make_shared<Group>(filename);
-    node->addChild(meshGroup);
-    parseNodes(root_node, materials, transformStack, meshGroup, aiScene, shader);
+    parseNodes(root_node, materials, transformStack, node, aiScene, shader);
 
     if (geometryMap != nullptr)
-        (*geometryMap)[filename] = meshGroup;
+        (*geometryMap)[filename] = node;
 
     transformStack.pop();
 
@@ -347,6 +352,54 @@ std::string getAttribute(rapidxml::xml_node<>* node, const std::string& attribut
 State parseState(std::vector<std::string> xmlpath, rapidxml::xml_node<>* state_node) {
 }
 
+LodNode parseLodNode(std::vector<std::string> xmlpath, rapidxml::xml_node<>* lod_node, GeometryMap& geometryMap, const std::shared_ptr<Shader>& shader) {
+    std::string nodeName = lod_node->first_attribute("name")->value();
+    LodNode lodNode = nodeName.empty() ? LodNode() : LodNode(nodeName);
+    std::string maxDist;
+
+    if (lod_node->first_attribute("maxDistance"))
+        maxDist = lod_node->first_attribute("maxDistance")->value();
+
+    if (!maxDist.empty())
+        lodNode.setMaxDistance(readValue<float>(maxDist));
+
+    for (rapidxml::xml_node<>* child = lod_node->first_node(); child; child = child->next_sibling()) {
+        xmlpath.push_back(child->name());
+        std::string name = std::string(child->name());
+        std::string nodeName = child->first_attribute("name")->value();
+
+        if (name != "Geometry")
+            throw std::runtime_error("Node (" + name + ") LOD node can only contain Geometry nodes: " + pathToString(xmlpath));
+
+        std::string distanceStr;
+        if (child->first_attribute("distance"))
+            distanceStr = child->first_attribute("distance")->value();
+
+        if (distanceStr.empty() && maxDist.empty())
+            throw std::runtime_error("Node (" + name + ") No distance specified for Geometry or max distance specified: " + pathToString(xmlpath));
+
+        float distance = 0;
+        if (!distanceStr.empty())
+            distance = readValue<float>(distanceStr);
+
+        std::string filepath = child->first_attribute("filepath")->value();
+
+        if (filepath.empty())
+            throw std::runtime_error("Node (" + name + ") No filepath specified for Geometry: " + pathToString(xmlpath));
+
+        // Check if we have a geometry with the filepath already in the map
+        std::shared_ptr<Group> geometryGroup = std::make_shared<Group>(filepath);
+        if (geometryMap.find(filepath) != geometryMap.end()) {
+            lodNode.addChild(distance, geometryMap[filepath]);
+        } else if (load3DModelFile(filepath, geometryGroup, shader, &geometryMap)) {
+            lodNode.addChild(distance, geometryGroup);
+        } else {
+            throw std::runtime_error("Node (" + name + ") Invalid file in: " + pathToString(xmlpath));
+        }
+    }
+
+    return lodNode;
+}
 // Parses XML nodes recursively
 void parseSceneNode(std::vector<std::string> xmlpath, rapidxml::xml_node<>* node_node, GeometryMap& geometryMap, std::shared_ptr<Group>& node, const std::shared_ptr<Shader>& shader) {
     if (node_node->type() == rapidxml::node_comment || node_node->type() == rapidxml::node_doctype)
@@ -362,14 +415,14 @@ void parseSceneNode(std::vector<std::string> xmlpath, rapidxml::xml_node<>* node
     for (rapidxml::xml_node<>* child = node_node->first_node(); child; child = child->next_sibling()) {
         xmlpath.push_back(child->name());
         std::string name = std::string(child->name());
-
         if (child->type() == rapidxml::node_comment || child->type() == rapidxml::node_doctype)
             continue;
-
-        std::string nodeName = child->first_attribute("name")->value();
+        std::string nodeName;
+        if (child->first_attribute("name"))
+            nodeName = child->first_attribute("name")->value();
 
         if (name == "Group") {
-            std::shared_ptr<Group> groupNode = std::make_shared<Group>(nodeName);
+            std::shared_ptr<Group> groupNode = nodeName.empty() ? std::make_shared<Group>() : std::make_shared<Group>(nodeName);
             parseSceneNode(xmlpath, child, geometryMap, groupNode, shader);
             if (state)
                 groupNode->setState(state);
@@ -415,13 +468,25 @@ void parseSceneNode(std::vector<std::string> xmlpath, rapidxml::xml_node<>* node
         } else if (name == "Geometry") {
             std::string filepath = child->first_attribute("filepath")->value();
             if (filepath.empty())
-                throw std::runtime_error("Node (" + name + ") Invalid file in: " + pathToString(xmlpath));
+                throw std::runtime_error("Node (" + name + ") No filepath specified for Geometry: " + pathToString(xmlpath));
 
             // Check if we have a geometry with the filepath already in the map
+            std::shared_ptr<Group> geometryGroup = std::make_shared<Group>(filepath);
             if (geometryMap.find(filepath) != geometryMap.end()) {
                 node->addChild(geometryMap[filepath]);
-            } else if (!load3DModelFile(filepath, node, shader, &geometryMap))
+            } else if (load3DModelFile(filepath, geometryGroup, shader, &geometryMap)) {
+                node->addChild(geometryGroup);
+            } else {
                 throw std::runtime_error("Node (" + name + ") Invalid file in: " + pathToString(xmlpath));
+            }
+
+        } else if (name == "LOD") {
+            LodNode lodNode = parseLodNode(xmlpath, child, geometryMap, shader);
+            std::shared_ptr<LodNode> lod = std::make_shared<LodNode>(lodNode);
+
+            if (state)
+                lod->setState(state);
+            node->addChild(lod);
         }
 
         xmlpath.pop_back();

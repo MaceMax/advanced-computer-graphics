@@ -11,7 +11,6 @@ out vec4 color;
 uniform mat4 m, v, p;
 uniform mat4 v_inv;
 uniform int numberOfLights;
-uniform bool lightingEnabled;
 
 const int MAX_TEXTURES=2;
 
@@ -59,41 +58,41 @@ void main()
 
 
   
-  if (lightingEnabled == true) {
-      // for all light sources
-      for (int index = 0; index < numberOfLights; index++) 
-      {
-        LightSource light = lights[index];
-        if (0.0 == light.position.w) // directional light?
-        {
-          attenuation = 1.0; // no attenuation
-          lightDirection = normalize(vec3(light.position));
-        }
-        else // point light or spotlight (or other kind of light) 
-        {
-          vec3 positionToLightSource = vec3(light.position - position);
-          float distance = length(positionToLightSource);
-          lightDirection = normalize(positionToLightSource);
-          attenuation = 1.0;
-        }
+ 
+  // for all light sources
+  for (int index = 0; index < numberOfLights; index++) 
+  {
+    LightSource light = lights[index];
+    if (0.0 == light.position.w) // directional light?
+    {
+      attenuation = 1.0; // no attenuation
+      lightDirection = normalize(vec3(light.position));
+    }
+    else // point light or spotlight (or other kind of light) 
+    {
+      vec3 positionToLightSource = vec3(light.position - position);
+      float distance = length(positionToLightSource);
+      lightDirection = normalize(positionToLightSource);
+      attenuation = 1.0;
+    }
 
-        vec3 diffuseReflection = attenuation
-          * vec3(light.diffuse) * vec3(material.diffuse)
-          * max(0.0, dot(normalDirection, lightDirection));
+    vec3 diffuseReflection = attenuation
+      * vec3(light.diffuse) * vec3(material.diffuse)
+      * max(0.0, dot(normalDirection, lightDirection));
 
-        vec3 specularReflection;
-        if (dot(normalDirection, lightDirection) < 0.0) // light source on the wrong side?
-        {
-          specularReflection = vec3(0.0, 0.0, 0.0); // no specular reflection
-        }
-        else // light source on the right side
-        {
-          specularReflection = attenuation * vec3(light.specular) * vec3(material.specular)
-            * pow(max(0.0, dot(reflect(-lightDirection, normalDirection), viewDirection)), material.shininess);
-        }
-        totalLighting = totalLighting + diffuseReflection + specularReflection;
-      }
+    vec3 specularReflection;
+    if (dot(normalDirection, lightDirection) < 0.0) // light source on the wrong side?
+    {
+      specularReflection = vec3(0.0, 0.0, 0.0); // no specular reflection
+    }
+    else // light source on the right side
+    {
+      specularReflection = attenuation * vec3(light.specular) * vec3(material.specular)
+        * pow(max(0.0, dot(reflect(-lightDirection, normalDirection), viewDirection)), material.shininess);
+    }
+    totalLighting = totalLighting + diffuseReflection + specularReflection;
   }
+  
 
   // How we could check for a diffuse texture map
   if (material.activeTextures[0])

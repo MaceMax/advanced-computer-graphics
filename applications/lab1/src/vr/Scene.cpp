@@ -1,4 +1,5 @@
 #include <vr/Animation/CircleAnimation.h>
+#include <vr/Group.h>
 #include <vr/Scene.h>
 #include <vr/glErrorUtil.h>
 
@@ -31,7 +32,6 @@ bool Scene::initShaders(const std::string& vshader_filename, const std::string& 
     std::shared_ptr<State> state = std::make_shared<State>(m_shader);
     state->setMaterial(std::make_shared<Material>());
     m_root->setState(state);
-    m_lights.clear();
 
     if (!m_root->getState()->getShader()) {
         return false;
@@ -41,12 +41,12 @@ bool Scene::initShaders(const std::string& vshader_filename, const std::string& 
 }
 
 void Scene::add(std::shared_ptr<Light> light) {
-    m_lights.push_back(light);
+    // m_lights.push_back(light);
     m_root->getState()->addLight(light);
 }
 
-const LightVector& Scene::getLights() {
-    return m_lights;
+const LightVector Scene::getLights() {
+    return m_root->getState()->getLights();
 }
 
 std::shared_ptr<Camera> Scene::getCamera() {
@@ -93,12 +93,13 @@ std::shared_ptr<Group>& Scene::getRoot() {
 BoundingBox Scene::calculateBoundingBox() {
     BoundingBox box;
 
-    box.expand(m_root->calculateBoundingBox());
+    box.expand(m_root->calculateBoundingBox(glm::mat4(1.0f)));
     return box;
 }
 
 void Scene::render() {
     m_updateVisitor->visit(m_root.get());
+    m_renderVisitor->setCameraPosition(glm::vec4(m_camera->getPosition(), 1.0f));
     m_renderVisitor->visit(m_root.get());
 }
 

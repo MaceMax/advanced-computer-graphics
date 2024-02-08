@@ -9,5 +9,6 @@ class UpdateVisitor : public NodeVisitor {
     void visit(Geometry* geometry) override;
     void visit(Transform* transform) override;
     void visit(Group* group) override;
+    void visit(LodNode* lodNode) override;
 };
 }  // namespace vr

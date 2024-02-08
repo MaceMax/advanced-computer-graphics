@@ -13,11 +13,10 @@ Light::Light() : enabled(true) {
 }
 
 void Light::createMesh() {
+    // glm::vec3 light_position = glm::vec3(0.0, 1.0, 2.0);
     /*
     m_mesh = std::shared_ptr<Mesh>(new Mesh);
-
     float size = 0.1f;
-    glm::vec3 light_position = glm::vec3(0.0, 1.0, 2.0);
     m_mesh->vertices.push_back(glm::vec4(-size, -size, -size, 0.0));
     m_mesh->vertices.push_back(glm::vec4(size, -size, -size, 0.0));
     m_mesh->vertices.push_back(glm::vec4(size, size, -size, 0.0));
