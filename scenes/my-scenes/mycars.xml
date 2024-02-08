@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <Scene>
+<Group name="Group1">
     <Transform name="Transform1" translate="0 0 0" rotate="0 0 0" scale="1 1 1">
         <Geometry name="Cars1" filepath="models/porsche_911_gt3.glb"/>
     </Transform>
@@ -30,4 +31,38 @@
     <Transform name="Transform3" translate="10 -5 0" rotate="0 0 0">
         <Geometry name="Cars3" filepath="models/porsche_911_gt3.glb"/>
     </Transform>
+</Group>
+
+<Group name="Group2">
+    <Transform name="Transform1" translate="0 20 0" rotate="0 0 0" scale="1 1 1">
+        <Geometry name="Cars1" filepath="models/porsche_911_gt3.glb"/>
+    </Transform>
+    <Transform name="Transform2" translate="5 20 0" rotate="0 0 0" scale="1 1 1">
+        <Geometry name="Cars2" filepath="models/porsche_911_gt3.glb"/>
+    </Transform>
+    <Transform name="Transform3" translate="10 20 0" rotate="0 0 0">
+        <Geometry name="Cars3" filepath="models/porsche_911_gt3.glb"/>
+    </Transform>
+
+    <Transform name="Transform1" translate="0 15 0" rotate="0 0 0" scale="1 1 1">
+        <Geometry name="Cars1" filepath="models/porsche_911_gt3.glb"/>
+    </Transform>
+    <Transform name="Transform2" translate="5 15 0" rotate="0 0 0" scale="1 1 1">
+        <Geometry name="Cars2" filepath="models/porsche_911_gt3.glb"/>
+    </Transform>
+    <Transform name="Transform3" translate="10 15 0" rotate="0 0 0">
+        <Geometry name="Cars3" filepath="models/porsche_911_gt3.glb"/>
+    </Transform>
+
+    <Transform name="Transform1" translate="0 10 0" rotate="0 0 0" scale="1 1 1">
+        <Geometry name="Cars1" filepath="models/porsche_911_gt3.glb"/>
+    </Transform>
+    <Transform name="Transform2" translate="5 10 0" rotate="0 0 0" scale="1 1 1">
+        <Geometry name="Cars2" filepath="models/porsche_911_gt3.glb"/>
+    </Transform>
+    <Transform name="Transform3" translate="10 10 0" rotate="0 0 0">
+        <Geometry name="Cars3" filepath="models/porsche_911_gt3.glb"/>
+    </Transform>
+</Group>
+
 </Scene>
