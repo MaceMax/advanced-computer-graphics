@@ -9,13 +9,13 @@
             
             <!-- State attributes for Transform -->
             <State>
-                <Lighting enable="true" global="false">
+                <Lighting enable="true">
                     <!-- Individual light settings go here -->
                     <Light id="1" enable="true"/>
                     <Light id="2" enable="false"/>
                 </Lighting>
                 <CullFace enable="true"/>
-                <Shader filepath="/path/to/shader1.glsl"/>
+                <Shader vshader="/path/to/shader1.vs" fshader="/path/to/shader2.fs"/>
             </State>
         </Transform>
 

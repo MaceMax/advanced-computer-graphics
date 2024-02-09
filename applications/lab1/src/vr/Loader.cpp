@@ -349,7 +349,66 @@ std::string getAttribute(rapidxml::xml_node<>* node, const std::string& attribut
     return attrib->value();
 }
 
+LightVector parseLights(std::vector<std::string> xmlpath, rapidxml::xml_node<>* light_node) {
+    Light light;
+}
+
 State parseState(std::vector<std::string> xmlpath, rapidxml::xml_node<>* state_node) {
+    State state = State();
+    xmlpath.push_back(state_node->name());
+
+    rapidxml::xml_node<>* lightingNode = state_node->first_node("Lighting");
+    if (lightingNode) {
+        xmlpath.push_back(lightingNode->name());
+        std::string enabled;
+        if (lightingNode->first_attribute("enabled"))
+            enabled = lightingNode->first_attribute("enabled")->value();
+
+        if (!enabled.empty())
+            state.setLightingEnabled(readValue<bool>(enabled));
+
+        LightVector lights = parseLights(xmlpath, lightingNode);
+        for (auto l : lights)
+            state.addLight(l);
+    }
+
+    rapidxml::xml_node<>* shaderNode = state_node->first_node("Shader");
+    if (shaderNode) {
+        xmlpath.push_back(shaderNode->name());
+        std::string vshader;
+        if (shaderNode->first_attribute("vshader"))
+            vshader = shaderNode->first_attribute("vshader")->value();
+
+        if (vshader.empty())
+            throw std::runtime_error("Node (Shader) No filepath specified for vertex shader: " + pathToString(xmlpath));
+
+        std::string fshader;
+        if (shaderNode->first_attribute("fshader"))
+            fshader = shaderNode->first_attribute("fshader")->value();
+
+        if (fshader.empty())
+            throw std::runtime_error("Node (Shader) No filepath specified for fragment shader: " + pathToString(xmlpath));
+
+        // Should probably add shader to a map and check if it already exists to avoid loading the same shader multiple times
+        Shader shader = Shader(vshader, fshader);
+        if (!shader.valid())
+            throw std::runtime_error("Node (Shader) Invalid shader: " + pathToString(xmlpath));
+
+        state.setShader(std::make_shared<Shader>(vshader, fshader));
+    }
+
+    rapidxml::xml_node<>* cullNode = state_node->first_node("CullFace");
+    if (cullNode) {
+        xmlpath.push_back(cullNode->name());
+        std::string enabled;
+        if (cullNode->first_attribute("enabled"))
+            enabled = cullNode->first_attribute("enabled")->value();
+
+        if (!enabled.empty())
+            state.setCullFaceEnabled(readValue<bool>(enabled));
+    }
+
+    return state;
 }
 
 LodNode parseLodNode(std::vector<std::string> xmlpath, rapidxml::xml_node<>* lod_node, GeometryMap& geometryMap, const std::shared_ptr<Shader>& shader) {
