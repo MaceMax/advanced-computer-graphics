@@ -65,11 +65,6 @@ class Scene {
     std::shared_ptr<Camera> getCamera();
 
     /**
-    Apply the camera
-    */
-    void applyCamera();
-
-    /**
     Use the shader program
     */
     void useProgram();

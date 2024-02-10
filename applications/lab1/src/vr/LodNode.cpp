@@ -15,8 +15,8 @@ void LodNode::addChild(float distance, std::shared_ptr<Group> node) {
     std::sort(m_children.begin(), m_children.end(), [](const GroupPair& a, const GroupPair& b) { return a.first < b.first; });
 }
 
-Group& LodNode::getChild(const glm::vec4& cameraPosition) {
-    float distance = glm::distance(cameraPosition, glm::vec4(bbox.getCenter(), 1.0f));
+Group& LodNode::getChild(const glm::vec3& cameraPosition) {
+    float distance = glm::distance(cameraPosition, bbox.getCenter());
 
     // If a max distance is set, use it
     if (m_maxDistance != -1.0f) {

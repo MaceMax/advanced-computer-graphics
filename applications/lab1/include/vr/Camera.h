@@ -120,9 +120,26 @@ namespace vr
     */
     float getSpeed() const;
 
+    /**
+     * @brief Get the View matrix
+     * 
+     * @return glm::mat4  The view matrix
+     */ 
+    glm::mat4 getView() const;
+
+    /**
+     * @brief Get the Projection matrix
+     * 
+     * @return glm::mat4  The projection matrix
+     */
+    glm::mat4 getProjection() const;
+
   private:
 
     void handleMouse(GLFWwindow* window, double xpos, double ypos);
+    
+    glm::mat4 m_view;
+    glm::mat4 m_projection;
 
     glm::uvec2 m_screenSize;
     glm::vec2 m_nearFar;

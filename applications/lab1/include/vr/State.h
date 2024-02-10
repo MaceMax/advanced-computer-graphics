@@ -9,9 +9,7 @@ namespace vr {
 class State {
    public:
     // Default constructor
-    State(std::shared_ptr<Shader> shader = nullptr) : m_shader(shader),
-                                                      lightingEnabled(true),
-                                                      cullFaceEnabled(false) {}
+    State(std::shared_ptr<Shader> shader = nullptr) : m_shader(shader), lightingEnabled(-1), cullFaceEnabled(-1) {}
     // + operator overload. Combines two states into one. Returns a shared pointer to the new state.
     std::shared_ptr<State> operator+(const State& other) const;
     State& operator+=(const State& other);
@@ -38,8 +36,8 @@ class State {
     void apply();
 
    private:
-    bool lightingEnabled;
-    bool cullFaceEnabled;
+    int lightingEnabled;
+    int cullFaceEnabled;
 
     LightVector m_lights;
     std::shared_ptr<Material> m_material;

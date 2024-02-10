@@ -9,8 +9,18 @@ using namespace vr;
 std::shared_ptr<State> State::operator+(const State& childState) const {
     std::shared_ptr<State> newState = std::make_shared<State>();
     // Child state has precedence. If child state has a value, use it. Otherwise, use parent state's value.
-    newState->lightingEnabled = childState.lightingEnabled;
-    newState->cullFaceEnabled = childState.cullFaceEnabled;
+
+    if (childState.lightingEnabled != -1) {
+        newState->lightingEnabled = childState.lightingEnabled;
+    } else {
+        newState->lightingEnabled = lightingEnabled;
+    }
+
+    if (childState.cullFaceEnabled != -1) {
+        newState->cullFaceEnabled = childState.cullFaceEnabled;
+    } else {
+        newState->cullFaceEnabled = cullFaceEnabled;
+    }
 
     if (childState.m_shader != nullptr) {
         newState->setShader(childState.m_shader);
@@ -40,8 +50,13 @@ std::shared_ptr<State> State::operator+(const State& childState) const {
 }
 
 State& State::operator+=(const State& other) {
-    lightingEnabled = other.lightingEnabled;
-    cullFaceEnabled = other.cullFaceEnabled;
+    if (other.lightingEnabled != -1) {
+        lightingEnabled = other.lightingEnabled;
+    }
+
+    if (other.cullFaceEnabled != -1) {
+        cullFaceEnabled = other.cullFaceEnabled;
+    }
 
     if (other.m_shader != nullptr) {
         m_shader = other.m_shader;
@@ -51,20 +66,14 @@ State& State::operator+=(const State& other) {
 
     if (!other.m_lights.empty()) {
         m_lights = other.m_lights;
-    } else {
-        m_lights = m_lights;
     }
 
     if (other.m_material != nullptr) {
         m_material = other.m_material;
-    } else {
-        m_material = m_material;
     }
 
     if (other.m_texture != nullptr) {
         m_texture = other.m_texture;
-    } else {
-        m_texture = m_texture;
     }
 
     return *this;
@@ -91,7 +100,7 @@ void State::addLight(std::shared_ptr<Light> light) {
 }
 
 void State::setLightEnabled(size_t idx, bool enabled) {
-    m_lights[idx]->enabled = enabled;
+    m_lights[idx]->setEnabled(enabled);
 }
 
 LightVector const State::getLights() {
@@ -129,6 +138,11 @@ void State::apply() {
     m_shader->use();
     // Update number of lights
     m_shader->setInt("numberOfLights", m_lights.size());
+
+    // Turn lighting off in shader since if two two geometries share the same shader and one of them has lighting disabled,
+    // the other one will also have lighting disabled.
+    m_shader->setInt("lightingEnabled", lightingEnabled);
+
     // Apply lightsources
     size_t i = 0;
     if (m_lights.size() != 0 && lightingEnabled) {

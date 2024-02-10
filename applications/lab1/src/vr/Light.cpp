@@ -8,7 +8,11 @@
 
 using namespace vr;
 
-Light::Light() : enabled(true) {
+Light::Light(glm::vec4 position, glm::vec4 diffuse, glm::vec4 specular) : enabled(true) {
+    this->position = position;
+    this->diffuse = diffuse;
+    this->specular = specular;
+
     createMesh();
 }
 
@@ -34,8 +38,23 @@ void Light::createMesh() {
 std::shared_ptr<Mesh>& Light::getMesh() {
     return m_mesh;
 }
-
 */
+
+void Light::setEnabled(bool enabled) {
+    this->enabled = enabled;
+}
+
+void Light::setPosition(glm::vec4 position) {
+    this->position = position;
+}
+
+void Light::setDiffuse(glm::vec4 diffuse) {
+    this->diffuse = diffuse;
+}
+
+void Light::setSpecular(glm::vec4 specular) {
+    this->specular = specular;
+}
 
 void Light::apply(std::shared_ptr<vr::Shader> shader, size_t idx) {
     // Update light position

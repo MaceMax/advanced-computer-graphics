@@ -12,13 +12,18 @@ using namespace vr;
 
 void RenderVisitor::visit(Geometry* geometry) {
     std::shared_ptr<State> state = nullptr;
-    if (geometry->hasState()) {
-        state = *(m_stateStack.top()) + *(geometry->getState());
-    } else {
-        state = m_stateStack.top();
+
+    // Geometry always has a state
+    state = *(m_stateStack.top()) + *(geometry->getState());
+
+    // If the geometry group has a material, override the geometry's default material
+    // Not correct. Something else must be done here.
+    if (m_stateStack.top()->getMaterial() != nullptr) {
+        state->setMaterial(m_stateStack.top()->getMaterial());
     }
 
     state->apply();
+    m_activeCamera->apply(state->getShader());
     geometry->draw(state->getShader(), m_matrixStack.empty() ? glm::mat4(1.0f) : m_matrixStack.top());
 }
 
@@ -66,13 +71,9 @@ void RenderVisitor::visit(LodNode* lodNode) {
     }
 
     lodNode->applyTransformation(m_matrixStack.empty() ? glm::mat4(1.0f) : m_matrixStack.top());
-    lodNode->getChild(m_cameraPosition).accept(*this);
+    lodNode->getChild(m_activeCamera->getPosition()).accept(*this);
 
     if (lodNode->hasState()) {
         m_stateStack.pop();
     }
-}
-
-void RenderVisitor::setCameraPosition(const glm::vec4& cameraPosition) {
-    m_cameraPosition = cameraPosition;
 }

@@ -13,6 +13,7 @@ std::shared_ptr<Scene> Scene::instance = nullptr;
 Scene::Scene() : m_uniform_numberOfLights(-1) {
     m_camera = std::make_shared<Camera>();
     m_renderVisitor = std::make_shared<RenderVisitor>();
+    m_renderVisitor->setActiveCamera(m_camera);
     m_updateVisitor = std::make_shared<UpdateVisitor>();
 }
 
@@ -29,19 +30,22 @@ bool Scene::initShaders(const std::string& vshader_filename, const std::string& 
         return false;
 
     m_root = std::shared_ptr<Group>(new Group("root"));
-    std::shared_ptr<State> state = std::make_shared<State>(m_shader);
-    state->setMaterial(std::make_shared<Material>());
-    m_root->setState(state);
 
-    if (!m_root->getState()->getShader()) {
-        return false;
-    }
+    // Create a default state. Can be overridden by the user in the scene file.
+    std::shared_ptr<State> state = std::make_shared<State>(m_shader);
+    Light light = Light(glm::vec4(0.0, -2.0, 2.0, 0.0),
+                        glm::vec4(1, 1, 1, 1),
+                        glm::vec4(1, 1, 1, 1));
+    std::shared_ptr<Light> light1 = std::make_shared<Light>(light);
+    state->addLight(light1);
+    state->setMaterial(std::make_shared<Material>());
+    state->setLightingEnabled(true);
+    m_root->setState(state);
 
     return true;
 }
 
 void Scene::add(std::shared_ptr<Light> light) {
-    // m_lights.push_back(light);
     m_root->getState()->addLight(light);
 }
 
@@ -65,10 +69,6 @@ void Scene::cleanup() {
     if (m_root) {
         m_root = nullptr;
     }
-}
-
-void Scene::applyCamera() {
-    m_camera->apply(m_shader);
 }
 
 void Scene::useProgram() {
@@ -99,7 +99,6 @@ BoundingBox Scene::calculateBoundingBox() {
 
 void Scene::render() {
     m_updateVisitor->visit(m_root.get());
-    m_renderVisitor->setCameraPosition(glm::vec4(m_camera->getPosition(), 1.0f));
     m_renderVisitor->visit(m_root.get());
 }
 

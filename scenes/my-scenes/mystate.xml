@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Scene>
+    <Transform name="Transform2" translate="5 0 0" rotate="0 0 0" scale="1 1 1">
+        <State>
+            <CullFace enabled="false"/>
+            <Lighting enabled="true">
+                <Light position="-2 2 2 0" diffuse="0.4 0.4 0.4 1" specular="1 1 1 1"/>
+                <Light position="2 2 2 0" diffuse="0.4 0.4 0.4 1" specular="1 1 1 1"/>
+                <Light position="2 2 -2 0" diffuse="0.4 0.4 0.4 1" specular="1 1 1 1"/>
+            </Lighting>
+        </State>
+        <Geometry name="Cars2" filepath="models/porsche_911_gt3.glb"/>
+    </Transform>
+
+
+    <Transform name="Transform2" translate="0 0 0" rotate="0 0 0" scale="1 1 1">
+        <State>
+            <CullFace enabled="false"/>
+            <Shader fshader="shaders/toon-shading.fs" vshader="shaders/toon-shading.vs"/>
+        </State>
+        <Geometry name="Cars2" filepath="models/monkey.obj"/>
+    </Transform>
+</Scene>

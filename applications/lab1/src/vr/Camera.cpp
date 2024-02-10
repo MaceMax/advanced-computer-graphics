@@ -25,6 +25,8 @@ Camera::Camera() : m_firstClick(true),
     m_direction = glm::vec3(0.0f, 0.0f, -1.0f);
     m_up = glm::vec3(0.0f, 1.0f, 0.0f);
     m_position = glm::vec3(0.0f, -1.0f, 0.0f);
+    m_view = glm::mat4(1.0f);
+    m_projection = glm::mat4(1.0f);
 
     m_screenSize[0] = 1280;
     m_screenSize[1] = 720;
@@ -176,21 +178,17 @@ void Camera::setNearFar(const glm::vec2& nearFar) {
 }
 
 void Camera::apply(std::shared_ptr<vr::Shader> shader) {
-    // Initializes matrices since otherwise they will be the null matrix
-    glm::mat4 view = glm::mat4(1.0f);
-    glm::mat4 projection = glm::mat4(1.0f);
-
     // Makes camera look in the right direction from the right position
-    view = glm::lookAt(m_position, m_position + m_direction, m_up);
+    m_view = glm::lookAt(m_position, m_position + m_direction, m_up);
 
     float aspect = (float)m_screenSize[0] / (float)m_screenSize[1];
 
     // Adds perspective to the scene
-    projection = glm::perspective(glm::radians(m_fov), aspect, m_nearFar[0], m_nearFar[1]);
+    m_projection = glm::perspective(glm::radians(m_fov), aspect, m_nearFar[0], m_nearFar[1]);
 
-    shader->setMat4("v", view);
-    shader->setMat4("p", projection);
-    glm::mat4 v_inv = glm::inverse(view);
+    shader->setMat4("v", m_view);
+    shader->setMat4("p", m_projection);
+    glm::mat4 v_inv = glm::inverse(m_view);
     shader->setMat4("v_inv", v_inv);
 }
 
@@ -216,4 +214,12 @@ void Camera::setSpeed(float speed) {
 
 float Camera::getSpeed() const {
     return m_speed;
+}
+
+glm::mat4 Camera::getView() const {
+    return m_view;
+}
+
+glm::mat4 Camera::getProjection() const {
+    return m_projection;
 }

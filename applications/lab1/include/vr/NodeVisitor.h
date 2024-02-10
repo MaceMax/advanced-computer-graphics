@@ -2,6 +2,7 @@
 
 #include <stack>
 
+#include "vr/Camera.h"
 #include "vr/State.h"
 
 namespace vr {
@@ -17,10 +18,11 @@ class NodeVisitor {
     virtual void visit(Transform* transform) = 0;
     virtual void visit(Group* group) = 0;
     virtual void visit(LodNode* lodNode) = 0;
+    void setActiveCamera(std::shared_ptr<Camera> camera) { m_activeCamera = camera; }
 
    protected:
     StateStack m_stateStack;
-    glm::vec4 m_cameraPosition;
+    std::shared_ptr<Camera> m_activeCamera;
 };
 
 }  // namespace vr

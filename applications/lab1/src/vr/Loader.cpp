@@ -289,6 +289,13 @@ T readValue(const std::string& string) {
     return result;
 }
 
+template <>
+bool readValue<bool>(const std::string& value) {
+    std::string lowerCaseValue = value;
+    std::transform(lowerCaseValue.begin(), lowerCaseValue.end(), lowerCaseValue.begin(), ::tolower);
+    return lowerCaseValue == "true";
+}
+
 std::string pathToString(std::vector<std::string>& path) {
     std::string result;
     for (auto s : path)
@@ -350,7 +357,34 @@ std::string getAttribute(rapidxml::xml_node<>* node, const std::string& attribut
 }
 
 LightVector parseLights(std::vector<std::string> xmlpath, rapidxml::xml_node<>* light_node) {
-    Light light;
+    LightVector lights;
+    for (rapidxml::xml_node<>* child = light_node->first_node(); child; child = child->next_sibling()) {
+        xmlpath.push_back(child->name());
+        std::string name = std::string(child->name());
+
+        if (name != "Light")
+            throw std::runtime_error("Node (" + name + ") Lighting node can only contain Light nodes: " + pathToString(xmlpath));
+
+        std::string position = getAttribute(child, "position");
+        glm::vec4 pos;
+        if (!getVec<glm::vec4>(pos, position))
+            throw std::runtime_error("Node (" + name + ") Invalid position in: " + pathToString(xmlpath));
+
+        std::string diffuse = getAttribute(child, "diffuse");
+        glm::vec4 diff;
+        if (!getVec<glm::vec4>(diff, diffuse))
+            throw std::runtime_error("Node (" + name + ") Invalid diffuse in: " + pathToString(xmlpath));
+
+        std::string specular = getAttribute(child, "specular");
+        glm::vec4 spec;
+        if (!getVec<glm::vec4>(spec, specular))
+            throw std::runtime_error("Node (" + name + ") Invalid specular in: " + pathToString(xmlpath));
+
+        std::shared_ptr<Light> light = std::make_shared<Light>(pos, diff, spec);
+        lights.push_back(light);
+    }
+
+    return lights;
 }
 
 State parseState(std::vector<std::string> xmlpath, rapidxml::xml_node<>* state_node) {
@@ -395,6 +429,58 @@ State parseState(std::vector<std::string> xmlpath, rapidxml::xml_node<>* state_n
             throw std::runtime_error("Node (Shader) Invalid shader: " + pathToString(xmlpath));
 
         state.setShader(std::make_shared<Shader>(vshader, fshader));
+    }
+
+    rapidxml::xml_node<>* materialNode = state_node->first_node("Material");
+    if (materialNode) {
+        xmlpath.push_back(materialNode->name());
+
+        glm::vec4 amb;
+        std::string ambient;
+        if (materialNode->first_attribute("ambient"))
+            ambient = materialNode->first_attribute("ambient")->value();
+
+        if (ambient.empty())
+            throw std::runtime_error("Node (Material) No ambient specified for Material: " + pathToString(xmlpath));
+
+        if (!getVec<glm::vec4>(amb, ambient))
+            throw std::runtime_error("Node (Material) Invalid ambient in: " + pathToString(xmlpath));
+
+        glm::vec4 diff;
+        std::string diffuse;
+        if (materialNode->first_attribute("diffuse"))
+            diffuse = materialNode->first_attribute("diffuse")->value();
+
+        if (diffuse.empty())
+            throw std::runtime_error("Node (Material) No diffuse specified for Material: " + pathToString(xmlpath));
+
+        if (!getVec<glm::vec4>(diff, diffuse))
+            throw std::runtime_error("Node (Material) Invalid diffuse in: " + pathToString(xmlpath));
+
+        glm::vec4 spec;
+        std::string specular;
+        if (materialNode->first_attribute("specular"))
+            specular = materialNode->first_attribute("specular")->value();
+
+        if (specular.empty())
+            throw std::runtime_error("Node (Material) No specular specified for Material: " + pathToString(xmlpath));
+
+        if (!getVec<glm::vec4>(spec, specular))
+            throw std::runtime_error("Node (Material) Invalid specular in: " + pathToString(xmlpath));
+
+        std::string shininess;
+        if (materialNode->first_attribute("shininess"))
+            shininess = materialNode->first_attribute("shininess")->value();
+
+        if (shininess.empty())
+            throw std::runtime_error("Node (Material) No shininess specified for Material: " + pathToString(xmlpath));
+
+        std::shared_ptr<Material> material = std::make_shared<Material>();
+        material->setAmbient(amb);
+        material->setDiffuse(diff);
+        material->setSpecular(spec);
+        material->setShininess(readValue<float>(shininess));
+        state.setMaterial(material);
     }
 
     rapidxml::xml_node<>* cullNode = state_node->first_node("CullFace");
@@ -464,13 +550,6 @@ void parseSceneNode(std::vector<std::string> xmlpath, rapidxml::xml_node<>* node
     if (node_node->type() == rapidxml::node_comment || node_node->type() == rapidxml::node_doctype)
         return;
 
-    rapidxml::xml_node<>* stateNode = node_node->first_node("State");
-    std::shared_ptr<State> state;
-    // Check if we have a state
-    if (stateNode) {
-        state = std::make_shared<State>(parseState(xmlpath, stateNode));
-    }
-
     for (rapidxml::xml_node<>* child = node_node->first_node(); child; child = child->next_sibling()) {
         xmlpath.push_back(child->name());
         std::string name = std::string(child->name());
@@ -480,9 +559,18 @@ void parseSceneNode(std::vector<std::string> xmlpath, rapidxml::xml_node<>* node
         if (child->first_attribute("name"))
             nodeName = child->first_attribute("name")->value();
 
+        rapidxml::xml_node<>* stateNode = child->first_node("State");
+        std::shared_ptr<State> state;
+        std::shared_ptr<Shader> newShader = shader;
+        // Check if we have a state
+        if (stateNode) {
+            state = std::make_shared<State>(parseState(xmlpath, stateNode));
+            newShader = state->getShader() ? state->getShader() : shader;
+        }
+
         if (name == "Group") {
             std::shared_ptr<Group> groupNode = nodeName.empty() ? std::make_shared<Group>() : std::make_shared<Group>(nodeName);
-            parseSceneNode(xmlpath, child, geometryMap, groupNode, shader);
+            parseSceneNode(xmlpath, child, geometryMap, groupNode, newShader);
             if (state)
                 groupNode->setState(state);
             node->addChild(groupNode);
@@ -518,7 +606,7 @@ void parseSceneNode(std::vector<std::string> xmlpath, rapidxml::xml_node<>* node
 
             std::shared_ptr<Group> groupTransform = std::dynamic_pointer_cast<Group>(transformNode);
 
-            parseSceneNode(xmlpath, child, geometryMap, groupTransform, shader);
+            parseSceneNode(xmlpath, child, geometryMap, groupTransform, newShader);
 
             if (state)
                 transformNode->setState(state);
@@ -533,14 +621,14 @@ void parseSceneNode(std::vector<std::string> xmlpath, rapidxml::xml_node<>* node
             std::shared_ptr<Group> geometryGroup = std::make_shared<Group>(filepath);
             if (geometryMap.find(filepath) != geometryMap.end()) {
                 node->addChild(geometryMap[filepath]);
-            } else if (load3DModelFile(filepath, geometryGroup, shader, &geometryMap)) {
+            } else if (load3DModelFile(filepath, geometryGroup, newShader, &geometryMap)) {
                 node->addChild(geometryGroup);
             } else {
                 throw std::runtime_error("Node (" + name + ") Invalid file in: " + pathToString(xmlpath));
             }
 
         } else if (name == "LOD") {
-            LodNode lodNode = parseLodNode(xmlpath, child, geometryMap, shader);
+            LodNode lodNode = parseLodNode(xmlpath, child, geometryMap, newShader);
             std::shared_ptr<LodNode> lod = std::make_shared<LodNode>(lodNode);
 
             if (state)
@@ -579,6 +667,7 @@ bool vr::loadSceneFile(const std::string& sceneFile, std::shared_ptr<Scene>& sce
         doc.parse<rapidxml::parse_trim_whitespace | rapidxml::parse_normalize_whitespace | rapidxml::parse_full>(xmlFile.data());
 
         root_node = doc.first_node("Scene");
+
         if (!root_node)
             throw std::runtime_error("File missing scene/");
 

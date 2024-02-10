@@ -37,5 +37,5 @@ void UpdateVisitor::visit(LodNode* lodNode) {
         lodNode->getUpdateCallback()->execute(*lodNode);
     }
 
-    lodNode->getChild(m_cameraPosition).accept(*this);
+    lodNode->getChild(m_activeCamera->getPosition()).accept(*this);
 }

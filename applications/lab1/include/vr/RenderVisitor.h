@@ -12,11 +12,9 @@ class RenderVisitor : public NodeVisitor {
     void visit(Group* group) override;
     void visit(LodNode* lodNode) override;
     int getSteps() { return steps; }
-    void setCameraPosition(const glm::vec4& cameraPosition);
 
    private:
     std::stack<glm::mat4> m_matrixStack;
-    glm::vec4 m_cameraPosition;
 
     int steps = 0;
 };

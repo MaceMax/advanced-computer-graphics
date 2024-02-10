@@ -106,7 +106,7 @@ void Scene::render()
 
   // Update number of lights
   m_shader->setInt("numberOfLights", (GLint)m_lights.size());
-
+  m_shader->setInt("lightingEnabled", 1);
   // Apply lightsources
   size_t i = 0;
   for (auto l : m_lights)

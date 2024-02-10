@@ -9,7 +9,7 @@ class LodNode : public Node {
     virtual void accept(NodeVisitor& visitor) override;
     virtual BoundingBox calculateBoundingBox(glm::mat4 m_mat) override;
     void addChild(float maxDistance, std::shared_ptr<Group> node);
-    Group& getChild(const glm::vec4& cameraPosition);
+    Group& getChild(const glm::vec3& cameraPosition);
     void setMaxDistance(float maxDistance);
     void applyTransformation(const glm::mat4& matrix);
 

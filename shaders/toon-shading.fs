@@ -47,6 +47,10 @@ vec4 scene_ambient = vec4(0.2, 0.2, 0.2, 1.0);
 // The front surface material
 uniform Material material;
 
+// Toon parameters
+int toonLevels = 3;
+float toonScaleFactor = 1.0 / toonLevels;
+
 void main()
 {
   vec3 normalDirection = normalize(normal);
@@ -77,21 +81,20 @@ void main()
           attenuation = 1.0;
         }
 
+        // Toon calculations
+        float diffFactor = dot(normalDirection, lightDirection);
+
+        if (diffFactor > 0) {
+          diffFactor = ceil(diffFactor * toonLevels) * toonScaleFactor;        
+        }
+
         vec3 diffuseReflection = attenuation
           * vec3(light.diffuse) * vec3(material.diffuse)
-          * max(0.0, dot(normalDirection, lightDirection));
-
-        vec3 specularReflection;
-        if (dot(normalDirection, lightDirection) < 0.0) // light source on the wrong side?
-        {
-          specularReflection = vec3(0.0, 0.0, 0.0); // no specular reflection
-        }
-        else // light source on the right side
-        {
-          specularReflection = attenuation * vec3(light.specular) * vec3(material.specular)
-            * pow(max(0.0, dot(reflect(-lightDirection, normalDirection), viewDirection)), material.shininess);
-        }
-        totalLighting = totalLighting + diffuseReflection + specularReflection;
+          * max(0.0, dot(normalDirection, lightDirection)) * diffFactor;
+        
+        // This is a temporary solution, since if i don't use these, they will be optimized away and glUniformLocation will return -1
+        vec3 specularReflection = vec3(material.specular) * viewDirection * material.shininess;
+        totalLighting = totalLighting + diffuseReflection + (specularReflection * 0.0000001);
       }
   }
 

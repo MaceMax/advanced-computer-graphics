@@ -85,12 +85,6 @@ bool Application::initResources(const std::string& model_filename, const std::st
 
   m_sceneRoot->add(groundNode);
 #endif
-    std::shared_ptr<Light> light1 = std::shared_ptr<Light>(new Light);
-    light1->diffuse = glm::vec4(1, 1, 1, 1);
-    light1->specular = glm::vec4(1, 1, 1, 1);
-    light1->position = glm::vec4(0.0, -2.0, 2.0, 0.0);
-
-    m_scene->add(light1);
 
     return 1;
 }
@@ -118,7 +112,7 @@ void Application::initView() {
     std::shared_ptr<Light> light = m_scene->getLights().front();
     glm::vec4 position;
     position = glm::vec4(eye + glm::vec3(3, 2, 0), 1);
-    light->position = position;
+    light->setPosition(position);
 
     m_scene->resetTransform();
 
@@ -140,7 +134,6 @@ void Application::render(GLFWwindow* window) {
     glClearColor(m_clearColor[0], m_clearColor[1], m_clearColor[2], m_clearColor[3]);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    m_scene->applyCamera();
     m_scene->render();
     m_fpsCounter->render(window);
 }
