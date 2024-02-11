@@ -1,15 +1,16 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Scene>
+    <State>
+        <Lighting enabled="true"/>
+    </State>
     <Transform name="Transform2" translate="5 0 0" rotate="0 0 0" scale="1 1 1">
         <State>
             <CullFace enabled="false"/>
             <Lighting enabled="true">
-                <Light position="-2 2 2 0" diffuse="0.4 0.4 0.4 1" specular="1 1 1 1"/>
-                <Light position="2 2 2 0" diffuse="0.4 0.4 0.4 1" specular="1 1 1 1"/>
-                <Light position="2 2 -2 0" diffuse="0.4 0.4 0.4 1" specular="1 1 1 1"/>
+                <Light position="-2 2 2 0" diffuse="0.8 0.8 0.8 1" specular="1 1 1 1"/>
             </Lighting>
         </State>
-        <Geometry name="Cars2" filepath="models/porsche_911_gt3.glb"/>
+        <Geometry name="Car" filepath="models/porsche_911_gt3.glb"/>
     </Transform>
 
 
@@ -18,6 +19,26 @@
             <CullFace enabled="false"/>
             <Shader fshader="shaders/toon-shading.fs" vshader="shaders/toon-shading.vs"/>
         </State>
-        <Geometry name="Cars2" filepath="models/monkey.obj"/>
+        <Geometry name="Monkey1" filepath="models/monkey.obj"/>
+    </Transform>
+
+    <Transform name="Transform2" translate="-5 0 0" rotate="0 0 0" scale="1 1 1">
+        <State>
+            <CullFace enabled="false"/>
+            <Material ambient="1 1 1 1" diffuse="0.8 0 0 1" specular="0.9 0.9 0.9 1" shininess="32"/>
+        </State>
+        <Geometry name="Monkey2" filepath="models/monkey.obj"/>
+    </Transform>
+
+    <Transform name="Transform2" translate="-10 0 0" rotate="0 0 0" scale="1 1 1">
+        <State>
+            <CullFace enabled="false"/>
+            <Material ambient="1 1 1 0" diffuse="1 1 1 1" specular="0.9 0.9 0.9 1" shininess="32"/>
+            <Textures>
+                <Texture filepath="textures/chrille.png"/>
+                <Texture filepath="textures/box.bmp"/>
+            </Textures>
+        </State>
+        <Geometry name="Suzanne" filepath="models/suzanne.obj"/>
     </Transform>
 </Scene>

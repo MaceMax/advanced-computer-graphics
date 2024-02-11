@@ -13,7 +13,8 @@ uniform mat4 v_inv;
 uniform int numberOfLights;
 uniform int lightingEnabled;
 
-const int MAX_TEXTURES=2;
+const int MAX_MATERIAL_TEXTURES=3;
+const int MAX_TEXTURES=10;
 
 // declaration of a Material structure
 struct Material
@@ -23,8 +24,8 @@ struct Material
     vec4 specular;
 
     float shininess;
-    bool activeTextures[MAX_TEXTURES];
-    sampler2D textures[MAX_TEXTURES];
+    bool activeTextures[MAX_MATERIAL_TEXTURES];
+    sampler2D textures[MAX_MATERIAL_TEXTURES];
 };
 
 // Definition of a light source structure
@@ -34,8 +35,17 @@ struct LightSource
   vec4 position;
   vec4 diffuse;
   vec4 specular;
+  float constant;
+  float linear;
+  float quadratic;
 };
 
+struct Textures
+{
+  bool activeTextures[MAX_TEXTURES];
+  sampler2D textures[MAX_TEXTURES];
+};
+ 
 const int MaxNumberOfLights = 10;
 
 // This is the uniforms that our program communicates with
@@ -46,6 +56,7 @@ vec4 scene_ambient = vec4(0.2, 0.2, 0.2, 1.0);
 
 // The front surface material
 uniform Material material;
+uniform Textures textureLayers;
 
 void main()
 {
@@ -74,7 +85,7 @@ void main()
           vec3 positionToLightSource = vec3(light.position - position);
           float distance = length(positionToLightSource);
           lightDirection = normalize(positionToLightSource);
-          attenuation = 1.0;
+          attenuation = 1.0 / (light.constant + light.linear * distance + light.quadratic * (distance * distance));
         }
 
         vec3 diffuseReflection = attenuation
@@ -101,6 +112,23 @@ void main()
     vec4 diffuseTex = texture2D(material.textures[0], texCoord);
     totalLighting = totalLighting * diffuseTex.rgb;
   }
+  
+  vec4 blendedColor = vec4(0, 0, 0, 1);
+  int activeTextureCount = 0;
+
+  for (int index = 0; index < MAX_TEXTURES; index++) {
+    if (textureLayers.activeTextures[index]) {
+      vec4 layerColor = texture(textureLayers.textures[index], texCoord);
+      blendedColor = mix(blendedColor, layerColor, 1.0 / 2.0);
+      activeTextureCount += 1;
+    }
+  }
+  
+  if (activeTextureCount > 0) {
+    totalLighting = totalLighting * blendedColor.rgb;  
+  }
+  
+  
 
   color = vec4(totalLighting, 1.0);
 }

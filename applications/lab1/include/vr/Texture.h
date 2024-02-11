@@ -7,6 +7,10 @@
 
 namespace vr {
 
+#define MATERIAL_TEXTURES_BASE_SLOT 0
+#define TEXTURES_BASE_SLOT 3
+#define MAX_TEXTURES 10
+
 class Texture {
    public:
     /// <summary>
@@ -18,7 +22,7 @@ class Texture {
     /// <param name="format"></param>
     /// <param name="pixelType"></param>
     Texture();
-    bool create(const char* image, unsigned int slot = 0, GLenum texType = GL_TEXTURE_2D, GLenum pixelType = GL_UNSIGNED_BYTE);
+    bool create(const char* image, bool isMaterialTexture, unsigned int slot = 0, GLenum texType = GL_TEXTURE_2D, GLenum pixelType = GL_UNSIGNED_BYTE);
 
     bool isValid();
 

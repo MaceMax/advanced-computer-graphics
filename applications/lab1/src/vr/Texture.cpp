@@ -9,7 +9,7 @@
 #include "stb_image.h"
 using namespace vr;
 
-bool Texture::create(const char* image, unsigned int slot, GLenum texType, GLenum pixelType) {
+bool Texture::create(const char* image, bool isMaterialTexture, unsigned int slot, GLenum texType, GLenum pixelType) {
     if (m_valid)
         cleanup();
 
@@ -30,7 +30,20 @@ bool Texture::create(const char* image, unsigned int slot, GLenum texType, GLenu
         return false;
     }
 
-    m_textureSlot = slot;
+    if (isMaterialTexture && slot >= TEXTURES_BASE_SLOT) {
+        std::cerr << "Texture slot is greater than the maximum number of textures allowed" << std::endl;
+        return false;
+    }
+
+    if (!isMaterialTexture && slot >= MAX_TEXTURES) {
+        std::cerr << "Texture slot is greater than the maximum number of textures allowed" << std::endl;
+        return false;
+    }
+
+    if (isMaterialTexture)
+        m_textureSlot = MATERIAL_TEXTURES_BASE_SLOT + slot;
+    else
+        m_textureSlot = TEXTURES_BASE_SLOT + slot;
 
     // Assigns the type of the texture of the texture object
     m_type = texType;
@@ -55,7 +68,7 @@ bool Texture::create(const char* image, unsigned int slot, GLenum texType, GLenu
     glGenTextures(1, &m_id);
 
     // Assigns the texture to a Texture Unit
-    glActiveTexture(GL_TEXTURE0 + slot);
+    glActiveTexture(GL_TEXTURE0 + m_textureSlot);
     glBindTexture(texType, m_id);
 
     CHECK_GL_ERROR_LINE_FILE();
@@ -104,7 +117,6 @@ void Texture::texUnit(GLuint program, const char* uniform, unsigned int unit) {
 
 void Texture::bind() {
     glActiveTexture(GL_TEXTURE0 + m_textureSlot);
-
     if (m_valid)
         glBindTexture(m_type, m_id);
 }

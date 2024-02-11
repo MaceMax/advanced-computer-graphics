@@ -1,5 +1,3 @@
-#pragma once
-
 #include "vr/Geometry.h"
 
 #include <vr/glErrorUtil.h>

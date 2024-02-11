@@ -132,7 +132,6 @@ int main(int argc, char** argv) {
         return 1;
     }
 
-    application->setClearColor(glm::f32vec4(0.1, 0.1, 0.3, 1.0));
     application->getCamera()->setFOV(60);
     application->initView();
 

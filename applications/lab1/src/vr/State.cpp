@@ -40,10 +40,10 @@ std::shared_ptr<State> State::operator+(const State& childState) const {
         newState->m_material = m_material;
     }
 
-    if (childState.m_texture != nullptr) {
-        newState->m_texture = childState.m_texture;
+    if (!childState.m_textures.empty()) {
+        newState->m_textures = childState.m_textures;
     } else {
-        newState->m_texture = m_texture;
+        newState->m_textures = m_textures;
     }
 
     return newState;
@@ -72,8 +72,8 @@ State& State::operator+=(const State& other) {
         m_material = other.m_material;
     }
 
-    if (other.m_texture != nullptr) {
-        m_texture = other.m_texture;
+    if (other.m_textures.empty()) {
+        m_textures = other.m_textures;
     }
 
     return *this;
@@ -111,12 +111,12 @@ void State::setMaterial(std::shared_ptr<Material> material) {
     m_material = material;
 }
 
-std::shared_ptr<Texture> const State::getTexture() {
-    return m_texture;
+TextureVector const State::getTextures() {
+    return m_textures;
 }
 
-void State::setTexture(std::shared_ptr<Texture> texture) {
-    m_texture = texture;
+void State::addTexture(std::shared_ptr<Texture> texture) {
+    m_textures.push_back(texture);
 }
 
 std::shared_ptr<Material> const State::getMaterial() {
@@ -161,9 +161,26 @@ void State::apply() {
         glDisable(GL_CULL_FACE);
     }
 
-    /*
-    if (m_texture) {
-        m_texture->apply(m_shader);
+    std::vector<int> slotActive;
+    std::vector<int> slots;
+    slotActive.resize(m_textures.size());
+    slots.resize(m_textures.size());
+    if (m_textures.size() != 0) {
+        for (int i = 0; i < m_textures.size(); i++) {
+            slots[i] = 3 + i;
+            slotActive[i] = m_textures[i] != nullptr;
+            if (m_textures[i])
+                m_textures[i]->bind();
+        }
+        m_shader->setIntVector("textureLayers.textures", slots);
+        m_shader->setIntVector("textureLayers.activeTextures", slotActive);
+    } else {
+        std::vector<int> slotActive;
+        slotActive.resize(MAX_TEXTURES);
+
+        for (int i = 0; i < MAX_TEXTURES; i++) {
+            slotActive[i] = 0;
+        }
+        m_shader->setIntVector("textureLayers.activeTextures", slotActive);
     }
-    */
 }

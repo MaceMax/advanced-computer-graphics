@@ -6,6 +6,7 @@
 #include "vr/Texture.h"
 
 namespace vr {
+typedef std::vector<std::shared_ptr<Texture>> TextureVector;
 class State {
    public:
     // Default constructor
@@ -27,8 +28,8 @@ class State {
     void setMaterial(std::shared_ptr<Material> material);
     std::shared_ptr<Material> const getMaterial();
 
-    void setTexture(std::shared_ptr<Texture> texture);
-    std::shared_ptr<Texture> const getTexture();
+    void addTexture(std::shared_ptr<Texture> texture);
+    TextureVector const getTextures();
 
     void setShader(std::shared_ptr<Shader> shader);
     std::shared_ptr<Shader> const& getShader();
@@ -40,8 +41,8 @@ class State {
     int cullFaceEnabled;
 
     LightVector m_lights;
+    TextureVector m_textures;
     std::shared_ptr<Material> m_material;
-    std::shared_ptr<Texture> m_texture;
     std::shared_ptr<Shader> m_shader;
 };
 }  // namespace vr

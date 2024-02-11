@@ -8,6 +8,7 @@
 namespace vr {
 
 typedef std::unordered_map<std::string, std::shared_ptr<Group>> GeometryMap;
+typedef std::unordered_map<std::string, std::shared_ptr<Texture>> TextureMap;
 
 /// Load a given file and add content to the scene
 bool load3DModelFile(const std::string& filename,

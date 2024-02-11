@@ -14,7 +14,7 @@
 using namespace vr;
 
 Application::Application(unsigned int width, unsigned height) : m_screenSize(width, height),
-                                                                m_clearColor(1, 1, 1, 1) {
+                                                                m_clearColor(0.1, 0.1, 0.1, 1) {
     m_fpsCounter = std::make_shared<FPSCounter>();
     m_fpsCounter->setFontScale(0.5f);
     m_fpsCounter->setColor(glm::vec4(0.2, 1.0, 1.0, 1.0));

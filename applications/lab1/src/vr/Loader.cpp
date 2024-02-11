@@ -87,6 +87,10 @@ size_t ExtractMaterials(const aiScene* scene, MaterialVector& materials, const s
         std::shared_ptr<Material> material(new Material);
 
         ai_material = scene->mMaterials[i];
+        if (ai_material->GetName().C_Str() == std::string(AI_DEFAULT_MATERIAL_NAME) || ai_material->GetName().C_Str() == std::string("(null)")) {
+            materials.push_back(nullptr);
+            continue;
+        }
 
         ai_material->Get(AI_MATKEY_COLOR_AMBIENT, color);
         material->setAmbient(glm::vec4(color.r, color.g, color.b, color.a));
@@ -112,7 +116,7 @@ size_t ExtractMaterials(const aiScene* scene, MaterialVector& materials, const s
                 std::cerr << "Unable to find texture: " << path.C_Str() << std::endl;
             } else {
                 std::shared_ptr<vr::Texture> texture = std::make_shared<vr::Texture>();
-                if (!texture->create(texturePath.c_str(), 0))
+                if (!texture->create(texturePath.c_str(), true, 0))
                     std::cerr << "Error creating texture: " << texturePath << std::endl;
                 else
                     material->setTexture(texture, 0);
@@ -223,7 +227,7 @@ void parseNodes(aiNode* root_node, MaterialVector& materials, std::stack<glm::ma
         loadedMesh->initShader(shader);
         loadedMesh->upload();
 
-        if (!materials.empty())
+        if (!materials.empty() && materials[mesh->mMaterialIndex] != nullptr)
             state->setMaterial(materials[mesh->mMaterialIndex]);
 
         loadedMesh->setState(state);
@@ -254,11 +258,6 @@ bool vr::load3DModelFile(const std::string& filename, std::shared_ptr<Group>& no
                                                    aiProcess_JoinIdenticalVertices |
                                                    aiProcess_SortByPType);
 
-    if (!aiScene) {
-        std::cerr << "Couldn't load model: " << filepath << " Error Importing Asset: " << importer.GetErrorString() << std::endl;
-        return false;
-    }
-
     aiNode* root_node = aiScene->mRootNode;
 
     ExtractMaterials(aiScene, materials, filename);
@@ -267,10 +266,15 @@ bool vr::load3DModelFile(const std::string& filename, std::shared_ptr<Group>& no
     std::stack<glm::mat4> transformStack;
     transformStack.push(glm::mat4());
 
-    parseNodes(root_node, materials, transformStack, node, aiScene, shader);
-
-    if (geometryMap != nullptr)
-        (*geometryMap)[filename] = node;
+    if (geometryMap->find(filepath) != geometryMap->end()) {
+        node = geometryMap->at(filepath);
+        for (auto c : node->getChildren())
+            node->addChild(c);
+    } else {
+        parseNodes(root_node, materials, transformStack, node, aiScene, shader);
+        if (geometryMap != nullptr)
+            geometryMap->insert(std::make_pair(filepath, node));
+    }
 
     transformStack.pop();
 
@@ -380,11 +384,41 @@ LightVector parseLights(std::vector<std::string> xmlpath, rapidxml::xml_node<>* 
         if (!getVec<glm::vec4>(spec, specular))
             throw std::runtime_error("Node (" + name + ") Invalid specular in: " + pathToString(xmlpath));
 
+        std::cout << "Light: " << pos.x << " " << pos.y << " " << pos.z << std::endl;
+
         std::shared_ptr<Light> light = std::make_shared<Light>(pos, diff, spec);
         lights.push_back(light);
     }
 
     return lights;
+}
+
+TextureVector parseTextures(std::vector<std::string> xmlpath, rapidxml::xml_node<>* texture_node) {
+    TextureVector textures;
+    int slot = 0;
+    for (rapidxml::xml_node<>* child = texture_node->first_node(); child; child = child->next_sibling()) {
+        xmlpath.push_back(child->name());
+        std::string name = std::string(child->name());
+
+        if (name != "Texture")
+            throw std::runtime_error("Node (" + name + ") Textures node can only contain Texture nodes: " + pathToString(xmlpath));
+
+        std::string filepath = getAttribute(child, "filepath");
+        if (filepath.empty())
+            throw std::runtime_error("Node (" + name + ") No filepath specified for Texture: " + pathToString(xmlpath));
+
+        std::shared_ptr<Texture> texture = std::make_shared<Texture>();
+        if (!texture->create(filepath.c_str(), false, slot))
+            throw std::runtime_error("Node (" + name + ") Error creating texture: " + filepath);
+
+        textures.push_back(texture);
+        slot++;
+    }
+
+    if (textures.size() > MAX_TEXTURES)
+        throw std::runtime_error("Node (Textures) Too many textures, maximum allowed is 10: " + pathToString(xmlpath));
+
+    return textures;
 }
 
 State parseState(std::vector<std::string> xmlpath, rapidxml::xml_node<>* state_node) {
@@ -429,6 +463,16 @@ State parseState(std::vector<std::string> xmlpath, rapidxml::xml_node<>* state_n
             throw std::runtime_error("Node (Shader) Invalid shader: " + pathToString(xmlpath));
 
         state.setShader(std::make_shared<Shader>(vshader, fshader));
+    }
+
+    rapidxml::xml_node<>* textureNode = state_node->first_node("Textures");
+    if (textureNode) {
+        xmlpath.push_back(textureNode->name());
+        std::string vshader;
+        TextureVector textures = parseTextures(xmlpath, textureNode);
+
+        for (auto t : textures)
+            state.addTexture(t);
     }
 
     rapidxml::xml_node<>* materialNode = state_node->first_node("Material");
@@ -619,9 +663,10 @@ void parseSceneNode(std::vector<std::string> xmlpath, rapidxml::xml_node<>* node
 
             // Check if we have a geometry with the filepath already in the map
             std::shared_ptr<Group> geometryGroup = std::make_shared<Group>(filepath);
-            if (geometryMap.find(filepath) != geometryMap.end()) {
-                node->addChild(geometryMap[filepath]);
-            } else if (load3DModelFile(filepath, geometryGroup, newShader, &geometryMap)) {
+            if (state)
+                geometryGroup->setState(state);
+
+            if (load3DModelFile(filepath, geometryGroup, newShader, &geometryMap)) {
                 node->addChild(geometryGroup);
             } else {
                 throw std::runtime_error("Node (" + name + ") Invalid file in: " + pathToString(xmlpath));
@@ -673,8 +718,15 @@ bool vr::loadSceneFile(const std::string& sceneFile, std::shared_ptr<Scene>& sce
 
         xmlpath.push_back("Scene");
 
-        GeometryMap geometryMap;
+        rapidxml::xml_node<>* stateNode = root_node->first_node("State");
+        if (stateNode) {
+            std::shared_ptr<State> rootState = scene->getRoot()->getState();
+            std::shared_ptr<State> newRootState = std::make_shared<State>(parseState(xmlpath, stateNode));
+            scene->getRoot()->setState(*(rootState) + *(newRootState));
+        }
 
+        std::cout << "Parsing scene file: " << filepath << std::endl;
+        GeometryMap geometryMap;
         parseSceneNode(xmlpath, root_node, geometryMap, scene->getRoot(), scene->getRoot()->getState()->getShader());
 
         xmlpath.pop_back();  // scene

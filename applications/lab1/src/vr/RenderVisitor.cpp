@@ -16,12 +16,6 @@ void RenderVisitor::visit(Geometry* geometry) {
     // Geometry always has a state
     state = *(m_stateStack.top()) + *(geometry->getState());
 
-    // If the geometry group has a material, override the geometry's default material
-    // Not correct. Something else must be done here.
-    if (m_stateStack.top()->getMaterial() != nullptr) {
-        state->setMaterial(m_stateStack.top()->getMaterial());
-    }
-
     state->apply();
     m_activeCamera->apply(state->getShader());
     geometry->draw(state->getShader(), m_matrixStack.empty() ? glm::mat4(1.0f) : m_matrixStack.top());

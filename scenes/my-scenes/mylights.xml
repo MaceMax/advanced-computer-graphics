@@ -1,0 +1,6 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Scene>
+    <Transform name="Transform1" scale="5 5 5" translate="0 0 0" rotate="0 0 0">
+        <Geometry name="House" filepath="models/House01/House01.obj"/>
+    </Transform>
+<Scene/>

@@ -17,12 +17,17 @@ class Light {
     void setPosition(glm::vec4 position);
     void setDiffuse(glm::vec4 diffuse);
     void setSpecular(glm::vec4 specular);
+    void setAttenuation(float constant, float linear, float quadratic);
 
    private:
     bool enabled;
     glm::vec4 position;
     glm::vec4 diffuse;
     glm::vec4 specular;
+    float constant;
+    float linear;
+    float quadratic;
+
     friend class Scene;
     // std::shared_ptr<Mesh> m_mesh;
     void createMesh();
