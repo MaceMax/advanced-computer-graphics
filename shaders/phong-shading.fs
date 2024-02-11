@@ -52,7 +52,7 @@ const int MaxNumberOfLights = 10;
 uniform LightSource lights[MaxNumberOfLights];
 
 // Some hard coded default ambient lighting
-vec4 scene_ambient = vec4(0.2, 0.2, 0.2, 1.0);
+vec4 scene_ambient = vec4(0.1, 0.1, 0.1, 1.0);
 
 // The front surface material
 uniform Material material;

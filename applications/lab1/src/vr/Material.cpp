@@ -16,8 +16,8 @@ using namespace vr;
 
 /// Simple class for storing material properties
 Material::Material() : m_shininess(5) {
-    m_ambient = glm::vec4(0.1, 1.0, 0.2, 1.0);
-    m_diffuse = glm::vec4(0.7, 0.8, 0.8, 1.0);
+    m_ambient = glm::vec4(0.1, 0.1, 0.1, 1.0);
+    m_diffuse = glm::vec4(0.8, 0.8, 0.8, 1.0);
     m_specular = glm::vec4(1.0, 1.0, 1.0, 1.0);
 
     m_textures.resize(2);

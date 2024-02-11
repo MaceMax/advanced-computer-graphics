@@ -60,6 +60,26 @@ bool Application::initResources(const std::string& model_filename, const std::st
         }
     }
 
+    if (m_scene->getLights().empty()) {
+        std::cout << "No lights in scene, adding a default light" << std::endl;
+        std::shared_ptr<Light> light = std::make_shared<Light>(glm::vec4(0.0, -2.0, 2.0, 1.0),
+                                                               glm::vec4(1.0, 1.0, 1.0, 1.0),
+                                                               glm::vec4(1.0, 1.0, 1.0, 1.0));
+        m_scene->add(light);
+        BoundingBox box = m_scene->calculateBoundingBox();
+        float radius = box.getRadius();
+
+        // Compute the diagonal and a suitable distance so we can see the whole thing
+        float distance = radius * 1.5f;
+        glm::vec3 eye = glm::vec3(0, radius, distance);
+
+        glm::vec3 direction = glm::normalize(box.getCenter() - eye);
+
+        glm::vec4 position;
+        position = glm::vec4(eye + glm::vec3(3, 2, 0), position.w);
+        light->setPosition(position);
+    }
+
 #if 0
   std::shared_ptr<Mesh> ground(new Mesh);
 
@@ -108,13 +128,6 @@ void Application::initView() {
     glm::vec3 eye = glm::vec3(0, radius, distance);
 
     glm::vec3 direction = glm::normalize(box.getCenter() - eye);
-
-    std::shared_ptr<Light> light = m_scene->getLights().front();
-    glm::vec4 position;
-    position = glm::vec4(eye + glm::vec3(3, 2, 0), 1);
-    light->setPosition(position);
-
-    m_scene->resetTransform();
 
     // Set the position/direction of the camera
     getCamera()->set(eye, direction, glm::vec3(0.0, 1.0, 0.0));

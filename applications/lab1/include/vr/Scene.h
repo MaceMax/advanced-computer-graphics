@@ -70,11 +70,6 @@ class Scene {
     void useProgram();
 
     /**
-    Reset all nodes transform to its initial value
-    */
-    void resetTransform();
-
-    /**
     Get the i:th node
     \param i - Index in vector<
     \return A node

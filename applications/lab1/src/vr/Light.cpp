@@ -67,9 +67,6 @@ void Light::setAttenuation(float constant, float linear, float quadratic) {
 }
 
 void Light::apply(std::shared_ptr<vr::Shader> shader, size_t idx) {
-    // Update light position
-    // m_mesh->object2world = glm::translate(glm::mat4(1), glm::vec3(this->position));
-
     std::stringstream str;
     str << "lights[" << idx << "].";
     std::string prefix = str.str();
@@ -78,7 +75,6 @@ void Light::apply(std::shared_ptr<vr::Shader> shader, size_t idx) {
     std::string uniform_name;
 
     uniform_name = prefix + "enabled";
-
     shader->setInt(uniform_name, enabled);
     CHECK_GL_ERROR_LINE_FILE();
     shader->setVec4(prefix + "diffuse", this->diffuse);
@@ -88,8 +84,7 @@ void Light::apply(std::shared_ptr<vr::Shader> shader, size_t idx) {
     shader->setVec4(prefix + "position", this->position);
     CHECK_GL_ERROR_LINE_FILE();
 
-    // IMPORTANT
-    // Position gets set to 1 somewhere. need to figure out where
+    // Något tokigt med point lights.
 
     if (position.w != 0) {
         shader->setFloat(prefix + "constant", this->constant);

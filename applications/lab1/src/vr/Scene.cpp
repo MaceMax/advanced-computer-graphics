@@ -33,11 +33,6 @@ bool Scene::initShaders(const std::string& vshader_filename, const std::string& 
 
     // Create a default state. Can be overridden by the user in the scene file.
     std::shared_ptr<State> state = std::make_shared<State>(m_shader);
-    Light light = Light(glm::vec4(0.0, -2.0, 2.0, 0.0),
-                        glm::vec4(1, 1, 1, 1),
-                        glm::vec4(1, 1, 1, 1));
-    std::shared_ptr<Light> light1 = std::make_shared<Light>(light);
-    state->addLight(light1);
     state->setMaterial(std::make_shared<Material>());
     state->setLightingEnabled(true);
     m_root->setState(state);
@@ -73,13 +68,6 @@ void Scene::cleanup() {
 
 void Scene::useProgram() {
     m_shader->use();
-}
-
-void Scene::resetTransform() {
-    /*
-    for (auto n : m_nodes)
-        n->resetTransform();
-    */
 }
 
 std::shared_ptr<Node> Scene::getNode(size_t i) {

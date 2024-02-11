@@ -1,14 +1,13 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Scene>
     <State>
-        <Lighting enabled="true"/>
+        <Lighting enabled="true">
+                <Light position="0 0 0 1" diffuse="0.8 0.8 0.8 1" specular="1 1 1 1"/>
+        </Lighting>
     </State>
     <Transform name="Transform2" translate="5 0 0" rotate="0 0 0" scale="1 1 1">
         <State>
             <CullFace enabled="false"/>
-            <Lighting enabled="true">
-                <Light position="-2 2 2 0" diffuse="0.8 0.8 0.8 1" specular="1 1 1 1"/>
-            </Lighting>
         </State>
         <Geometry name="Car" filepath="models/porsche_911_gt3.glb"/>
     </Transform>

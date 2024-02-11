@@ -384,8 +384,6 @@ LightVector parseLights(std::vector<std::string> xmlpath, rapidxml::xml_node<>* 
         if (!getVec<glm::vec4>(spec, specular))
             throw std::runtime_error("Node (" + name + ") Invalid specular in: " + pathToString(xmlpath));
 
-        std::cout << "Light: " << pos.x << " " << pos.y << " " << pos.z << std::endl;
-
         std::shared_ptr<Light> light = std::make_shared<Light>(pos, diff, spec);
         lights.push_back(light);
     }
@@ -725,7 +723,6 @@ bool vr::loadSceneFile(const std::string& sceneFile, std::shared_ptr<Scene>& sce
             scene->getRoot()->setState(*(rootState) + *(newRootState));
         }
 
-        std::cout << "Parsing scene file: " << filepath << std::endl;
         GeometryMap geometryMap;
         parseSceneNode(xmlpath, root_node, geometryMap, scene->getRoot(), scene->getRoot()->getState()->getShader());
 
