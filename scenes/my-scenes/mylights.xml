@@ -2,10 +2,11 @@
 <Scene>
     <State>
         <Lighting enabled="true">
-            <Light position="2 2 2 1" diffuse="1 1 1 1" specular="1 1 1 1"/>        
+            <Light position="25.0 8 -15.0 1" diffuse="1 1 1 1" specular="1 1 1 1"/>
+            <Light position="14.0 5.5 -43.0 1.0" diffuse="1 1 1 1" specular="1 1 1 1"/>          
         </Lighting>
     </State>
     <Transform name="Transform1" scale="1 1 1" translate="0 0 0" rotate="0 0 0">
-        <Geometry name="House" filepath="models/5426_C3PO_Robot_Star_Wars.obj"/>
+        <Geometry name="House" filepath="models/House01/House01.obj"/>
     </Transform>
 </Scene>

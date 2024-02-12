@@ -47,7 +47,7 @@ class Scene {
     bool initShaders(const std::string& vshader_filename, const std::string& fshader_filename);
 
     /**
-    Add a lightsource
+    Add a lightsource to scene root
     \param light - A new light source<
     */
     void add(std::shared_ptr<Light> light);
@@ -69,13 +69,6 @@ class Scene {
     */
     void useProgram();
 
-    /**
-    Get the i:th node
-    \param i - Index in vector<
-    \return A node
-    */
-    std::shared_ptr<Node> getNode(size_t i);
-
     std::shared_ptr<Group>& getRoot();
 
     /**
@@ -92,10 +85,11 @@ class Scene {
     void printSceneGraph();
 
    private:
+    /**
+     * Private constructor for the scene class.
+     */
     Scene();
 
-    NodeVector m_nodes;
-    GLint m_uniform_numberOfLights;
     std::shared_ptr<RenderVisitor> m_renderVisitor;
     std::shared_ptr<UpdateVisitor> m_updateVisitor;
 

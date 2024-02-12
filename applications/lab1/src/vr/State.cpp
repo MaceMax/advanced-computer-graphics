@@ -138,9 +138,6 @@ void State::apply() {
     m_shader->use();
     // Update number of lights
     m_shader->setInt("numberOfLights", m_lights.size());
-
-    // Turn lighting off in shader since if two two geometries share the same shader and one of them has lighting disabled,
-    // the other one will also have lighting disabled.
     m_shader->setInt("lightingEnabled", lightingEnabled);
 
     // Apply lightsources

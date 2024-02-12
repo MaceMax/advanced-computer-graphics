@@ -33,6 +33,7 @@ struct LightSource
 {
   bool enabled;
   vec4 position;
+  vec4 ambient;
   vec4 diffuse;
   vec4 specular;
   float constant;
@@ -51,9 +52,6 @@ const int MaxNumberOfLights = 10;
 // This is the uniforms that our program communicates with
 uniform LightSource lights[MaxNumberOfLights];
 
-// Some hard coded default ambient lighting
-vec4 scene_ambient = vec4(0.1, 0.1, 0.1, 1.0);
-
 // The front surface material
 uniform Material material;
 uniform Textures textureLayers;
@@ -64,9 +62,7 @@ void main()
   vec3 viewDirection = normalize(vec3(v_inv * vec4(0.0, 0.0, 0.0, 1.0) - position));
   vec3 lightDirection;
   float attenuation;
-
-  // initialize total lighting with ambient lighting
-  vec3 totalLighting = vec3(scene_ambient) * vec3(material.ambient);
+  vec3 totalLighting;
 
 
   
@@ -75,6 +71,7 @@ void main()
       for (int index = 0; index < numberOfLights; index++) 
       {
         LightSource light = lights[index];
+               
         if (0.0 == light.position.w) // directional light?
         {
           attenuation = 1.0; // no attenuation
@@ -82,12 +79,14 @@ void main()
         }
         else // point light or spotlight (or other kind of light) 
         {
-          vec3 positionToLightSource = vec3(light.position - position);
+          vec4 positionWorld = v_inv * position;
+          vec3 positionToLightSource = vec3(light.position - positionWorld);
           float distance = length(positionToLightSource);
           lightDirection = normalize(positionToLightSource);
           attenuation = 1.0 / (light.constant + light.linear * distance + light.quadratic * (distance * distance));
         }
-
+        
+        totalLighting = attenuation * vec3(light.ambient) * vec3(material.ambient); 
         vec3 diffuseReflection = attenuation
           * vec3(light.diffuse) * vec3(material.diffuse)
           * max(0.0, dot(normalDirection, lightDirection));
@@ -102,33 +101,38 @@ void main()
           specularReflection = attenuation * vec3(light.specular) * vec3(material.specular)
             * pow(max(0.0, dot(reflect(-lightDirection, normalDirection), viewDirection)), material.shininess);
         }
-        totalLighting = totalLighting + diffuseReflection + specularReflection;
+        totalLighting = totalLighting * attenuation + diffuseReflection + specularReflection;
       }
   }
 
   // How we could check for a diffuse texture map
+  vec4 diffuseTex = vec4(0.0, 0.0, 0.0, 1.0);
   if (material.activeTextures[0])
   {
-    vec4 diffuseTex = texture2D(material.textures[0], texCoord);
+    diffuseTex = texture2D(material.textures[0], texCoord);
     totalLighting = totalLighting * diffuseTex.rgb;
   }
+  float alpha = diffuseTex.a;
   
-  vec4 blendedColor = vec4(0, 0, 0, 1);
+  vec4 blendedColor;
   int activeTextureCount = 0;
 
   for (int index = 0; index < MAX_TEXTURES; index++) {
     if (textureLayers.activeTextures[index]) {
-      vec4 layerColor = texture(textureLayers.textures[index], texCoord);
-      blendedColor = mix(blendedColor, layerColor, 1.0 / 2.0);
+      if (activeTextureCount == 0) {
+        blendedColor = texture(textureLayers.textures[index], texCoord);
+      } else {
+        vec4 layerColor = texture(textureLayers.textures[index], texCoord);
+        blendedColor = blendedColor * layerColor;
+      }
       activeTextureCount += 1;
     }
   }
   
   if (activeTextureCount > 0) {
-    totalLighting = totalLighting * blendedColor.rgb;  
+    totalLighting = totalLighting * blendedColor.rgb;
+    alpha = alpha * blendedColor.a;  
   }
   
-  
-
-  color = vec4(totalLighting, 1.0);
+  color = vec4(totalLighting, alpha);
 }

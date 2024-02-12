@@ -12,6 +12,7 @@ class Group : public Node {
     virtual BoundingBox calculateBoundingBox(glm::mat4 t_mat) override;
 
     NodeVector& getChildren();
+    void setChildren(NodeVector& children);
 
    protected:
     NodeVector m_children;

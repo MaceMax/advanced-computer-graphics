@@ -248,29 +248,25 @@ bool vr::load3DModelFile(const std::string& filename, std::shared_ptr<Group>& no
         return false;
     }
 
-    MaterialVector materials;
-
-    Assimp::Importer importer;
-    const aiScene* aiScene = importer.ReadFile(filepath,
-                                               aiProcess_CalcTangentSpace |
-                                                   aiProcess_GenSmoothNormals |
-                                                   aiProcess_Triangulate |
-                                                   aiProcess_JoinIdenticalVertices |
-                                                   aiProcess_SortByPType);
-
-    aiNode* root_node = aiScene->mRootNode;
-
-    ExtractMaterials(aiScene, materials, filename);
-    std::cout << "Found " << materials.size() << " materials" << std::endl;
-
     std::stack<glm::mat4> transformStack;
     transformStack.push(glm::mat4());
 
     if (geometryMap->find(filepath) != geometryMap->end()) {
-        node = geometryMap->at(filepath);
-        for (auto c : node->getChildren())
-            node->addChild(c);
+        node->setChildren(geometryMap->at(filepath)->getChildren());
     } else {
+        MaterialVector materials;
+
+        Assimp::Importer importer;
+        const aiScene* aiScene = importer.ReadFile(filepath,
+                                                   aiProcess_CalcTangentSpace |
+                                                       aiProcess_GenSmoothNormals |
+                                                       aiProcess_Triangulate |
+                                                       aiProcess_JoinIdenticalVertices |
+                                                       aiProcess_SortByPType);
+
+        aiNode* root_node = aiScene->mRootNode;
+        ExtractMaterials(aiScene, materials, filename);
+        std::cout << "Found " << materials.size() << " materials" << std::endl;
         parseNodes(root_node, materials, transformStack, node, aiScene, shader);
         if (geometryMap != nullptr)
             geometryMap->insert(std::make_pair(filepath, node));
@@ -374,6 +370,11 @@ LightVector parseLights(std::vector<std::string> xmlpath, rapidxml::xml_node<>* 
         if (!getVec<glm::vec4>(pos, position))
             throw std::runtime_error("Node (" + name + ") Invalid position in: " + pathToString(xmlpath));
 
+        std::string ambient = getAttribute(child, "ambient");
+        glm::vec4 amb;
+        if (!getVec<glm::vec4>(amb, ambient))
+            throw std::runtime_error("Node (" + name + ") Invalid diffuse in: " + pathToString(xmlpath));
+
         std::string diffuse = getAttribute(child, "diffuse");
         glm::vec4 diff;
         if (!getVec<glm::vec4>(diff, diffuse))
@@ -384,7 +385,7 @@ LightVector parseLights(std::vector<std::string> xmlpath, rapidxml::xml_node<>* 
         if (!getVec<glm::vec4>(spec, specular))
             throw std::runtime_error("Node (" + name + ") Invalid specular in: " + pathToString(xmlpath));
 
-        std::shared_ptr<Light> light = std::make_shared<Light>(pos, diff, spec);
+        std::shared_ptr<Light> light = std::make_shared<Light>(pos, amb, diff, spec);
         lights.push_back(light);
     }
 
@@ -587,6 +588,13 @@ LodNode parseLodNode(std::vector<std::string> xmlpath, rapidxml::xml_node<>* lod
 
     return lodNode;
 }
+
+std::vector<UpdateCallback> parseUpdateCallback(std::vector<std::string> xmlpath, rapidxml::xml_node<>* update_node) {
+    std::string name = update_node->first_attribute("name")->value();
+
+    return std::vector<UpdateCallback>();
+}
+
 // Parses XML nodes recursively
 void parseSceneNode(std::vector<std::string> xmlpath, rapidxml::xml_node<>* node_node, GeometryMap& geometryMap, std::shared_ptr<Group>& node, const std::shared_ptr<Shader>& shader) {
     if (node_node->type() == rapidxml::node_comment || node_node->type() == rapidxml::node_doctype)

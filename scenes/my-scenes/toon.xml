@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Scene>
+<!-- Sphere with an alpha texture -->
+<Transform rotate="-30 0 0">
+    <Geometry name="Skelton" filepath="models/suzanne.obj">
+        <State>
+            <Shader fshader="shaders/toon-shading.fs" vshader="shaders/toon-shading.vs"/>
+        </State>
+     </Geometry>
+    </Transform>
+</Scene>

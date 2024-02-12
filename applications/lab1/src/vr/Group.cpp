@@ -14,6 +14,10 @@ NodeVector& Group::getChildren() {
     return m_children;
 }
 
+void Group::setChildren(NodeVector& children) {
+    m_children = children;
+}
+
 BoundingBox Group::calculateBoundingBox(glm::mat4 t_mat) {
     BoundingBox bbox;
     for (auto child : m_children) {

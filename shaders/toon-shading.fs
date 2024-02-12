@@ -33,6 +33,7 @@ struct LightSource
 {
   bool enabled;
   vec4 position;
+  vec4 ambient;
   vec4 diffuse;
   vec4 specular;
   float constant;
@@ -51,9 +52,6 @@ const int MaxNumberOfLights = 10;
 // This is the uniforms that our program communicates with
 uniform LightSource lights[MaxNumberOfLights];
 
-// Some hard coded default ambient lighting
-vec4 scene_ambient = vec4(0.2, 0.2, 0.2, 1.0);
-
 // The front surface material
 uniform Material material;
 uniform Textures textureLayers;
@@ -69,8 +67,7 @@ void main()
   vec3 lightDirection;
   float attenuation;
 
-  // initialize total lighting with ambient lighting
-  vec3 totalLighting = vec3(scene_ambient) * vec3(material.ambient);
+  vec3 totalLighting;
 
 
   
@@ -86,12 +83,13 @@ void main()
         }
         else // point light or spotlight (or other kind of light) 
         {
-          vec3 positionToLightSource = vec3(light.position - position);
+          vec4 positionWorld = v_inv * position;
+          vec3 positionToLightSource = vec3(light.position - positionWorld);
           float distance = length(positionToLightSource);
           lightDirection = normalize(positionToLightSource);
           attenuation = 1.0 / (light.constant + light.linear * distance + light.quadratic * (distance * distance));
         }
-
+        totalLighting = attenuation * vec3(light.ambient) * vec3(material.ambient); 
         // Toon calculations
         float diffFactor = dot(normalDirection, lightDirection);
 
@@ -116,19 +114,19 @@ void main()
     totalLighting = totalLighting * diffuseTex.rgb;
   }
 
-  vec4 blendedColor = vec4(0, 0, 0, 1);
+  vec4 blendedColor;
   int activeTextureCount = 0;
 
   for (int index = 0; index < MAX_TEXTURES; index++) {
     if (textureLayers.activeTextures[index]) {
-      vec4 layerColor = texture(textureLayers.textures[index], texCoord);
-      blendedColor = mix(blendedColor, layerColor, 1.0 / (activeTextureCount + 1.0));
+      if (activeTextureCount == 0) {
+        blendedColor = texture(textureLayers.textures[index], texCoord);
+      } else {
+        vec4 layerColor = texture(textureLayers.textures[index], texCoord);
+        blendedColor = blendedColor * layerColor;
+      }
       activeTextureCount += 1;
     }
-  }
-  
-  if (activeTextureCount > 0) {
-    totalLighting = totalLighting * blendedColor.rgb;  
   }
 
   color = vec4(totalLighting, 1.0);

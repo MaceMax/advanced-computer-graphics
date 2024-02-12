@@ -10,11 +10,12 @@ using namespace vr;
 
 std::shared_ptr<Scene> Scene::instance = nullptr;
 
-Scene::Scene() : m_uniform_numberOfLights(-1) {
+Scene::Scene() {
     m_camera = std::make_shared<Camera>();
     m_renderVisitor = std::make_shared<RenderVisitor>();
     m_renderVisitor->setActiveCamera(m_camera);
     m_updateVisitor = std::make_shared<UpdateVisitor>();
+    m_updateVisitor->setActiveCamera(m_camera);
 }
 
 std::shared_ptr<Scene> Scene::getInstance() {
@@ -70,10 +71,6 @@ void Scene::useProgram() {
     m_shader->use();
 }
 
-std::shared_ptr<Node> Scene::getNode(size_t i) {
-    return m_nodes[i];
-}
-
 std::shared_ptr<Group>& Scene::getRoot() {
     return m_root;
 }
@@ -88,11 +85,4 @@ BoundingBox Scene::calculateBoundingBox() {
 void Scene::render() {
     m_updateVisitor->visit(m_root.get());
     m_renderVisitor->visit(m_root.get());
-}
-
-void Scene::printSceneGraph() {
-    std::cout << "Scene graph:" << std::endl;
-    for (auto n : m_nodes) {
-        std::cout << n->getName() << std::endl;
-    }
 }

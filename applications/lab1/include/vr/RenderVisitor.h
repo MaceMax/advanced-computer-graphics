@@ -7,6 +7,7 @@
 namespace vr {
 class RenderVisitor : public NodeVisitor {
    public:
+    RenderVisitor();
     void visit(Geometry* geometry) override;
     void visit(Transform* transform) override;
     void visit(Group* group) override;

@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Scene>
+<!-- Sphere with an alpha texture -->
+<Transform rotate="0 90 0">
+    <Geometry name="Skelton" filepath="models/sphere.obj">
+        <State>
+            <Textures>
+                <Texture filepath="textures/skeleton.png"/>
+            </Textures>
+        </State>
+     </Geometry>
+    </Transform>
+</Scene>

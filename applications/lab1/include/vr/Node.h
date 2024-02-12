@@ -24,7 +24,6 @@ class Node {
     bool hasCallback() { return m_updateCallback != nullptr; }
     void setUpdateCallback(UpdateCallback* callback) { m_updateCallback = callback; }
     UpdateCallback* getUpdateCallback() { return m_updateCallback; }
-    bool isRoot() { return m_name == "root"; }
     void setState(std::shared_ptr<State> state) { m_state = state; }
     std::shared_ptr<State>& getState() { return m_state; }
 

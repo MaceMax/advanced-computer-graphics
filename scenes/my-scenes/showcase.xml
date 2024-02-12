@@ -1,0 +1,61 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Scene>
+<State>
+    <Lighting enabled="true">
+        <Light position="2 5.5 -6 1" ambient="0.5 0.5 0.5 1" diffuse="0.9 0.9 0.9 1" specular="1 1 1 1"/>    
+    </Lighting>
+</State>
+<Transform name="Transform1" scale="1 1 1" translate="-20 -1 30" rotate="0 0 0">
+        <Geometry name="House" filepath="models/House01/House01.obj"/>
+</Transform>
+<Group name="Group1">
+    <Transform name="Transform1" scale="1 1 1" translate="3 3.2 -5" rotate="0 210 0">
+             <Geometry name="Car" filepath="models/porsche_911_gt3.glb"/>
+    </Transform>
+    <Transform name="Transform1" scale="0.5 0.5 0.5" translate="1 5 -5" rotate="0 160 0">
+             <Geometry name="Car" filepath="models/suzanne.obj"/>
+    </Transform>
+    <Transform name="Transform2" scale="0.5 0.5 0.5" translate="3 5 -5" rotate="0 180 0">
+             <Geometry name="Car" filepath="models/suzanne.obj">
+                <State>
+                    <Shader fshader="shaders/toon-shading.fs" vshader="shaders/toon-shading.vs"/>
+                    <Material ambient="0 0 0 1" diffuse="0 0.8 0 1" specular="0.9 0.9 0.9 1" shininess="32"/>                
+                </State>
+             </Geometry>
+    </Transform>
+    <Transform name="Transform2" scale="1.2 1.2 1.2" translate="0 5.0 -7.4" rotate="20 -80 20">
+             <Geometry name="Car" filepath="models/sphere.obj">
+                <State>
+                    <Material ambient="1 1 1 1" diffuse="0.8 0.8 0.8 1" specular="0.9 0.9 0.9 1" shininess="32"/>  
+                    <Textures>
+                        <Texture filepath="textures/flowers.jpg"/>
+                        <Texture filepath="textures/box.bmp"/>
+                    </Textures>
+                    <Lighting enabled="true">
+                        <Light position="0 1 -1 0" ambient="1 1 1 1" diffuse="0.9 0.9 0.9 1" specular="1 1 1 1"/>    
+                    </Lighting>
+                </State>
+             </Geometry>
+    </Transform>
+    <Transform name="Transform 1" scale="0.006 0.006 0.006" rotate="0 200 0" translate="-3 3 -3">
+    <LOD name="LOD" maxDistance="20.0">
+        <Geometry name="cow1" filepath="models/cow/cow_0.99.obj"/>
+        <Geometry name="cow2" filepath="models/cow/cow_0.5.obj"/>
+        <Geometry name="cow3" filepath="models/cow/cow_0.3.obj"/>
+        <Geometry name="cow4" filepath="models/cow/cow_0.1.obj"/>
+        <Geometry name="cow5" filepath="models/cow/cow_0.05.obj"/>
+        <Geometry name="cow6" filepath="models/cow/cow_0.01.obj"/>
+    </LOD>
+    </Transform>
+    <Transform name="Transform 1" scale="0.006 0.006 0.006" rotate="0 180 0" translate="0- 3 -7">
+    <LOD name="LOD2" maxDistance="25.0">
+        <Geometry name="cow1" filepath="models/cow/cow_0.99.obj"/>
+        <Geometry name="cow2" filepath="models/cow/cow_0.5.obj"/>
+        <Geometry name="cow3" filepath="models/cow/cow_0.3.obj"/>
+        <Geometry name="cow4" filepath="models/cow/cow_0.1.obj"/>
+        <Geometry name="cow5" filepath="models/cow/cow_0.05.obj"/>
+        <Geometry name="cow6" filepath="models/cow/cow_0.01.obj"/>
+    </LOD>
+    </Transform>
+</Group>
+</Scene>

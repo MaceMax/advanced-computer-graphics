@@ -10,6 +10,10 @@
 
 using namespace vr;
 
+RenderVisitor::RenderVisitor() {
+    m_matrixStack.push(glm::mat4(1.0f));
+}
+
 void RenderVisitor::visit(Geometry* geometry) {
     std::shared_ptr<State> state = nullptr;
 
@@ -18,15 +22,11 @@ void RenderVisitor::visit(Geometry* geometry) {
 
     state->apply();
     m_activeCamera->apply(state->getShader());
-    geometry->draw(state->getShader(), m_matrixStack.empty() ? glm::mat4(1.0f) : m_matrixStack.top());
+    geometry->draw(state->getShader(), m_matrixStack.top());
 }
 
 void RenderVisitor::visit(Transform* transform) {
-    if (m_matrixStack.empty()) {
-        m_matrixStack.push(transform->getMatrix());
-    } else {
-        m_matrixStack.push(m_matrixStack.top() * transform->getMatrix());
-    }
+    m_matrixStack.push(m_matrixStack.top() * transform->getMatrix());
 
     // Push the current matrix onto the stack
     if (transform->hasState()) {
@@ -44,7 +44,7 @@ void RenderVisitor::visit(Transform* transform) {
 }
 
 void RenderVisitor::visit(Group* group) {
-    if (group->isRoot()) {
+    if (m_stateStack.empty() && group->hasState()) {
         m_stateStack.push(group->getState());
     } else if (group->hasState()) {
         m_stateStack.push(*(m_stateStack.top()) + *(group->getState()));
@@ -64,7 +64,7 @@ void RenderVisitor::visit(LodNode* lodNode) {
         m_stateStack.push(*(m_stateStack.top()) + *(lodNode->getState()));
     }
 
-    lodNode->applyTransformation(m_matrixStack.empty() ? glm::mat4(1.0f) : m_matrixStack.top());
+    lodNode->applyTransformation(m_matrixStack.top());
     lodNode->getChild(m_activeCamera->getPosition()).accept(*this);
 
     if (lodNode->hasState()) {
