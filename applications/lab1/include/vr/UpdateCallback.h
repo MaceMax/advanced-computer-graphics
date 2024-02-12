@@ -1,5 +1,8 @@
 #pragma once
 
+#include <memory>
+#include <vector>
+
 namespace vr {
 class Geometry;
 class Group;
@@ -13,4 +16,5 @@ class UpdateCallback {
     virtual void execute(Transform& node) = 0;
     virtual void execute(LodNode& node) = 0;
 };
+typedef std::vector<std::shared_ptr<UpdateCallback>> UpdateCallbackVector;
 }  // namespace vr

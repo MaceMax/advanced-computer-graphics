@@ -1,4 +1,3 @@
-#include <vr/Animation/CircleAnimation.h>
 #include <vr/Group.h>
 #include <vr/Scene.h>
 #include <vr/glErrorUtil.h>

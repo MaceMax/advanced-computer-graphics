@@ -1,4 +1,3 @@
-#include <vr/Animation/CircleAnimation.h>
 #include <vr/AnimationCallback.h>
 #include <vr/Application.h>
 #include <vr/FileSystem.h>

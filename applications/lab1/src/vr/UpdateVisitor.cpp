@@ -7,14 +7,18 @@
 using namespace vr;
 
 void UpdateVisitor::visit(Geometry* geometry) {
-    if (geometry->hasCallback()) {
-        geometry->getUpdateCallback()->execute(*geometry);
+    if (geometry->hasCallbacks()) {
+        for (auto& callback : geometry->getUpdateCallbacks()) {
+            callback->execute(*geometry);
+        }
     }
 }
 
 void UpdateVisitor::visit(Transform* transform) {
-    if (transform->hasCallback()) {
-        transform->getUpdateCallback()->execute(*transform);
+    if (transform->hasCallbacks()) {
+        for (auto& callback : transform->getUpdateCallbacks()) {
+            callback->execute(*transform);
+        }
     }
 
     for (auto& child : transform->getChildren()) {
@@ -23,8 +27,10 @@ void UpdateVisitor::visit(Transform* transform) {
 }
 
 void UpdateVisitor::visit(Group* group) {
-    if (group->hasCallback()) {
-        group->getUpdateCallback()->execute(*group);
+    if (group->hasCallbacks()) {
+        for (auto& callback : group->getUpdateCallbacks()) {
+            callback->execute(*group);
+        }
     }
 
     for (auto& child : group->getChildren()) {
@@ -33,8 +39,10 @@ void UpdateVisitor::visit(Group* group) {
 }
 
 void UpdateVisitor::visit(LodNode* lodNode) {
-    if (lodNode->hasCallback()) {
-        lodNode->getUpdateCallback()->execute(*lodNode);
+    if (lodNode->hasCallbacks()) {
+        for (auto& callback : lodNode->getUpdateCallbacks()) {
+            callback->execute(*lodNode);
+        }
     }
 
     lodNode->getChild(m_activeCamera->getPosition()).accept(*this);

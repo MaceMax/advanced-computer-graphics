@@ -223,30 +223,6 @@ src/glad.c.s:
 	cd /home/macemax/University/advanced-computer-graphics && $(MAKE) $(MAKESILENT) -f applications/lab1/CMakeFiles/lab1.dir/build.make applications/lab1/CMakeFiles/lab1.dir/src/glad.c.s
 .PHONY : src/glad.c.s
 
-src/vr/Animation/CircleAnimation.o: src/vr/Animation/CircleAnimation.cpp.o
-.PHONY : src/vr/Animation/CircleAnimation.o
-
-# target to build an object file
-src/vr/Animation/CircleAnimation.cpp.o:
-	cd /home/macemax/University/advanced-computer-graphics && $(MAKE) $(MAKESILENT) -f applications/lab1/CMakeFiles/lab1.dir/build.make applications/lab1/CMakeFiles/lab1.dir/src/vr/Animation/CircleAnimation.cpp.o
-.PHONY : src/vr/Animation/CircleAnimation.cpp.o
-
-src/vr/Animation/CircleAnimation.i: src/vr/Animation/CircleAnimation.cpp.i
-.PHONY : src/vr/Animation/CircleAnimation.i
-
-# target to preprocess a source file
-src/vr/Animation/CircleAnimation.cpp.i:
-	cd /home/macemax/University/advanced-computer-graphics && $(MAKE) $(MAKESILENT) -f applications/lab1/CMakeFiles/lab1.dir/build.make applications/lab1/CMakeFiles/lab1.dir/src/vr/Animation/CircleAnimation.cpp.i
-.PHONY : src/vr/Animation/CircleAnimation.cpp.i
-
-src/vr/Animation/CircleAnimation.s: src/vr/Animation/CircleAnimation.cpp.s
-.PHONY : src/vr/Animation/CircleAnimation.s
-
-# target to generate assembly for a file
-src/vr/Animation/CircleAnimation.cpp.s:
-	cd /home/macemax/University/advanced-computer-graphics && $(MAKE) $(MAKESILENT) -f applications/lab1/CMakeFiles/lab1.dir/build.make applications/lab1/CMakeFiles/lab1.dir/src/vr/Animation/CircleAnimation.cpp.s
-.PHONY : src/vr/Animation/CircleAnimation.cpp.s
-
 src/vr/AnimationCallback.o: src/vr/AnimationCallback.cpp.o
 .PHONY : src/vr/AnimationCallback.o
 
@@ -794,9 +770,6 @@ help:
 	@echo "... src/glad.o"
 	@echo "... src/glad.i"
 	@echo "... src/glad.s"
-	@echo "... src/vr/Animation/CircleAnimation.o"
-	@echo "... src/vr/Animation/CircleAnimation.i"
-	@echo "... src/vr/Animation/CircleAnimation.s"
 	@echo "... src/vr/AnimationCallback.o"
 	@echo "... src/vr/AnimationCallback.i"
 	@echo "... src/vr/AnimationCallback.s"

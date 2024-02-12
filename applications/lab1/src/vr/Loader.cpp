@@ -2,6 +2,7 @@
 #include <assimp/postprocess.h>
 #include <assimp/scene.h>
 #include <glad/glad.h>
+#include <vr/AnimationCallback.h>
 #include <vr/FileSystem.h>
 #include <vr/Geometry.h>
 #include <vr/Group.h>
@@ -541,7 +542,10 @@ State parseState(std::vector<std::string> xmlpath, rapidxml::xml_node<>* state_n
 }
 
 LodNode parseLodNode(std::vector<std::string> xmlpath, rapidxml::xml_node<>* lod_node, GeometryMap& geometryMap, const std::shared_ptr<Shader>& shader) {
-    std::string nodeName = lod_node->first_attribute("name")->value();
+    std::string nodeName;
+    if (lod_node->first_attribute("name"))
+        nodeName = lod_node->first_attribute("name")->value();
+
     LodNode lodNode = nodeName.empty() ? LodNode() : LodNode(nodeName);
     std::string maxDist;
 
@@ -589,12 +593,77 @@ LodNode parseLodNode(std::vector<std::string> xmlpath, rapidxml::xml_node<>* lod
     return lodNode;
 }
 
-std::vector<UpdateCallback> parseUpdateCallback(std::vector<std::string> xmlpath, rapidxml::xml_node<>* update_node) {
-    std::string name = update_node->first_attribute("name")->value();
+UpdateCallbackVector parseUpdateCallback(std::vector<std::string> xmlpath, rapidxml::xml_node<>* update_node) {
+    std::string name;
+    if (update_node->first_attribute("name"))
+        name = update_node->first_attribute("name")->value();
+    UpdateCallbackVector updateCallbacks;
 
-    return std::vector<UpdateCallback>();
+    for (rapidxml::xml_node<>* child = update_node->first_node(); child; child = child->next_sibling()) {
+        xmlpath.push_back(child->name());
+
+        std::string name = std::string(child->name());
+        std::string speed = getAttribute(child, "speed");
+        float speed_val = 1.0f;
+        if (!speed.empty())
+            speed_val = readValue<float>(speed);
+
+        std::string loop = getAttribute(child, "loop");
+        bool loop_val = true;
+        if (!loop.empty())
+            loop_val = readValue<bool>(loop);
+
+        std::shared_ptr<AnimationCallback> animCallback = std::make_shared<AnimationCallback>(speed_val, loop_val);
+
+        if (name == "AnimationCallback") {
+            for (rapidxml::xml_node<>* frame = child->first_node(); frame; frame = frame->next_sibling()) {
+                xmlpath.push_back(frame->name());
+                std::string name = std::string(frame->name());
+                if (name != "Frame")
+                    throw std::runtime_error("Node (" + name + ") Update node can only contain Frame nodes: " + pathToString(xmlpath));
+
+                std::string duration = getAttribute(frame, "duration");
+                float duration_val = 0;
+                if (!duration.empty())
+                    duration_val = readValue<float>(duration);
+
+                std::string translate = getAttribute(frame, "translate");
+                glm::vec3 t_vec;
+                if (!getVec<glm::vec3>(t_vec, translate))
+                    throw std::runtime_error("Node (" + name + ") Invalid translate in: " + pathToString(xmlpath));
+
+                std::string rotate = getAttribute(frame, "rotate");
+                glm::vec3 r_vec;
+                if (!getVec<glm::vec3>(r_vec, rotate))
+                    throw std::runtime_error("Node (" + name + ") Invalid rotate in: " + pathToString(xmlpath));
+
+                std::string scale = getAttribute(frame, "scale");
+                glm::vec3 s_vec;
+                if (!getVec<glm::vec3>(s_vec, scale, glm::vec3(1)))
+                    throw std::runtime_error("Node (" + name + ") Invalid scale in: " + pathToString(xmlpath));
+
+                glm::mat4 mt = glm::translate(glm::mat4(), t_vec);
+                glm::mat4 ms = glm::scale(glm::mat4(), s_vec);
+                glm::mat4 rx = glm::rotate(glm::mat4(), glm::radians(r_vec.x), glm::vec3(1, 0, 0));
+                glm::mat4 ry = glm::rotate(glm::mat4(), glm::radians(r_vec.y), glm::vec3(0, 1, 0));
+                glm::mat4 rz = glm::rotate(glm::mat4(), glm::radians(r_vec.z), glm::vec3(0, 0, 1));
+
+                auto t = mt * rz * ry * rx;
+                t = glm::scale(t, s_vec);
+
+                AnimationFrame animFrame = {t, duration_val};
+
+                animCallback->addFrame(animFrame);
+            }
+        } else {
+            throw std::runtime_error("Node (" + name + ") Invalid update callback in: " + pathToString(xmlpath));
+        }
+
+        updateCallbacks.push_back(animCallback);
+    }
+
+    return updateCallbacks;
 }
-
 // Parses XML nodes recursively
 void parseSceneNode(std::vector<std::string> xmlpath, rapidxml::xml_node<>* node_node, GeometryMap& geometryMap, std::shared_ptr<Group>& node, const std::shared_ptr<Shader>& shader) {
     if (node_node->type() == rapidxml::node_comment || node_node->type() == rapidxml::node_doctype)
@@ -625,6 +694,14 @@ void parseSceneNode(std::vector<std::string> xmlpath, rapidxml::xml_node<>* node
                 groupNode->setState(state);
             node->addChild(groupNode);
 
+            rapidxml::xml_node<>* callbacksNode = child->first_node("Callbacks");
+            if (callbacksNode) {
+                xmlpath.push_back(callbacksNode->name());
+                UpdateCallbackVector updateCallbacks = parseUpdateCallback(xmlpath, callbacksNode);
+                for (auto c : updateCallbacks)
+                    groupNode->addUpdateCallback(c);
+            }
+
         } else if (name == "Transform") {
             std::shared_ptr<Transform> transformNode = std::make_shared<Transform>(nodeName);
             xmlpath.push_back("transform");
@@ -654,6 +731,14 @@ void parseSceneNode(std::vector<std::string> xmlpath, rapidxml::xml_node<>* node
             t = glm::scale(t, s_vec);
             transformNode->setMatrix(t);
 
+            rapidxml::xml_node<>* callbacksNode = child->first_node("Callbacks");
+            if (callbacksNode) {
+                xmlpath.push_back(callbacksNode->name());
+                UpdateCallbackVector updateCallbacks = parseUpdateCallback(xmlpath, callbacksNode);
+                for (auto c : updateCallbacks)
+                    transformNode->addUpdateCallback(c);
+            }
+
             std::shared_ptr<Group> groupTransform = std::dynamic_pointer_cast<Group>(transformNode);
 
             parseSceneNode(xmlpath, child, geometryMap, groupTransform, newShader);
@@ -678,6 +763,14 @@ void parseSceneNode(std::vector<std::string> xmlpath, rapidxml::xml_node<>* node
                 throw std::runtime_error("Node (" + name + ") Invalid file in: " + pathToString(xmlpath));
             }
 
+            rapidxml::xml_node<>* callbacksNode = child->first_node("Callbacks");
+            if (callbacksNode) {
+                xmlpath.push_back(callbacksNode->name());
+                UpdateCallbackVector updateCallbacks = parseUpdateCallback(xmlpath, callbacksNode);
+                for (auto c : updateCallbacks)
+                    geometryGroup->addUpdateCallback(c);
+            }
+
         } else if (name == "LOD") {
             LodNode lodNode = parseLodNode(xmlpath, child, geometryMap, newShader);
             std::shared_ptr<LodNode> lod = std::make_shared<LodNode>(lodNode);
@@ -685,6 +778,14 @@ void parseSceneNode(std::vector<std::string> xmlpath, rapidxml::xml_node<>* node
             if (state)
                 lod->setState(state);
             node->addChild(lod);
+
+            rapidxml::xml_node<>* callbacksNode = child->first_node("Callbacks");
+            if (callbacksNode) {
+                xmlpath.push_back(callbacksNode->name());
+                UpdateCallbackVector updateCallbacks = parseUpdateCallback(xmlpath, callbacksNode);
+                for (auto c : updateCallbacks)
+                    lod->addUpdateCallback(c);
+            }
         }
 
         xmlpath.pop_back();
