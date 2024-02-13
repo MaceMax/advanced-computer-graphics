@@ -1,6 +1,7 @@
 
 #include <vr/Application.h>
 #include <vr/FileSystem.h>
+#include <vr/Nodes/Geometry.h>
 #include <vr/Scene/Loader.h>
 #include <vr/Scene/Scene.h>
 
@@ -30,32 +31,39 @@ bool Application::initResources(const std::string& model_filename, const std::st
         return false;
     getCamera()->setScreenSize(m_screenSize);
 
-    std::string ext = vr::FileSystem::getFileExtension(model_filename);
     std::shared_ptr<Group>& m_sceneRoot = m_scene->getRoot();
+    if (model_filename.empty()) {
+        std::shared_ptr<Group> geometryGroup = std::make_shared<Group>("default");
+        geometryGroup->addChild(createDefaultGeometry(m_sceneRoot->getState()->getShader()));
 
-    // Ok lets load this as our own "scene file format"
-    if (ext == "xml" || ext == "XML") {
-        if (!loadSceneFile(model_filename, m_scene)) {
-            return false;
-        }
-
-        if (m_scene->getRoot()->getChildren().empty()) {
-            std::cerr << "Empty scene, something when wrong when loading files" << std::endl;
-            return false;
-        }
-
+        m_sceneRoot->addChild(geometryGroup);
     } else {
-        const std::shared_ptr<Shader>& root_shader = m_sceneRoot->getState()->getShader();
+        std::string ext = vr::FileSystem::getFileExtension(model_filename);
 
-        if (!root_shader) {
-            std::cerr << "No shader found" << std::endl;
-            return false;
-        }
-        std::shared_ptr<Group> geometryGroup = std::make_shared<Group>(model_filename);
-        if (!load3DModelFile(model_filename, geometryGroup, root_shader)) {
-            return false;
+        // Ok lets load this as our own "scene file format"
+        if (ext == "xml" || ext == "XML") {
+            if (!loadSceneFile(model_filename, m_scene)) {
+                return false;
+            }
+
+            if (m_scene->getRoot()->getChildren().empty()) {
+                std::cerr << "Empty scene, something when wrong when loading files" << std::endl;
+                return false;
+            }
+
         } else {
-            m_sceneRoot->addChild(geometryGroup);
+            const std::shared_ptr<Shader>& root_shader = m_sceneRoot->getState()->getShader();
+
+            if (!root_shader) {
+                std::cerr << "No shader found" << std::endl;
+                return false;
+            }
+            std::shared_ptr<Group> geometryGroup = std::make_shared<Group>(model_filename);
+            if (!load3DModelFile(model_filename, geometryGroup, root_shader)) {
+                return false;
+            } else {
+                m_sceneRoot->addChild(geometryGroup);
+            }
         }
     }
 
@@ -168,6 +176,61 @@ void Application::setScreenSize(unsigned int width, unsigned int height) {
 
 std::shared_ptr<Camera> Application::getCamera() {
     return m_scene->getCamera();
+}
+
+std::shared_ptr<Geometry> Application::createDefaultGeometry(const std::shared_ptr<Shader>& shader) {
+    std::shared_ptr<Geometry> geometry = std::make_shared<Geometry>();
+    geometry->setState(std::make_shared<State>(shader));
+
+    // Should implement so that geometry can be created manually in the xml scene file
+    std::vector<glm::vec4> vertices = {
+        // Front face
+        glm::vec4(-1.0, -1.0, 1.0, 1.0), glm::vec4(1.0, -1.0, 1.0, 1.0), glm::vec4(1.0, 1.0, 1.0, 1.0), glm::vec4(-1.0, 1.0, 1.0, 1.0),
+        // Back face
+        glm::vec4(-1.0, -1.0, -1.0, 1.0), glm::vec4(-1.0, 1.0, -1.0, 1.0), glm::vec4(1.0, 1.0, -1.0, 1.0), glm::vec4(1.0, -1.0, -1.0, 1.0),
+        // Left face
+        glm::vec4(-1.0, -1.0, -1.0, 1.0), glm::vec4(-1.0, -1.0, 1.0, 1.0), glm::vec4(-1.0, 1.0, 1.0, 1.0), glm::vec4(-1.0, 1.0, -1.0, 1.0),
+        // Right face
+        glm::vec4(1.0, -1.0, -1.0, 1.0), glm::vec4(1.0, 1.0, -1.0, 1.0), glm::vec4(1.0, 1.0, 1.0, 1.0), glm::vec4(1.0, -1.0, 1.0, 1.0),
+        // Bottom face
+        glm::vec4(-1.0, -1.0, -1.0, 1.0), glm::vec4(1.0, -1.0, -1.0, 1.0), glm::vec4(1.0, -1.0, 1.0, 1.0), glm::vec4(-1.0, -1.0, 1.0, 1.0),
+        // Top face
+        glm::vec4(-1.0, 1.0, -1.0, 1.0), glm::vec4(-1.0, 1.0, 1.0, 1.0), glm::vec4(1.0, 1.0, 1.0, 1.0), glm::vec4(1.0, 1.0, -1.0, 1.0)};
+
+    std::vector<glm::vec3> normals = {
+        // Front face
+        glm::vec3(0.0, 0.0, 1.0), glm::vec3(0.0, 0.0, 1.0), glm::vec3(0.0, 0.0, 1.0), glm::vec3(0.0, 0.0, 1.0),
+        // Back face
+        glm::vec3(0.0, 0.0, -1.0), glm::vec3(0.0, 0.0, -1.0), glm::vec3(0.0, 0.0, -1.0), glm::vec3(0.0, 0.0, -1.0),
+        // Left face
+        glm::vec3(-1.0, 0.0, 0.0), glm::vec3(-1.0, 0.0, 0.0), glm::vec3(-1.0, 0.0, 0.0), glm::vec3(-1.0, 0.0, 0.0),
+        // Right face
+        glm::vec3(1.0, 0.0, 0.0), glm::vec3(1.0, 0.0, 0.0), glm::vec3(1.0, 0.0, 0.0), glm::vec3(1.0, 0.0, 0.0),
+        // Bottom face
+        glm::vec3(0.0, -1.0, 0.0), glm::vec3(0.0, -1.0, 0.0), glm::vec3(0.0, -1.0, 0.0), glm::vec3(0.0, -1.0, 0.0),
+        // Top face
+        glm::vec3(0.0, 1.0, 0.0), glm::vec3(0.0, 1.0, 0.0), glm::vec3(0.0, 1.0, 0.0), glm::vec3(0.0, 1.0, 0.0)};
+
+    std::vector<GLuint> indices = {
+        // Front face
+        0, 1, 2, 0, 2, 3,
+        // Back face
+        4, 5, 6, 4, 6, 7,
+        // Left face
+        8, 9, 10, 8, 10, 11,
+        // Right face
+        12, 13, 14, 12, 14, 15,
+        // Bottom face
+        16, 17, 18, 16, 18, 19,
+        // Top face
+        20, 21, 22, 20, 22, 23};
+
+    std::vector<glm::vec2> texCoords;
+    geometry->buildGeometry(vertices, normals, texCoords, indices);
+    geometry->initShader(shader);
+    geometry->upload();
+
+    return geometry;
 }
 
 Application::~Application() {

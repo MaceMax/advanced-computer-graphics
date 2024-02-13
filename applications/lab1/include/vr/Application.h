@@ -40,6 +40,8 @@ class Application {
 
     void setClearColor(const glm::f32vec4& clearColor);
 
+    std::shared_ptr<Geometry> createDefaultGeometry(const std::shared_ptr<Shader>& shader);
+
    private:
     // Parent of all to be rendered
     std::shared_ptr<Scene> m_scene;
