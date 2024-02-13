@@ -1,8 +1,8 @@
-#include <vr/AnimationCallback.h>
+
 #include <vr/Application.h>
 #include <vr/FileSystem.h>
-#include <vr/Loader.h>
-#include <vr/Scene.h>
+#include <vr/Scene/Loader.h>
+#include <vr/Scene/Scene.h>
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>

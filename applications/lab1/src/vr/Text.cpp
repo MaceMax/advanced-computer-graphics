@@ -1,10 +1,11 @@
 #define _CRT_SECURE_NO_WARNINGS
 
+// clang-format off
 #include <glad/glad.h>
 #include <vr/Text.h>
 #include <vector>
 #include <vr/FileSystem.h>
-#include <vr/Shader.h>
+#include <vr/State/Shader.h>
 
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>

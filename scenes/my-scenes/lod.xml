@@ -2,7 +2,7 @@
 
 <Scene>
     <Transform name="Transform 1" translate="-500 0 0">
-    <LOD name="LOD" maxDistance="1000.0">
+    <LOD name="LOD" maxDistance="5000.0">
         <Geometry name="cow1" filepath="models/cow/cow_0.99.obj"/>
         <Geometry name="cow2" filepath="models/cow/cow_0.5.obj"/>
         <Geometry name="cow3" filepath="models/cow/cow_0.3.obj"/>
@@ -12,7 +12,7 @@
     </LOD>
     </Transform>
     <Transform name="Transform 1" translate="500 0 0">
-        <LOD name="LOD">
+        <LOD name="LOD" maxDistance="12000.0">
             <Geometry name="cow7" distance="500.0" filepath="models/cow/cow_0.99.obj"/>
             <Geometry name="cow8" distance="1000.0" filepath="models/cow/cow_0.5.obj"/>
             <Geometry name="cow9" distance="2000.0" filepath="models/cow/cow_0.3.obj"/>

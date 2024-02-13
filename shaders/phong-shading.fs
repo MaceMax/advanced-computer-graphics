@@ -62,7 +62,7 @@ void main()
   vec3 viewDirection = normalize(vec3(v_inv * vec4(0.0, 0.0, 0.0, 1.0) - position));
   vec3 lightDirection;
   float attenuation;
-  vec3 totalLighting;
+  vec3 totalLighting = vec3(0.0, 0.0, 0.0);
 
 
   
@@ -71,37 +71,39 @@ void main()
       for (int index = 0; index < numberOfLights; index++) 
       {
         LightSource light = lights[index];
-               
-        if (0.0 == light.position.w) // directional light?
-        {
-          attenuation = 1.0; // no attenuation
-          lightDirection = normalize(vec3(light.position));
-        }
-        else // point light or spotlight (or other kind of light) 
-        {
-          vec4 positionWorld = v_inv * position;
-          vec3 positionToLightSource = vec3(light.position - positionWorld);
-          float distance = length(positionToLightSource);
-          lightDirection = normalize(positionToLightSource);
-          attenuation = 1.0 / (light.constant + light.linear * distance + light.quadratic * (distance * distance));
-        }
-        
-        totalLighting = attenuation * vec3(light.ambient) * vec3(material.ambient); 
-        vec3 diffuseReflection = attenuation
-          * vec3(light.diffuse) * vec3(material.diffuse)
-          * max(0.0, dot(normalDirection, lightDirection));
+        if (light.enabled) {
+            if (0.0 == light.position.w) // directional light?
+            {
+              attenuation = 1.0; // no attenuation
+              lightDirection = normalize(vec3(light.position));
+            }
+            else // point light or spotlight (or other kind of light) 
+            {
+              vec4 positionWorld = v_inv * position;
+              vec3 positionToLightSource = vec3(light.position - positionWorld);
+              float distance = length(positionToLightSource);
+              lightDirection = normalize(positionToLightSource);
+              attenuation = 1.0 / (light.constant + light.linear * distance + light.quadratic * (distance * distance));
+            }
+            
+            vec3 ambientReflection = attenuation * vec3(light.ambient) * vec3(material.ambient); 
+            vec3 diffuseReflection = attenuation
+              * vec3(light.diffuse) * vec3(material.diffuse)
+              * max(0.0, dot(normalDirection, lightDirection));
 
-        vec3 specularReflection;
-        if (dot(normalDirection, lightDirection) < 0.0) // light source on the wrong side?
-        {
-          specularReflection = vec3(0.0, 0.0, 0.0); // no specular reflection
-        }
-        else // light source on the right side
-        {
-          specularReflection = attenuation * vec3(light.specular) * vec3(material.specular)
-            * pow(max(0.0, dot(reflect(-lightDirection, normalDirection), viewDirection)), material.shininess);
-        }
-        totalLighting = totalLighting * attenuation + diffuseReflection + specularReflection;
+            vec3 specularReflection;
+            if (dot(normalDirection, lightDirection) < 0.0) // light source on the wrong side?
+            {
+              specularReflection = vec3(0.0, 0.0, 0.0); // no specular reflection
+            }
+            else // light source on the right side
+            {
+              specularReflection = attenuation * vec3(light.specular) * vec3(material.specular)
+                * pow(max(0.0, dot(reflect(-lightDirection, normalDirection), viewDirection)), material.shininess);
+            }
+            totalLighting += ambientReflection + diffuseReflection + specularReflection;
+        }       
+        
       }
   }
 

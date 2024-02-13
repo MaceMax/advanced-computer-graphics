@@ -2,11 +2,14 @@
 <Scene>
     <State>
         <Lighting enabled="true">
-            <Light position="25.0 8 -15.0 1" diffuse="1 1 1 1" specular="1 1 1 1"/>
-            <Light position="14.0 5.5 -43.0 1.0" diffuse="1 1 1 1" specular="1 1 1 1"/>          
+            <Light enabled="false" position="0 1 0 0" ambient="1 1 1 1" diffuse="0.1 0.1 0.1 1" specular="0 0 0 1"/>
+            <Light position="0 1 0 0" ambient="0.4 0.4 0.4 1" diffuse="0.1 0.1 0.1 1" specular="0 0 0 1"/>
+            <Light position="0 17 0 1" diffuse="1 0 0 1" specular="1 1 1 1" constant="1" linear="0.045" quadratic="0.0075"/>
+            <Light position="10 17 0 1" diffuse="0 0 1 1" specular="1 1 1 1" constant="1" linear="0.045" quadratic="0.0075"/>
+            <Light position="5 20 5 1" diffuse="0 1 0 1" specular="1 1 1 1" constant="1" linear="0.045" quadratic="0.0075"/>
         </Lighting>
     </State>
     <Transform name="Transform1" scale="1 1 1" translate="0 0 0" rotate="0 0 0">
-        <Geometry name="House" filepath="models/House01/House01.obj"/>
+        <Geometry name="Mountain" filepath="models/Terrain/France_GameMap.stl"/>
     </Transform>
 </Scene>

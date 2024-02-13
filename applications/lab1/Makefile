@@ -223,30 +223,6 @@ src/glad.c.s:
 	cd /home/macemax/University/advanced-computer-graphics && $(MAKE) $(MAKESILENT) -f applications/lab1/CMakeFiles/lab1.dir/build.make applications/lab1/CMakeFiles/lab1.dir/src/glad.c.s
 .PHONY : src/glad.c.s
 
-src/vr/AnimationCallback.o: src/vr/AnimationCallback.cpp.o
-.PHONY : src/vr/AnimationCallback.o
-
-# target to build an object file
-src/vr/AnimationCallback.cpp.o:
-	cd /home/macemax/University/advanced-computer-graphics && $(MAKE) $(MAKESILENT) -f applications/lab1/CMakeFiles/lab1.dir/build.make applications/lab1/CMakeFiles/lab1.dir/src/vr/AnimationCallback.cpp.o
-.PHONY : src/vr/AnimationCallback.cpp.o
-
-src/vr/AnimationCallback.i: src/vr/AnimationCallback.cpp.i
-.PHONY : src/vr/AnimationCallback.i
-
-# target to preprocess a source file
-src/vr/AnimationCallback.cpp.i:
-	cd /home/macemax/University/advanced-computer-graphics && $(MAKE) $(MAKESILENT) -f applications/lab1/CMakeFiles/lab1.dir/build.make applications/lab1/CMakeFiles/lab1.dir/src/vr/AnimationCallback.cpp.i
-.PHONY : src/vr/AnimationCallback.cpp.i
-
-src/vr/AnimationCallback.s: src/vr/AnimationCallback.cpp.s
-.PHONY : src/vr/AnimationCallback.s
-
-# target to generate assembly for a file
-src/vr/AnimationCallback.cpp.s:
-	cd /home/macemax/University/advanced-computer-graphics && $(MAKE) $(MAKESILENT) -f applications/lab1/CMakeFiles/lab1.dir/build.make applications/lab1/CMakeFiles/lab1.dir/src/vr/AnimationCallback.cpp.s
-.PHONY : src/vr/AnimationCallback.cpp.s
-
 src/vr/Application.o: src/vr/Application.cpp.o
 .PHONY : src/vr/Application.o
 
@@ -271,29 +247,29 @@ src/vr/Application.cpp.s:
 	cd /home/macemax/University/advanced-computer-graphics && $(MAKE) $(MAKESILENT) -f applications/lab1/CMakeFiles/lab1.dir/build.make applications/lab1/CMakeFiles/lab1.dir/src/vr/Application.cpp.s
 .PHONY : src/vr/Application.cpp.s
 
-src/vr/Camera.o: src/vr/Camera.cpp.o
-.PHONY : src/vr/Camera.o
+src/vr/Callbacks/AnimationCallback.o: src/vr/Callbacks/AnimationCallback.cpp.o
+.PHONY : src/vr/Callbacks/AnimationCallback.o
 
 # target to build an object file
-src/vr/Camera.cpp.o:
-	cd /home/macemax/University/advanced-computer-graphics && $(MAKE) $(MAKESILENT) -f applications/lab1/CMakeFiles/lab1.dir/build.make applications/lab1/CMakeFiles/lab1.dir/src/vr/Camera.cpp.o
-.PHONY : src/vr/Camera.cpp.o
+src/vr/Callbacks/AnimationCallback.cpp.o:
+	cd /home/macemax/University/advanced-computer-graphics && $(MAKE) $(MAKESILENT) -f applications/lab1/CMakeFiles/lab1.dir/build.make applications/lab1/CMakeFiles/lab1.dir/src/vr/Callbacks/AnimationCallback.cpp.o
+.PHONY : src/vr/Callbacks/AnimationCallback.cpp.o
 
-src/vr/Camera.i: src/vr/Camera.cpp.i
-.PHONY : src/vr/Camera.i
+src/vr/Callbacks/AnimationCallback.i: src/vr/Callbacks/AnimationCallback.cpp.i
+.PHONY : src/vr/Callbacks/AnimationCallback.i
 
 # target to preprocess a source file
-src/vr/Camera.cpp.i:
-	cd /home/macemax/University/advanced-computer-graphics && $(MAKE) $(MAKESILENT) -f applications/lab1/CMakeFiles/lab1.dir/build.make applications/lab1/CMakeFiles/lab1.dir/src/vr/Camera.cpp.i
-.PHONY : src/vr/Camera.cpp.i
+src/vr/Callbacks/AnimationCallback.cpp.i:
+	cd /home/macemax/University/advanced-computer-graphics && $(MAKE) $(MAKESILENT) -f applications/lab1/CMakeFiles/lab1.dir/build.make applications/lab1/CMakeFiles/lab1.dir/src/vr/Callbacks/AnimationCallback.cpp.i
+.PHONY : src/vr/Callbacks/AnimationCallback.cpp.i
 
-src/vr/Camera.s: src/vr/Camera.cpp.s
-.PHONY : src/vr/Camera.s
+src/vr/Callbacks/AnimationCallback.s: src/vr/Callbacks/AnimationCallback.cpp.s
+.PHONY : src/vr/Callbacks/AnimationCallback.s
 
 # target to generate assembly for a file
-src/vr/Camera.cpp.s:
-	cd /home/macemax/University/advanced-computer-graphics && $(MAKE) $(MAKESILENT) -f applications/lab1/CMakeFiles/lab1.dir/build.make applications/lab1/CMakeFiles/lab1.dir/src/vr/Camera.cpp.s
-.PHONY : src/vr/Camera.cpp.s
+src/vr/Callbacks/AnimationCallback.cpp.s:
+	cd /home/macemax/University/advanced-computer-graphics && $(MAKE) $(MAKESILENT) -f applications/lab1/CMakeFiles/lab1.dir/build.make applications/lab1/CMakeFiles/lab1.dir/src/vr/Callbacks/AnimationCallback.cpp.s
+.PHONY : src/vr/Callbacks/AnimationCallback.cpp.s
 
 src/vr/FPSCounter.o: src/vr/FPSCounter.cpp.o
 .PHONY : src/vr/FPSCounter.o
@@ -343,245 +319,293 @@ src/vr/FileSystem.cpp.s:
 	cd /home/macemax/University/advanced-computer-graphics && $(MAKE) $(MAKESILENT) -f applications/lab1/CMakeFiles/lab1.dir/build.make applications/lab1/CMakeFiles/lab1.dir/src/vr/FileSystem.cpp.s
 .PHONY : src/vr/FileSystem.cpp.s
 
-src/vr/Geometry.o: src/vr/Geometry.cpp.o
-.PHONY : src/vr/Geometry.o
+src/vr/Nodes/Geometry.o: src/vr/Nodes/Geometry.cpp.o
+.PHONY : src/vr/Nodes/Geometry.o
 
 # target to build an object file
-src/vr/Geometry.cpp.o:
-	cd /home/macemax/University/advanced-computer-graphics && $(MAKE) $(MAKESILENT) -f applications/lab1/CMakeFiles/lab1.dir/build.make applications/lab1/CMakeFiles/lab1.dir/src/vr/Geometry.cpp.o
-.PHONY : src/vr/Geometry.cpp.o
+src/vr/Nodes/Geometry.cpp.o:
+	cd /home/macemax/University/advanced-computer-graphics && $(MAKE) $(MAKESILENT) -f applications/lab1/CMakeFiles/lab1.dir/build.make applications/lab1/CMakeFiles/lab1.dir/src/vr/Nodes/Geometry.cpp.o
+.PHONY : src/vr/Nodes/Geometry.cpp.o
 
-src/vr/Geometry.i: src/vr/Geometry.cpp.i
-.PHONY : src/vr/Geometry.i
+src/vr/Nodes/Geometry.i: src/vr/Nodes/Geometry.cpp.i
+.PHONY : src/vr/Nodes/Geometry.i
 
 # target to preprocess a source file
-src/vr/Geometry.cpp.i:
-	cd /home/macemax/University/advanced-computer-graphics && $(MAKE) $(MAKESILENT) -f applications/lab1/CMakeFiles/lab1.dir/build.make applications/lab1/CMakeFiles/lab1.dir/src/vr/Geometry.cpp.i
-.PHONY : src/vr/Geometry.cpp.i
+src/vr/Nodes/Geometry.cpp.i:
+	cd /home/macemax/University/advanced-computer-graphics && $(MAKE) $(MAKESILENT) -f applications/lab1/CMakeFiles/lab1.dir/build.make applications/lab1/CMakeFiles/lab1.dir/src/vr/Nodes/Geometry.cpp.i
+.PHONY : src/vr/Nodes/Geometry.cpp.i
 
-src/vr/Geometry.s: src/vr/Geometry.cpp.s
-.PHONY : src/vr/Geometry.s
+src/vr/Nodes/Geometry.s: src/vr/Nodes/Geometry.cpp.s
+.PHONY : src/vr/Nodes/Geometry.s
 
 # target to generate assembly for a file
-src/vr/Geometry.cpp.s:
-	cd /home/macemax/University/advanced-computer-graphics && $(MAKE) $(MAKESILENT) -f applications/lab1/CMakeFiles/lab1.dir/build.make applications/lab1/CMakeFiles/lab1.dir/src/vr/Geometry.cpp.s
-.PHONY : src/vr/Geometry.cpp.s
+src/vr/Nodes/Geometry.cpp.s:
+	cd /home/macemax/University/advanced-computer-graphics && $(MAKE) $(MAKESILENT) -f applications/lab1/CMakeFiles/lab1.dir/build.make applications/lab1/CMakeFiles/lab1.dir/src/vr/Nodes/Geometry.cpp.s
+.PHONY : src/vr/Nodes/Geometry.cpp.s
 
-src/vr/Group.o: src/vr/Group.cpp.o
-.PHONY : src/vr/Group.o
+src/vr/Nodes/Group.o: src/vr/Nodes/Group.cpp.o
+.PHONY : src/vr/Nodes/Group.o
 
 # target to build an object file
-src/vr/Group.cpp.o:
-	cd /home/macemax/University/advanced-computer-graphics && $(MAKE) $(MAKESILENT) -f applications/lab1/CMakeFiles/lab1.dir/build.make applications/lab1/CMakeFiles/lab1.dir/src/vr/Group.cpp.o
-.PHONY : src/vr/Group.cpp.o
+src/vr/Nodes/Group.cpp.o:
+	cd /home/macemax/University/advanced-computer-graphics && $(MAKE) $(MAKESILENT) -f applications/lab1/CMakeFiles/lab1.dir/build.make applications/lab1/CMakeFiles/lab1.dir/src/vr/Nodes/Group.cpp.o
+.PHONY : src/vr/Nodes/Group.cpp.o
 
-src/vr/Group.i: src/vr/Group.cpp.i
-.PHONY : src/vr/Group.i
+src/vr/Nodes/Group.i: src/vr/Nodes/Group.cpp.i
+.PHONY : src/vr/Nodes/Group.i
 
 # target to preprocess a source file
-src/vr/Group.cpp.i:
-	cd /home/macemax/University/advanced-computer-graphics && $(MAKE) $(MAKESILENT) -f applications/lab1/CMakeFiles/lab1.dir/build.make applications/lab1/CMakeFiles/lab1.dir/src/vr/Group.cpp.i
-.PHONY : src/vr/Group.cpp.i
+src/vr/Nodes/Group.cpp.i:
+	cd /home/macemax/University/advanced-computer-graphics && $(MAKE) $(MAKESILENT) -f applications/lab1/CMakeFiles/lab1.dir/build.make applications/lab1/CMakeFiles/lab1.dir/src/vr/Nodes/Group.cpp.i
+.PHONY : src/vr/Nodes/Group.cpp.i
 
-src/vr/Group.s: src/vr/Group.cpp.s
-.PHONY : src/vr/Group.s
+src/vr/Nodes/Group.s: src/vr/Nodes/Group.cpp.s
+.PHONY : src/vr/Nodes/Group.s
 
 # target to generate assembly for a file
-src/vr/Group.cpp.s:
-	cd /home/macemax/University/advanced-computer-graphics && $(MAKE) $(MAKESILENT) -f applications/lab1/CMakeFiles/lab1.dir/build.make applications/lab1/CMakeFiles/lab1.dir/src/vr/Group.cpp.s
-.PHONY : src/vr/Group.cpp.s
+src/vr/Nodes/Group.cpp.s:
+	cd /home/macemax/University/advanced-computer-graphics && $(MAKE) $(MAKESILENT) -f applications/lab1/CMakeFiles/lab1.dir/build.make applications/lab1/CMakeFiles/lab1.dir/src/vr/Nodes/Group.cpp.s
+.PHONY : src/vr/Nodes/Group.cpp.s
 
-src/vr/Light.o: src/vr/Light.cpp.o
-.PHONY : src/vr/Light.o
+src/vr/Nodes/LodNode.o: src/vr/Nodes/LodNode.cpp.o
+.PHONY : src/vr/Nodes/LodNode.o
 
 # target to build an object file
-src/vr/Light.cpp.o:
-	cd /home/macemax/University/advanced-computer-graphics && $(MAKE) $(MAKESILENT) -f applications/lab1/CMakeFiles/lab1.dir/build.make applications/lab1/CMakeFiles/lab1.dir/src/vr/Light.cpp.o
-.PHONY : src/vr/Light.cpp.o
+src/vr/Nodes/LodNode.cpp.o:
+	cd /home/macemax/University/advanced-computer-graphics && $(MAKE) $(MAKESILENT) -f applications/lab1/CMakeFiles/lab1.dir/build.make applications/lab1/CMakeFiles/lab1.dir/src/vr/Nodes/LodNode.cpp.o
+.PHONY : src/vr/Nodes/LodNode.cpp.o
 
-src/vr/Light.i: src/vr/Light.cpp.i
-.PHONY : src/vr/Light.i
+src/vr/Nodes/LodNode.i: src/vr/Nodes/LodNode.cpp.i
+.PHONY : src/vr/Nodes/LodNode.i
 
 # target to preprocess a source file
-src/vr/Light.cpp.i:
-	cd /home/macemax/University/advanced-computer-graphics && $(MAKE) $(MAKESILENT) -f applications/lab1/CMakeFiles/lab1.dir/build.make applications/lab1/CMakeFiles/lab1.dir/src/vr/Light.cpp.i
-.PHONY : src/vr/Light.cpp.i
+src/vr/Nodes/LodNode.cpp.i:
+	cd /home/macemax/University/advanced-computer-graphics && $(MAKE) $(MAKESILENT) -f applications/lab1/CMakeFiles/lab1.dir/build.make applications/lab1/CMakeFiles/lab1.dir/src/vr/Nodes/LodNode.cpp.i
+.PHONY : src/vr/Nodes/LodNode.cpp.i
 
-src/vr/Light.s: src/vr/Light.cpp.s
-.PHONY : src/vr/Light.s
+src/vr/Nodes/LodNode.s: src/vr/Nodes/LodNode.cpp.s
+.PHONY : src/vr/Nodes/LodNode.s
 
 # target to generate assembly for a file
-src/vr/Light.cpp.s:
-	cd /home/macemax/University/advanced-computer-graphics && $(MAKE) $(MAKESILENT) -f applications/lab1/CMakeFiles/lab1.dir/build.make applications/lab1/CMakeFiles/lab1.dir/src/vr/Light.cpp.s
-.PHONY : src/vr/Light.cpp.s
+src/vr/Nodes/LodNode.cpp.s:
+	cd /home/macemax/University/advanced-computer-graphics && $(MAKE) $(MAKESILENT) -f applications/lab1/CMakeFiles/lab1.dir/build.make applications/lab1/CMakeFiles/lab1.dir/src/vr/Nodes/LodNode.cpp.s
+.PHONY : src/vr/Nodes/LodNode.cpp.s
 
-src/vr/Loader.o: src/vr/Loader.cpp.o
-.PHONY : src/vr/Loader.o
+src/vr/Nodes/Transform.o: src/vr/Nodes/Transform.cpp.o
+.PHONY : src/vr/Nodes/Transform.o
 
 # target to build an object file
-src/vr/Loader.cpp.o:
-	cd /home/macemax/University/advanced-computer-graphics && $(MAKE) $(MAKESILENT) -f applications/lab1/CMakeFiles/lab1.dir/build.make applications/lab1/CMakeFiles/lab1.dir/src/vr/Loader.cpp.o
-.PHONY : src/vr/Loader.cpp.o
+src/vr/Nodes/Transform.cpp.o:
+	cd /home/macemax/University/advanced-computer-graphics && $(MAKE) $(MAKESILENT) -f applications/lab1/CMakeFiles/lab1.dir/build.make applications/lab1/CMakeFiles/lab1.dir/src/vr/Nodes/Transform.cpp.o
+.PHONY : src/vr/Nodes/Transform.cpp.o
 
-src/vr/Loader.i: src/vr/Loader.cpp.i
-.PHONY : src/vr/Loader.i
+src/vr/Nodes/Transform.i: src/vr/Nodes/Transform.cpp.i
+.PHONY : src/vr/Nodes/Transform.i
 
 # target to preprocess a source file
-src/vr/Loader.cpp.i:
-	cd /home/macemax/University/advanced-computer-graphics && $(MAKE) $(MAKESILENT) -f applications/lab1/CMakeFiles/lab1.dir/build.make applications/lab1/CMakeFiles/lab1.dir/src/vr/Loader.cpp.i
-.PHONY : src/vr/Loader.cpp.i
+src/vr/Nodes/Transform.cpp.i:
+	cd /home/macemax/University/advanced-computer-graphics && $(MAKE) $(MAKESILENT) -f applications/lab1/CMakeFiles/lab1.dir/build.make applications/lab1/CMakeFiles/lab1.dir/src/vr/Nodes/Transform.cpp.i
+.PHONY : src/vr/Nodes/Transform.cpp.i
 
-src/vr/Loader.s: src/vr/Loader.cpp.s
-.PHONY : src/vr/Loader.s
+src/vr/Nodes/Transform.s: src/vr/Nodes/Transform.cpp.s
+.PHONY : src/vr/Nodes/Transform.s
 
 # target to generate assembly for a file
-src/vr/Loader.cpp.s:
-	cd /home/macemax/University/advanced-computer-graphics && $(MAKE) $(MAKESILENT) -f applications/lab1/CMakeFiles/lab1.dir/build.make applications/lab1/CMakeFiles/lab1.dir/src/vr/Loader.cpp.s
-.PHONY : src/vr/Loader.cpp.s
+src/vr/Nodes/Transform.cpp.s:
+	cd /home/macemax/University/advanced-computer-graphics && $(MAKE) $(MAKESILENT) -f applications/lab1/CMakeFiles/lab1.dir/build.make applications/lab1/CMakeFiles/lab1.dir/src/vr/Nodes/Transform.cpp.s
+.PHONY : src/vr/Nodes/Transform.cpp.s
 
-src/vr/LodNode.o: src/vr/LodNode.cpp.o
-.PHONY : src/vr/LodNode.o
+src/vr/Scene/Camera.o: src/vr/Scene/Camera.cpp.o
+.PHONY : src/vr/Scene/Camera.o
 
 # target to build an object file
-src/vr/LodNode.cpp.o:
-	cd /home/macemax/University/advanced-computer-graphics && $(MAKE) $(MAKESILENT) -f applications/lab1/CMakeFiles/lab1.dir/build.make applications/lab1/CMakeFiles/lab1.dir/src/vr/LodNode.cpp.o
-.PHONY : src/vr/LodNode.cpp.o
+src/vr/Scene/Camera.cpp.o:
+	cd /home/macemax/University/advanced-computer-graphics && $(MAKE) $(MAKESILENT) -f applications/lab1/CMakeFiles/lab1.dir/build.make applications/lab1/CMakeFiles/lab1.dir/src/vr/Scene/Camera.cpp.o
+.PHONY : src/vr/Scene/Camera.cpp.o
 
-src/vr/LodNode.i: src/vr/LodNode.cpp.i
-.PHONY : src/vr/LodNode.i
+src/vr/Scene/Camera.i: src/vr/Scene/Camera.cpp.i
+.PHONY : src/vr/Scene/Camera.i
 
 # target to preprocess a source file
-src/vr/LodNode.cpp.i:
-	cd /home/macemax/University/advanced-computer-graphics && $(MAKE) $(MAKESILENT) -f applications/lab1/CMakeFiles/lab1.dir/build.make applications/lab1/CMakeFiles/lab1.dir/src/vr/LodNode.cpp.i
-.PHONY : src/vr/LodNode.cpp.i
+src/vr/Scene/Camera.cpp.i:
+	cd /home/macemax/University/advanced-computer-graphics && $(MAKE) $(MAKESILENT) -f applications/lab1/CMakeFiles/lab1.dir/build.make applications/lab1/CMakeFiles/lab1.dir/src/vr/Scene/Camera.cpp.i
+.PHONY : src/vr/Scene/Camera.cpp.i
 
-src/vr/LodNode.s: src/vr/LodNode.cpp.s
-.PHONY : src/vr/LodNode.s
+src/vr/Scene/Camera.s: src/vr/Scene/Camera.cpp.s
+.PHONY : src/vr/Scene/Camera.s
 
 # target to generate assembly for a file
-src/vr/LodNode.cpp.s:
-	cd /home/macemax/University/advanced-computer-graphics && $(MAKE) $(MAKESILENT) -f applications/lab1/CMakeFiles/lab1.dir/build.make applications/lab1/CMakeFiles/lab1.dir/src/vr/LodNode.cpp.s
-.PHONY : src/vr/LodNode.cpp.s
+src/vr/Scene/Camera.cpp.s:
+	cd /home/macemax/University/advanced-computer-graphics && $(MAKE) $(MAKESILENT) -f applications/lab1/CMakeFiles/lab1.dir/build.make applications/lab1/CMakeFiles/lab1.dir/src/vr/Scene/Camera.cpp.s
+.PHONY : src/vr/Scene/Camera.cpp.s
 
-src/vr/Material.o: src/vr/Material.cpp.o
-.PHONY : src/vr/Material.o
+src/vr/Scene/Light.o: src/vr/Scene/Light.cpp.o
+.PHONY : src/vr/Scene/Light.o
 
 # target to build an object file
-src/vr/Material.cpp.o:
-	cd /home/macemax/University/advanced-computer-graphics && $(MAKE) $(MAKESILENT) -f applications/lab1/CMakeFiles/lab1.dir/build.make applications/lab1/CMakeFiles/lab1.dir/src/vr/Material.cpp.o
-.PHONY : src/vr/Material.cpp.o
+src/vr/Scene/Light.cpp.o:
+	cd /home/macemax/University/advanced-computer-graphics && $(MAKE) $(MAKESILENT) -f applications/lab1/CMakeFiles/lab1.dir/build.make applications/lab1/CMakeFiles/lab1.dir/src/vr/Scene/Light.cpp.o
+.PHONY : src/vr/Scene/Light.cpp.o
 
-src/vr/Material.i: src/vr/Material.cpp.i
-.PHONY : src/vr/Material.i
+src/vr/Scene/Light.i: src/vr/Scene/Light.cpp.i
+.PHONY : src/vr/Scene/Light.i
 
 # target to preprocess a source file
-src/vr/Material.cpp.i:
-	cd /home/macemax/University/advanced-computer-graphics && $(MAKE) $(MAKESILENT) -f applications/lab1/CMakeFiles/lab1.dir/build.make applications/lab1/CMakeFiles/lab1.dir/src/vr/Material.cpp.i
-.PHONY : src/vr/Material.cpp.i
+src/vr/Scene/Light.cpp.i:
+	cd /home/macemax/University/advanced-computer-graphics && $(MAKE) $(MAKESILENT) -f applications/lab1/CMakeFiles/lab1.dir/build.make applications/lab1/CMakeFiles/lab1.dir/src/vr/Scene/Light.cpp.i
+.PHONY : src/vr/Scene/Light.cpp.i
 
-src/vr/Material.s: src/vr/Material.cpp.s
-.PHONY : src/vr/Material.s
+src/vr/Scene/Light.s: src/vr/Scene/Light.cpp.s
+.PHONY : src/vr/Scene/Light.s
 
 # target to generate assembly for a file
-src/vr/Material.cpp.s:
-	cd /home/macemax/University/advanced-computer-graphics && $(MAKE) $(MAKESILENT) -f applications/lab1/CMakeFiles/lab1.dir/build.make applications/lab1/CMakeFiles/lab1.dir/src/vr/Material.cpp.s
-.PHONY : src/vr/Material.cpp.s
+src/vr/Scene/Light.cpp.s:
+	cd /home/macemax/University/advanced-computer-graphics && $(MAKE) $(MAKESILENT) -f applications/lab1/CMakeFiles/lab1.dir/build.make applications/lab1/CMakeFiles/lab1.dir/src/vr/Scene/Light.cpp.s
+.PHONY : src/vr/Scene/Light.cpp.s
 
-src/vr/RenderVisitor.o: src/vr/RenderVisitor.cpp.o
-.PHONY : src/vr/RenderVisitor.o
+src/vr/Scene/Loader.o: src/vr/Scene/Loader.cpp.o
+.PHONY : src/vr/Scene/Loader.o
 
 # target to build an object file
-src/vr/RenderVisitor.cpp.o:
-	cd /home/macemax/University/advanced-computer-graphics && $(MAKE) $(MAKESILENT) -f applications/lab1/CMakeFiles/lab1.dir/build.make applications/lab1/CMakeFiles/lab1.dir/src/vr/RenderVisitor.cpp.o
-.PHONY : src/vr/RenderVisitor.cpp.o
+src/vr/Scene/Loader.cpp.o:
+	cd /home/macemax/University/advanced-computer-graphics && $(MAKE) $(MAKESILENT) -f applications/lab1/CMakeFiles/lab1.dir/build.make applications/lab1/CMakeFiles/lab1.dir/src/vr/Scene/Loader.cpp.o
+.PHONY : src/vr/Scene/Loader.cpp.o
 
-src/vr/RenderVisitor.i: src/vr/RenderVisitor.cpp.i
-.PHONY : src/vr/RenderVisitor.i
+src/vr/Scene/Loader.i: src/vr/Scene/Loader.cpp.i
+.PHONY : src/vr/Scene/Loader.i
 
 # target to preprocess a source file
-src/vr/RenderVisitor.cpp.i:
-	cd /home/macemax/University/advanced-computer-graphics && $(MAKE) $(MAKESILENT) -f applications/lab1/CMakeFiles/lab1.dir/build.make applications/lab1/CMakeFiles/lab1.dir/src/vr/RenderVisitor.cpp.i
-.PHONY : src/vr/RenderVisitor.cpp.i
+src/vr/Scene/Loader.cpp.i:
+	cd /home/macemax/University/advanced-computer-graphics && $(MAKE) $(MAKESILENT) -f applications/lab1/CMakeFiles/lab1.dir/build.make applications/lab1/CMakeFiles/lab1.dir/src/vr/Scene/Loader.cpp.i
+.PHONY : src/vr/Scene/Loader.cpp.i
 
-src/vr/RenderVisitor.s: src/vr/RenderVisitor.cpp.s
-.PHONY : src/vr/RenderVisitor.s
+src/vr/Scene/Loader.s: src/vr/Scene/Loader.cpp.s
+.PHONY : src/vr/Scene/Loader.s
 
 # target to generate assembly for a file
-src/vr/RenderVisitor.cpp.s:
-	cd /home/macemax/University/advanced-computer-graphics && $(MAKE) $(MAKESILENT) -f applications/lab1/CMakeFiles/lab1.dir/build.make applications/lab1/CMakeFiles/lab1.dir/src/vr/RenderVisitor.cpp.s
-.PHONY : src/vr/RenderVisitor.cpp.s
+src/vr/Scene/Loader.cpp.s:
+	cd /home/macemax/University/advanced-computer-graphics && $(MAKE) $(MAKESILENT) -f applications/lab1/CMakeFiles/lab1.dir/build.make applications/lab1/CMakeFiles/lab1.dir/src/vr/Scene/Loader.cpp.s
+.PHONY : src/vr/Scene/Loader.cpp.s
 
-src/vr/Scene.o: src/vr/Scene.cpp.o
-.PHONY : src/vr/Scene.o
+src/vr/Scene/Scene.o: src/vr/Scene/Scene.cpp.o
+.PHONY : src/vr/Scene/Scene.o
 
 # target to build an object file
-src/vr/Scene.cpp.o:
-	cd /home/macemax/University/advanced-computer-graphics && $(MAKE) $(MAKESILENT) -f applications/lab1/CMakeFiles/lab1.dir/build.make applications/lab1/CMakeFiles/lab1.dir/src/vr/Scene.cpp.o
-.PHONY : src/vr/Scene.cpp.o
+src/vr/Scene/Scene.cpp.o:
+	cd /home/macemax/University/advanced-computer-graphics && $(MAKE) $(MAKESILENT) -f applications/lab1/CMakeFiles/lab1.dir/build.make applications/lab1/CMakeFiles/lab1.dir/src/vr/Scene/Scene.cpp.o
+.PHONY : src/vr/Scene/Scene.cpp.o
 
-src/vr/Scene.i: src/vr/Scene.cpp.i
-.PHONY : src/vr/Scene.i
+src/vr/Scene/Scene.i: src/vr/Scene/Scene.cpp.i
+.PHONY : src/vr/Scene/Scene.i
 
 # target to preprocess a source file
-src/vr/Scene.cpp.i:
-	cd /home/macemax/University/advanced-computer-graphics && $(MAKE) $(MAKESILENT) -f applications/lab1/CMakeFiles/lab1.dir/build.make applications/lab1/CMakeFiles/lab1.dir/src/vr/Scene.cpp.i
-.PHONY : src/vr/Scene.cpp.i
+src/vr/Scene/Scene.cpp.i:
+	cd /home/macemax/University/advanced-computer-graphics && $(MAKE) $(MAKESILENT) -f applications/lab1/CMakeFiles/lab1.dir/build.make applications/lab1/CMakeFiles/lab1.dir/src/vr/Scene/Scene.cpp.i
+.PHONY : src/vr/Scene/Scene.cpp.i
 
-src/vr/Scene.s: src/vr/Scene.cpp.s
-.PHONY : src/vr/Scene.s
+src/vr/Scene/Scene.s: src/vr/Scene/Scene.cpp.s
+.PHONY : src/vr/Scene/Scene.s
 
 # target to generate assembly for a file
-src/vr/Scene.cpp.s:
-	cd /home/macemax/University/advanced-computer-graphics && $(MAKE) $(MAKESILENT) -f applications/lab1/CMakeFiles/lab1.dir/build.make applications/lab1/CMakeFiles/lab1.dir/src/vr/Scene.cpp.s
-.PHONY : src/vr/Scene.cpp.s
+src/vr/Scene/Scene.cpp.s:
+	cd /home/macemax/University/advanced-computer-graphics && $(MAKE) $(MAKESILENT) -f applications/lab1/CMakeFiles/lab1.dir/build.make applications/lab1/CMakeFiles/lab1.dir/src/vr/Scene/Scene.cpp.s
+.PHONY : src/vr/Scene/Scene.cpp.s
 
-src/vr/Shader.o: src/vr/Shader.cpp.o
-.PHONY : src/vr/Shader.o
+src/vr/State/Material.o: src/vr/State/Material.cpp.o
+.PHONY : src/vr/State/Material.o
 
 # target to build an object file
-src/vr/Shader.cpp.o:
-	cd /home/macemax/University/advanced-computer-graphics && $(MAKE) $(MAKESILENT) -f applications/lab1/CMakeFiles/lab1.dir/build.make applications/lab1/CMakeFiles/lab1.dir/src/vr/Shader.cpp.o
-.PHONY : src/vr/Shader.cpp.o
+src/vr/State/Material.cpp.o:
+	cd /home/macemax/University/advanced-computer-graphics && $(MAKE) $(MAKESILENT) -f applications/lab1/CMakeFiles/lab1.dir/build.make applications/lab1/CMakeFiles/lab1.dir/src/vr/State/Material.cpp.o
+.PHONY : src/vr/State/Material.cpp.o
 
-src/vr/Shader.i: src/vr/Shader.cpp.i
-.PHONY : src/vr/Shader.i
+src/vr/State/Material.i: src/vr/State/Material.cpp.i
+.PHONY : src/vr/State/Material.i
 
 # target to preprocess a source file
-src/vr/Shader.cpp.i:
-	cd /home/macemax/University/advanced-computer-graphics && $(MAKE) $(MAKESILENT) -f applications/lab1/CMakeFiles/lab1.dir/build.make applications/lab1/CMakeFiles/lab1.dir/src/vr/Shader.cpp.i
-.PHONY : src/vr/Shader.cpp.i
+src/vr/State/Material.cpp.i:
+	cd /home/macemax/University/advanced-computer-graphics && $(MAKE) $(MAKESILENT) -f applications/lab1/CMakeFiles/lab1.dir/build.make applications/lab1/CMakeFiles/lab1.dir/src/vr/State/Material.cpp.i
+.PHONY : src/vr/State/Material.cpp.i
 
-src/vr/Shader.s: src/vr/Shader.cpp.s
-.PHONY : src/vr/Shader.s
+src/vr/State/Material.s: src/vr/State/Material.cpp.s
+.PHONY : src/vr/State/Material.s
 
 # target to generate assembly for a file
-src/vr/Shader.cpp.s:
-	cd /home/macemax/University/advanced-computer-graphics && $(MAKE) $(MAKESILENT) -f applications/lab1/CMakeFiles/lab1.dir/build.make applications/lab1/CMakeFiles/lab1.dir/src/vr/Shader.cpp.s
-.PHONY : src/vr/Shader.cpp.s
+src/vr/State/Material.cpp.s:
+	cd /home/macemax/University/advanced-computer-graphics && $(MAKE) $(MAKESILENT) -f applications/lab1/CMakeFiles/lab1.dir/build.make applications/lab1/CMakeFiles/lab1.dir/src/vr/State/Material.cpp.s
+.PHONY : src/vr/State/Material.cpp.s
 
-src/vr/State.o: src/vr/State.cpp.o
-.PHONY : src/vr/State.o
+src/vr/State/Shader.o: src/vr/State/Shader.cpp.o
+.PHONY : src/vr/State/Shader.o
 
 # target to build an object file
-src/vr/State.cpp.o:
-	cd /home/macemax/University/advanced-computer-graphics && $(MAKE) $(MAKESILENT) -f applications/lab1/CMakeFiles/lab1.dir/build.make applications/lab1/CMakeFiles/lab1.dir/src/vr/State.cpp.o
-.PHONY : src/vr/State.cpp.o
+src/vr/State/Shader.cpp.o:
+	cd /home/macemax/University/advanced-computer-graphics && $(MAKE) $(MAKESILENT) -f applications/lab1/CMakeFiles/lab1.dir/build.make applications/lab1/CMakeFiles/lab1.dir/src/vr/State/Shader.cpp.o
+.PHONY : src/vr/State/Shader.cpp.o
 
-src/vr/State.i: src/vr/State.cpp.i
-.PHONY : src/vr/State.i
+src/vr/State/Shader.i: src/vr/State/Shader.cpp.i
+.PHONY : src/vr/State/Shader.i
 
 # target to preprocess a source file
-src/vr/State.cpp.i:
-	cd /home/macemax/University/advanced-computer-graphics && $(MAKE) $(MAKESILENT) -f applications/lab1/CMakeFiles/lab1.dir/build.make applications/lab1/CMakeFiles/lab1.dir/src/vr/State.cpp.i
-.PHONY : src/vr/State.cpp.i
+src/vr/State/Shader.cpp.i:
+	cd /home/macemax/University/advanced-computer-graphics && $(MAKE) $(MAKESILENT) -f applications/lab1/CMakeFiles/lab1.dir/build.make applications/lab1/CMakeFiles/lab1.dir/src/vr/State/Shader.cpp.i
+.PHONY : src/vr/State/Shader.cpp.i
 
-src/vr/State.s: src/vr/State.cpp.s
-.PHONY : src/vr/State.s
+src/vr/State/Shader.s: src/vr/State/Shader.cpp.s
+.PHONY : src/vr/State/Shader.s
 
 # target to generate assembly for a file
-src/vr/State.cpp.s:
-	cd /home/macemax/University/advanced-computer-graphics && $(MAKE) $(MAKESILENT) -f applications/lab1/CMakeFiles/lab1.dir/build.make applications/lab1/CMakeFiles/lab1.dir/src/vr/State.cpp.s
-.PHONY : src/vr/State.cpp.s
+src/vr/State/Shader.cpp.s:
+	cd /home/macemax/University/advanced-computer-graphics && $(MAKE) $(MAKESILENT) -f applications/lab1/CMakeFiles/lab1.dir/build.make applications/lab1/CMakeFiles/lab1.dir/src/vr/State/Shader.cpp.s
+.PHONY : src/vr/State/Shader.cpp.s
+
+src/vr/State/State.o: src/vr/State/State.cpp.o
+.PHONY : src/vr/State/State.o
+
+# target to build an object file
+src/vr/State/State.cpp.o:
+	cd /home/macemax/University/advanced-computer-graphics && $(MAKE) $(MAKESILENT) -f applications/lab1/CMakeFiles/lab1.dir/build.make applications/lab1/CMakeFiles/lab1.dir/src/vr/State/State.cpp.o
+.PHONY : src/vr/State/State.cpp.o
+
+src/vr/State/State.i: src/vr/State/State.cpp.i
+.PHONY : src/vr/State/State.i
+
+# target to preprocess a source file
+src/vr/State/State.cpp.i:
+	cd /home/macemax/University/advanced-computer-graphics && $(MAKE) $(MAKESILENT) -f applications/lab1/CMakeFiles/lab1.dir/build.make applications/lab1/CMakeFiles/lab1.dir/src/vr/State/State.cpp.i
+.PHONY : src/vr/State/State.cpp.i
+
+src/vr/State/State.s: src/vr/State/State.cpp.s
+.PHONY : src/vr/State/State.s
+
+# target to generate assembly for a file
+src/vr/State/State.cpp.s:
+	cd /home/macemax/University/advanced-computer-graphics && $(MAKE) $(MAKESILENT) -f applications/lab1/CMakeFiles/lab1.dir/build.make applications/lab1/CMakeFiles/lab1.dir/src/vr/State/State.cpp.s
+.PHONY : src/vr/State/State.cpp.s
+
+src/vr/State/Texture.o: src/vr/State/Texture.cpp.o
+.PHONY : src/vr/State/Texture.o
+
+# target to build an object file
+src/vr/State/Texture.cpp.o:
+	cd /home/macemax/University/advanced-computer-graphics && $(MAKE) $(MAKESILENT) -f applications/lab1/CMakeFiles/lab1.dir/build.make applications/lab1/CMakeFiles/lab1.dir/src/vr/State/Texture.cpp.o
+.PHONY : src/vr/State/Texture.cpp.o
+
+src/vr/State/Texture.i: src/vr/State/Texture.cpp.i
+.PHONY : src/vr/State/Texture.i
+
+# target to preprocess a source file
+src/vr/State/Texture.cpp.i:
+	cd /home/macemax/University/advanced-computer-graphics && $(MAKE) $(MAKESILENT) -f applications/lab1/CMakeFiles/lab1.dir/build.make applications/lab1/CMakeFiles/lab1.dir/src/vr/State/Texture.cpp.i
+.PHONY : src/vr/State/Texture.cpp.i
+
+src/vr/State/Texture.s: src/vr/State/Texture.cpp.s
+.PHONY : src/vr/State/Texture.s
+
+# target to generate assembly for a file
+src/vr/State/Texture.cpp.s:
+	cd /home/macemax/University/advanced-computer-graphics && $(MAKE) $(MAKESILENT) -f applications/lab1/CMakeFiles/lab1.dir/build.make applications/lab1/CMakeFiles/lab1.dir/src/vr/State/Texture.cpp.s
+.PHONY : src/vr/State/Texture.cpp.s
 
 src/vr/Text.o: src/vr/Text.cpp.o
 .PHONY : src/vr/Text.o
@@ -607,30 +631,6 @@ src/vr/Text.cpp.s:
 	cd /home/macemax/University/advanced-computer-graphics && $(MAKE) $(MAKESILENT) -f applications/lab1/CMakeFiles/lab1.dir/build.make applications/lab1/CMakeFiles/lab1.dir/src/vr/Text.cpp.s
 .PHONY : src/vr/Text.cpp.s
 
-src/vr/Texture.o: src/vr/Texture.cpp.o
-.PHONY : src/vr/Texture.o
-
-# target to build an object file
-src/vr/Texture.cpp.o:
-	cd /home/macemax/University/advanced-computer-graphics && $(MAKE) $(MAKESILENT) -f applications/lab1/CMakeFiles/lab1.dir/build.make applications/lab1/CMakeFiles/lab1.dir/src/vr/Texture.cpp.o
-.PHONY : src/vr/Texture.cpp.o
-
-src/vr/Texture.i: src/vr/Texture.cpp.i
-.PHONY : src/vr/Texture.i
-
-# target to preprocess a source file
-src/vr/Texture.cpp.i:
-	cd /home/macemax/University/advanced-computer-graphics && $(MAKE) $(MAKESILENT) -f applications/lab1/CMakeFiles/lab1.dir/build.make applications/lab1/CMakeFiles/lab1.dir/src/vr/Texture.cpp.i
-.PHONY : src/vr/Texture.cpp.i
-
-src/vr/Texture.s: src/vr/Texture.cpp.s
-.PHONY : src/vr/Texture.s
-
-# target to generate assembly for a file
-src/vr/Texture.cpp.s:
-	cd /home/macemax/University/advanced-computer-graphics && $(MAKE) $(MAKESILENT) -f applications/lab1/CMakeFiles/lab1.dir/build.make applications/lab1/CMakeFiles/lab1.dir/src/vr/Texture.cpp.s
-.PHONY : src/vr/Texture.cpp.s
-
 src/vr/Timer.o: src/vr/Timer.cpp.o
 .PHONY : src/vr/Timer.o
 
@@ -655,53 +655,53 @@ src/vr/Timer.cpp.s:
 	cd /home/macemax/University/advanced-computer-graphics && $(MAKE) $(MAKESILENT) -f applications/lab1/CMakeFiles/lab1.dir/build.make applications/lab1/CMakeFiles/lab1.dir/src/vr/Timer.cpp.s
 .PHONY : src/vr/Timer.cpp.s
 
-src/vr/Transform.o: src/vr/Transform.cpp.o
-.PHONY : src/vr/Transform.o
+src/vr/Visitors/RenderVisitor.o: src/vr/Visitors/RenderVisitor.cpp.o
+.PHONY : src/vr/Visitors/RenderVisitor.o
 
 # target to build an object file
-src/vr/Transform.cpp.o:
-	cd /home/macemax/University/advanced-computer-graphics && $(MAKE) $(MAKESILENT) -f applications/lab1/CMakeFiles/lab1.dir/build.make applications/lab1/CMakeFiles/lab1.dir/src/vr/Transform.cpp.o
-.PHONY : src/vr/Transform.cpp.o
+src/vr/Visitors/RenderVisitor.cpp.o:
+	cd /home/macemax/University/advanced-computer-graphics && $(MAKE) $(MAKESILENT) -f applications/lab1/CMakeFiles/lab1.dir/build.make applications/lab1/CMakeFiles/lab1.dir/src/vr/Visitors/RenderVisitor.cpp.o
+.PHONY : src/vr/Visitors/RenderVisitor.cpp.o
 
-src/vr/Transform.i: src/vr/Transform.cpp.i
-.PHONY : src/vr/Transform.i
+src/vr/Visitors/RenderVisitor.i: src/vr/Visitors/RenderVisitor.cpp.i
+.PHONY : src/vr/Visitors/RenderVisitor.i
 
 # target to preprocess a source file
-src/vr/Transform.cpp.i:
-	cd /home/macemax/University/advanced-computer-graphics && $(MAKE) $(MAKESILENT) -f applications/lab1/CMakeFiles/lab1.dir/build.make applications/lab1/CMakeFiles/lab1.dir/src/vr/Transform.cpp.i
-.PHONY : src/vr/Transform.cpp.i
+src/vr/Visitors/RenderVisitor.cpp.i:
+	cd /home/macemax/University/advanced-computer-graphics && $(MAKE) $(MAKESILENT) -f applications/lab1/CMakeFiles/lab1.dir/build.make applications/lab1/CMakeFiles/lab1.dir/src/vr/Visitors/RenderVisitor.cpp.i
+.PHONY : src/vr/Visitors/RenderVisitor.cpp.i
 
-src/vr/Transform.s: src/vr/Transform.cpp.s
-.PHONY : src/vr/Transform.s
+src/vr/Visitors/RenderVisitor.s: src/vr/Visitors/RenderVisitor.cpp.s
+.PHONY : src/vr/Visitors/RenderVisitor.s
 
 # target to generate assembly for a file
-src/vr/Transform.cpp.s:
-	cd /home/macemax/University/advanced-computer-graphics && $(MAKE) $(MAKESILENT) -f applications/lab1/CMakeFiles/lab1.dir/build.make applications/lab1/CMakeFiles/lab1.dir/src/vr/Transform.cpp.s
-.PHONY : src/vr/Transform.cpp.s
+src/vr/Visitors/RenderVisitor.cpp.s:
+	cd /home/macemax/University/advanced-computer-graphics && $(MAKE) $(MAKESILENT) -f applications/lab1/CMakeFiles/lab1.dir/build.make applications/lab1/CMakeFiles/lab1.dir/src/vr/Visitors/RenderVisitor.cpp.s
+.PHONY : src/vr/Visitors/RenderVisitor.cpp.s
 
-src/vr/UpdateVisitor.o: src/vr/UpdateVisitor.cpp.o
-.PHONY : src/vr/UpdateVisitor.o
+src/vr/Visitors/UpdateVisitor.o: src/vr/Visitors/UpdateVisitor.cpp.o
+.PHONY : src/vr/Visitors/UpdateVisitor.o
 
 # target to build an object file
-src/vr/UpdateVisitor.cpp.o:
-	cd /home/macemax/University/advanced-computer-graphics && $(MAKE) $(MAKESILENT) -f applications/lab1/CMakeFiles/lab1.dir/build.make applications/lab1/CMakeFiles/lab1.dir/src/vr/UpdateVisitor.cpp.o
-.PHONY : src/vr/UpdateVisitor.cpp.o
+src/vr/Visitors/UpdateVisitor.cpp.o:
+	cd /home/macemax/University/advanced-computer-graphics && $(MAKE) $(MAKESILENT) -f applications/lab1/CMakeFiles/lab1.dir/build.make applications/lab1/CMakeFiles/lab1.dir/src/vr/Visitors/UpdateVisitor.cpp.o
+.PHONY : src/vr/Visitors/UpdateVisitor.cpp.o
 
-src/vr/UpdateVisitor.i: src/vr/UpdateVisitor.cpp.i
-.PHONY : src/vr/UpdateVisitor.i
+src/vr/Visitors/UpdateVisitor.i: src/vr/Visitors/UpdateVisitor.cpp.i
+.PHONY : src/vr/Visitors/UpdateVisitor.i
 
 # target to preprocess a source file
-src/vr/UpdateVisitor.cpp.i:
-	cd /home/macemax/University/advanced-computer-graphics && $(MAKE) $(MAKESILENT) -f applications/lab1/CMakeFiles/lab1.dir/build.make applications/lab1/CMakeFiles/lab1.dir/src/vr/UpdateVisitor.cpp.i
-.PHONY : src/vr/UpdateVisitor.cpp.i
+src/vr/Visitors/UpdateVisitor.cpp.i:
+	cd /home/macemax/University/advanced-computer-graphics && $(MAKE) $(MAKESILENT) -f applications/lab1/CMakeFiles/lab1.dir/build.make applications/lab1/CMakeFiles/lab1.dir/src/vr/Visitors/UpdateVisitor.cpp.i
+.PHONY : src/vr/Visitors/UpdateVisitor.cpp.i
 
-src/vr/UpdateVisitor.s: src/vr/UpdateVisitor.cpp.s
-.PHONY : src/vr/UpdateVisitor.s
+src/vr/Visitors/UpdateVisitor.s: src/vr/Visitors/UpdateVisitor.cpp.s
+.PHONY : src/vr/Visitors/UpdateVisitor.s
 
 # target to generate assembly for a file
-src/vr/UpdateVisitor.cpp.s:
-	cd /home/macemax/University/advanced-computer-graphics && $(MAKE) $(MAKESILENT) -f applications/lab1/CMakeFiles/lab1.dir/build.make applications/lab1/CMakeFiles/lab1.dir/src/vr/UpdateVisitor.cpp.s
-.PHONY : src/vr/UpdateVisitor.cpp.s
+src/vr/Visitors/UpdateVisitor.cpp.s:
+	cd /home/macemax/University/advanced-computer-graphics && $(MAKE) $(MAKESILENT) -f applications/lab1/CMakeFiles/lab1.dir/build.make applications/lab1/CMakeFiles/lab1.dir/src/vr/Visitors/UpdateVisitor.cpp.s
+.PHONY : src/vr/Visitors/UpdateVisitor.cpp.s
 
 src/vr/glErrorUtil.o: src/vr/glErrorUtil.cpp.o
 .PHONY : src/vr/glErrorUtil.o
@@ -770,66 +770,66 @@ help:
 	@echo "... src/glad.o"
 	@echo "... src/glad.i"
 	@echo "... src/glad.s"
-	@echo "... src/vr/AnimationCallback.o"
-	@echo "... src/vr/AnimationCallback.i"
-	@echo "... src/vr/AnimationCallback.s"
 	@echo "... src/vr/Application.o"
 	@echo "... src/vr/Application.i"
 	@echo "... src/vr/Application.s"
-	@echo "... src/vr/Camera.o"
-	@echo "... src/vr/Camera.i"
-	@echo "... src/vr/Camera.s"
+	@echo "... src/vr/Callbacks/AnimationCallback.o"
+	@echo "... src/vr/Callbacks/AnimationCallback.i"
+	@echo "... src/vr/Callbacks/AnimationCallback.s"
 	@echo "... src/vr/FPSCounter.o"
 	@echo "... src/vr/FPSCounter.i"
 	@echo "... src/vr/FPSCounter.s"
 	@echo "... src/vr/FileSystem.o"
 	@echo "... src/vr/FileSystem.i"
 	@echo "... src/vr/FileSystem.s"
-	@echo "... src/vr/Geometry.o"
-	@echo "... src/vr/Geometry.i"
-	@echo "... src/vr/Geometry.s"
-	@echo "... src/vr/Group.o"
-	@echo "... src/vr/Group.i"
-	@echo "... src/vr/Group.s"
-	@echo "... src/vr/Light.o"
-	@echo "... src/vr/Light.i"
-	@echo "... src/vr/Light.s"
-	@echo "... src/vr/Loader.o"
-	@echo "... src/vr/Loader.i"
-	@echo "... src/vr/Loader.s"
-	@echo "... src/vr/LodNode.o"
-	@echo "... src/vr/LodNode.i"
-	@echo "... src/vr/LodNode.s"
-	@echo "... src/vr/Material.o"
-	@echo "... src/vr/Material.i"
-	@echo "... src/vr/Material.s"
-	@echo "... src/vr/RenderVisitor.o"
-	@echo "... src/vr/RenderVisitor.i"
-	@echo "... src/vr/RenderVisitor.s"
-	@echo "... src/vr/Scene.o"
-	@echo "... src/vr/Scene.i"
-	@echo "... src/vr/Scene.s"
-	@echo "... src/vr/Shader.o"
-	@echo "... src/vr/Shader.i"
-	@echo "... src/vr/Shader.s"
-	@echo "... src/vr/State.o"
-	@echo "... src/vr/State.i"
-	@echo "... src/vr/State.s"
+	@echo "... src/vr/Nodes/Geometry.o"
+	@echo "... src/vr/Nodes/Geometry.i"
+	@echo "... src/vr/Nodes/Geometry.s"
+	@echo "... src/vr/Nodes/Group.o"
+	@echo "... src/vr/Nodes/Group.i"
+	@echo "... src/vr/Nodes/Group.s"
+	@echo "... src/vr/Nodes/LodNode.o"
+	@echo "... src/vr/Nodes/LodNode.i"
+	@echo "... src/vr/Nodes/LodNode.s"
+	@echo "... src/vr/Nodes/Transform.o"
+	@echo "... src/vr/Nodes/Transform.i"
+	@echo "... src/vr/Nodes/Transform.s"
+	@echo "... src/vr/Scene/Camera.o"
+	@echo "... src/vr/Scene/Camera.i"
+	@echo "... src/vr/Scene/Camera.s"
+	@echo "... src/vr/Scene/Light.o"
+	@echo "... src/vr/Scene/Light.i"
+	@echo "... src/vr/Scene/Light.s"
+	@echo "... src/vr/Scene/Loader.o"
+	@echo "... src/vr/Scene/Loader.i"
+	@echo "... src/vr/Scene/Loader.s"
+	@echo "... src/vr/Scene/Scene.o"
+	@echo "... src/vr/Scene/Scene.i"
+	@echo "... src/vr/Scene/Scene.s"
+	@echo "... src/vr/State/Material.o"
+	@echo "... src/vr/State/Material.i"
+	@echo "... src/vr/State/Material.s"
+	@echo "... src/vr/State/Shader.o"
+	@echo "... src/vr/State/Shader.i"
+	@echo "... src/vr/State/Shader.s"
+	@echo "... src/vr/State/State.o"
+	@echo "... src/vr/State/State.i"
+	@echo "... src/vr/State/State.s"
+	@echo "... src/vr/State/Texture.o"
+	@echo "... src/vr/State/Texture.i"
+	@echo "... src/vr/State/Texture.s"
 	@echo "... src/vr/Text.o"
 	@echo "... src/vr/Text.i"
 	@echo "... src/vr/Text.s"
-	@echo "... src/vr/Texture.o"
-	@echo "... src/vr/Texture.i"
-	@echo "... src/vr/Texture.s"
 	@echo "... src/vr/Timer.o"
 	@echo "... src/vr/Timer.i"
 	@echo "... src/vr/Timer.s"
-	@echo "... src/vr/Transform.o"
-	@echo "... src/vr/Transform.i"
-	@echo "... src/vr/Transform.s"
-	@echo "... src/vr/UpdateVisitor.o"
-	@echo "... src/vr/UpdateVisitor.i"
-	@echo "... src/vr/UpdateVisitor.s"
+	@echo "... src/vr/Visitors/RenderVisitor.o"
+	@echo "... src/vr/Visitors/RenderVisitor.i"
+	@echo "... src/vr/Visitors/RenderVisitor.s"
+	@echo "... src/vr/Visitors/UpdateVisitor.o"
+	@echo "... src/vr/Visitors/UpdateVisitor.i"
+	@echo "... src/vr/Visitors/UpdateVisitor.s"
 	@echo "... src/vr/glErrorUtil.o"
 	@echo "... src/vr/glErrorUtil.i"
 	@echo "... src/vr/glErrorUtil.s"

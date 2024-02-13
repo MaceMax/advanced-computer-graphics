@@ -2,9 +2,10 @@
 
 #include <memory>
 
-#include "vr/Camera.h"
+// clang-format off
+#include "vr/Scene/Camera.h"
 #include "vr/FPSCounter.h"
-#include "vr/Scene.h"
+#include "vr/Scene/Scene.h"
 
 namespace vr {
 
