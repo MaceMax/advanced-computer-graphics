@@ -10,4 +10,16 @@
         </State>
      </Geometry>
     </Transform>
+
+<Transform translate="5 0 0">
+    <Geometry name="Sphere" filepath="models/sphere.obj">
+        <State>
+            <!-- Textures get blended equally -->
+            <Textures>
+                <Texture filepath="textures/flowers.jpg"/>
+                <Texture filepath="textures/box.bmp"/>
+            </Textures>
+        </State>
+    </Geometry>
+</Transform>
 </Scene>

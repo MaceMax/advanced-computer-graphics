@@ -164,7 +164,7 @@ void State::apply() {
     slots.resize(m_textures.size());
     if (m_textures.size() != 0) {
         for (int i = 0; i < m_textures.size(); i++) {
-            slots[i] = 3 + i;
+            slots[i] = TEXTURES_BASE_SLOT + i;
             slotActive[i] = m_textures[i] != nullptr;
             if (m_textures[i])
                 m_textures[i]->bind();

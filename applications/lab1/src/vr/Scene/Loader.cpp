@@ -252,7 +252,7 @@ bool vr::load3DModelFile(const std::string& filename, std::shared_ptr<Group>& no
     std::stack<glm::mat4> transformStack;
     transformStack.push(glm::mat4());
 
-    if (geometryMap->find(filepath) != geometryMap->end()) {
+    if (geometryMap != nullptr && geometryMap->find(filepath) != geometryMap->end()) {
         node->setChildren(geometryMap->at(filepath)->getChildren());
     } else {
         MaterialVector materials;
