@@ -14,14 +14,15 @@
 
 using namespace vr;
 
-Camera::Camera() : m_firstClick(true),
-                   m_speed(3.0f),
-                   m_fov(50),
-                   m_horizontalAngle(glm::pi<float>()),
-                   m_verticalAngle(0.0f),
-                   m_mouseSpeed(1),
-                   m_lastTime(0),
-                   m_speedup(1) {
+Camera::Camera(bool isLightCamera) : m_isLightCamera(isLightCamera),
+                                     m_firstClick(true),
+                                     m_speed(3.0f),
+                                     m_fov(50),
+                                     m_horizontalAngle(glm::pi<float>()),
+                                     m_verticalAngle(0.0f),
+                                     m_mouseSpeed(1),
+                                     m_lastTime(0),
+                                     m_speedup(1) {
     m_direction = glm::vec3(0.0f, 0.0f, -1.0f);
     m_up = glm::vec3(0.0f, 1.0f, 0.0f);
     m_position = glm::vec3(0.0f, -1.0f, 0.0f);
@@ -96,6 +97,10 @@ void Camera::handleMouse(GLFWwindow* window, double xpos, double ypos) {
 }
 
 void Camera::processInput(GLFWwindow* window) {
+    // If the camera is a light camera, it should not be controlled by the user
+    if (m_isLightCamera)
+        return;
+
     // Compute time difference between current and last frame
     float currentTime = (float)glfwGetTime();
     float deltaTime = float(currentTime - m_lastTime);

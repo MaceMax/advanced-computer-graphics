@@ -18,7 +18,7 @@ namespace vr
   public:
 
     /// Constructor
-    Camera();
+    Camera(bool isLightCamera = false);
 
     /**
     Handle keyboard events
@@ -137,7 +137,11 @@ namespace vr
   private:
 
     void handleMouse(GLFWwindow* window, double xpos, double ypos);
-    
+
+    GLuint m_fbo;
+    GLuint m_rbo;
+    GLuint m_depthTexure;
+
     glm::mat4 m_view;
     glm::mat4 m_projection;
 
@@ -149,6 +153,7 @@ namespace vr
     glm::vec3 m_up;
 
     bool m_firstClick;
+    bool m_isLightCamera;
     float m_speed;
     float m_fov;
     float m_horizontalAngle;

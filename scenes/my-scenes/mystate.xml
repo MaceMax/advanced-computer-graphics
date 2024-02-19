@@ -2,7 +2,7 @@
 <Scene>
     <State>
         <Lighting enabled="true">
-                <Light position="-5 2 0 1" diffuse="0.8 0.8 0.8 1" specular="1 1 1 1"/>
+                <Light position="1 1 0 0" diffuse="0.8 0.8 0.8 1" specular="1 1 1 1"/>
         </Lighting>
     </State>
     <Transform name="Transform2" translate="5 0 0" rotate="0 0 0" scale="1 1 1">
@@ -32,7 +32,7 @@
     <Transform name="Transform2" translate="-10 0 0" rotate="0 0 0" scale="1 1 1">
         <State>
             <CullFace enabled="false"/>
-            <Material ambient="1 1 1 0" diffuse="1 1 1 1" specular="0.9 0.9 0.9 1" shininess="32"/>
+            <Material ambient="1 1 1 1" diffuse="1 1 1 1" specular="0.9 0.9 0.9 1" shininess="32"/>
             <Textures>
                 <Texture filepath="textures/chrille.png"/>
                 <Texture filepath="textures/box.bmp"/>

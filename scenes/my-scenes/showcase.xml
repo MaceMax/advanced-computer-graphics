@@ -2,11 +2,16 @@
 <Scene>
 <State>
     <Lighting enabled="true">
-        <Light position="2 5.5 -6 1" ambient="0.5 0.5 0.5 1" diffuse="0.9 0.9 0.9 1" specular="1 1 1 1"/>    
+        <Light position="2 5.5 -6 1" ambient="1 1 1 1" diffuse="0.9 0.9 0.9 1" specular="1 1 1 1"/>    
     </Lighting>
 </State>
+<!--
 <Transform name="Transform1" scale="1 1 1" translate="-20 -1 30" rotate="0 0 0">
         <Geometry name="House" filepath="models/House01/House01.obj"/>
+</Transform>
+-->
+<Transform name="Transform1" scale="1 1 1" translate="5 6 -5" rotate="50 0 30">
+        <Geometry name="House" filepath="models/cube_special.obj"/>
 </Transform>
 <Group name="Group1">
     <Transform name="Transform1" scale="1 1 1" translate="3 3.2 -5" rotate="0 210 0">

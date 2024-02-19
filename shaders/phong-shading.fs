@@ -13,7 +13,7 @@ uniform mat4 v_inv;
 uniform int numberOfLights;
 uniform int lightingEnabled;
 
-const int MAX_MATERIAL_TEXTURES=3;
+const int MAX_MATERIAL_TEXTURES=8;
 const int MAX_TEXTURES=10;
 
 // declaration of a Material structure
@@ -64,8 +64,22 @@ void main()
   float attenuation;
   vec3 totalLighting = vec3(0.0, 0.0, 0.0);
 
+  vec4 diffuseColor = material.diffuse;
+  vec4 specularColor = material.specular;
+  vec4 ambientColor = material.ambient;
 
-  
+  if (material.activeTextures[0])
+  {
+    diffuseColor = texture(material.textures[0], texCoord);
+  }
+  float alpha = diffuseColor.a;
+
+  if (material.activeTextures[1])
+  {
+      specularColor = texture(material.textures[1], texCoord);
+  }
+
+  vec3 ambientReflection = vec3(0.0, 0.0, 0.0);
   if (lightingEnabled == 1) {
       // for all light sources
       for (int index = 0; index < numberOfLights; index++) 
@@ -76,6 +90,7 @@ void main()
             {
               attenuation = 1.0; // no attenuation
               lightDirection = normalize(vec3(light.position));
+              ambientReflection = vec3(light.ambient); // A scene should not have more than one directional light
             }
             else // point light or spotlight (or other kind of light) 
             {
@@ -86,9 +101,9 @@ void main()
               attenuation = 1.0 / (light.constant + light.linear * distance + light.quadratic * (distance * distance));
             }
             
-            vec3 ambientReflection = attenuation * vec3(light.ambient) * vec3(material.ambient); 
+        
             vec3 diffuseReflection = attenuation
-              * vec3(light.diffuse) * vec3(material.diffuse)
+              * vec3(light.diffuse) * vec3(diffuseColor)
               * max(0.0, dot(normalDirection, lightDirection));
 
             vec3 specularReflection;
@@ -98,24 +113,18 @@ void main()
             }
             else // light source on the right side
             {
-              specularReflection = attenuation * vec3(light.specular) * vec3(material.specular)
+              specularReflection = attenuation * vec3(light.specular) * vec3(specularColor)
                 * pow(max(0.0, dot(reflect(-lightDirection, normalDirection), viewDirection)), material.shininess);
             }
-            totalLighting += ambientReflection + diffuseReflection + specularReflection;
+            totalLighting += diffuseReflection + specularReflection;
         }       
         
       }
   }
 
-  // How we could check for a diffuse texture map
-  vec4 diffuseTex = vec4(0.0, 0.0, 0.0, 1.0);
-  if (material.activeTextures[0])
-  {
-    diffuseTex = texture2D(material.textures[0], texCoord);
-    totalLighting = totalLighting * diffuseTex.rgb;
-  }
-  float alpha = diffuseTex.a;
-  
+  ambientReflection = ambientReflection * vec3(ambientColor) * vec3(material.ambient);
+  totalLighting += ambientReflection;
+
   vec4 blendedColor;
   int activeTextureCount = 0;
 

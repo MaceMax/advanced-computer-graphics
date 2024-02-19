@@ -86,27 +86,32 @@ size_t ExtractMaterials(const aiScene* scene, MaterialVector& materials, const s
 
     for (uint32_t i = 0; i < num_materials; i++) {
         std::shared_ptr<Material> material(new Material);
-
+        aiReturn result;
         ai_material = scene->mMaterials[i];
+
         if (ai_material->GetName().C_Str() == std::string(AI_DEFAULT_MATERIAL_NAME) || ai_material->GetName().C_Str() == std::string("(null)")) {
             materials.push_back(nullptr);
             continue;
         }
 
-        ai_material->Get(AI_MATKEY_COLOR_AMBIENT, color);
-        material->setAmbient(glm::vec4(color.r, color.g, color.b, color.a));
+        result = ai_material->Get(AI_MATKEY_COLOR_AMBIENT, color);
+        if (result == AI_SUCCESS)
+            material->setAmbient(glm::vec4(color.r, color.g, color.b, color.a));
 
-        ai_material->Get(AI_MATKEY_COLOR_DIFFUSE, color);
-        material->setDiffuse(glm::vec4(color.r, color.g, color.b, color.a));
+        result = ai_material->Get(AI_MATKEY_COLOR_DIFFUSE, color);
+        if (result == AI_SUCCESS)
+            material->setDiffuse(glm::vec4(color.r, color.g, color.b, color.a));
 
-        ai_material->Get(AI_MATKEY_COLOR_SPECULAR, color);
-        material->setSpecular(glm::vec4(color.r, color.g, color.b, color.a));
+        result = ai_material->Get(AI_MATKEY_COLOR_SPECULAR, color);
+        if (result == AI_SUCCESS)
+            material->setSpecular(glm::vec4(color.r, color.g, color.b, color.a));
+
+        result = ai_material->Get(AI_MATKEY_SHININESS, shiniess);
+        if (result == AI_SUCCESS)
+            material->setShininess(shiniess);
 
         // ai_material->Get(AI_MATKEY_COLOR_EMISSIVE, color);
         // material->setAmbient(glm::vec4(color.r, color.g, color.b, color.a));
-
-        ai_material->Get(AI_MATKEY_SHININESS, shiniess);
-        material->setShininess(shiniess);
 
         if (ai_material->GetTextureCount(aiTextureType_DIFFUSE) > 0) {
             aiString res("res\\");
@@ -117,10 +122,10 @@ size_t ExtractMaterials(const aiScene* scene, MaterialVector& materials, const s
                 std::cerr << "Unable to find texture: " << path.C_Str() << std::endl;
             } else {
                 std::shared_ptr<vr::Texture> texture = std::make_shared<vr::Texture>();
-                if (!texture->create(texturePath.c_str(), true, 0))
+                if (!texture->create(texturePath.c_str(), true, DIFFUSE_TEXTURE))
                     std::cerr << "Error creating texture: " << texturePath << std::endl;
                 else
-                    material->setTexture(texture, 0);
+                    material->setTexture(texture, DIFFUSE_TEXTURE);
             }
         }
 
@@ -128,18 +133,54 @@ size_t ExtractMaterials(const aiScene* scene, MaterialVector& materials, const s
             aiString res("res\\");
             path.Clear();
             ai_material->GetTexture(aiTextureType_SPECULAR, 0, &path);
+
+            std::string texturePath = findTexture(path.C_Str(), modelPath);
+
+            if (texturePath.empty()) {
+                std::cerr << "Unable to find texture: " << path.C_Str() << std::endl;
+            } else {
+                std::shared_ptr<vr::Texture> texture = std::make_shared<vr::Texture>();
+                if (!texture->create(texturePath.c_str(), true, SPECULAR_TEXTURE))
+                    std::cerr << "Error creating texture: " << texturePath << std::endl;
+                else
+                    material->setTexture(texture, SPECULAR_TEXTURE);
+            }
         }
 
         if (ai_material->GetTextureCount(aiTextureType_HEIGHT) > 0) {
             aiString res("res\\");
             path.Clear();
             ai_material->GetTexture(aiTextureType_HEIGHT, 0, &path);
+
+            std::string texturePath = findTexture(path.C_Str(), modelPath);
+
+            if (texturePath.empty()) {
+                std::cerr << "Unable to find texture: " << path.C_Str() << std::endl;
+            } else {
+                std::shared_ptr<vr::Texture> texture = std::make_shared<vr::Texture>();
+                if (!texture->create(texturePath.c_str(), true, NORMAL_TEXTURE))
+                    std::cerr << "Error creating texture: " << texturePath << std::endl;
+                else
+                    material->setTexture(texture, NORMAL_TEXTURE);
+            }
         }
 
         if (ai_material->GetTextureCount(aiTextureType_DISPLACEMENT) > 0) {
             aiString res("res\\");
             path.Clear();
             ai_material->GetTexture(aiTextureType_DISPLACEMENT, 0, &path);
+
+            std::string texturePath = findTexture(path.C_Str(), modelPath);
+
+            if (texturePath.empty()) {
+                std::cerr << "Unable to find texture: " << path.C_Str() << std::endl;
+            } else {
+                std::shared_ptr<vr::Texture> texture = std::make_shared<vr::Texture>();
+                if (!texture->create(texturePath.c_str(), true, DISPLACEMENT_TEXTURE))
+                    std::cerr << "Error creating texture: " << texturePath << std::endl;
+                else
+                    material->setTexture(texture, DISPLACEMENT_TEXTURE);
+            }
         }
 
         materials.push_back(material);
