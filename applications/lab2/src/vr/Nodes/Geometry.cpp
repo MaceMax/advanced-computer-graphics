@@ -26,6 +26,21 @@ Geometry::~Geometry() {
         glDeleteBuffers(1, &m_vbo_texCoords);
         m_vbo_texCoords = 0;
     }
+
+    if (m_ibo_elements != 0) {
+        glDeleteBuffers(1, &m_ibo_elements);
+        m_ibo_elements = 0;
+    }
+
+    if (m_vbo_tangents != 0) {
+        glDeleteBuffers(1, &m_vbo_tangents);
+        m_vbo_tangents = 0;
+    }
+
+    if (m_vbo_bitangents != 0) {
+        glDeleteBuffers(1, &m_vbo_bitangents);
+        m_vbo_bitangents = 0;
+    }
 }
 
 void Geometry::accept(NodeVisitor& visitor) {
@@ -49,6 +64,16 @@ bool Geometry::initShader(const std::shared_ptr<vr::Shader>& shader) {
     attributeName = "vertex_texCoord";
     m_attribute_v_texCoords = shader->getAttribute(attributeName);
     if (m_attribute_v_texCoords == -1)
+        return false;
+
+    attributeName = "vertex_tangent";
+    m_attribute_v_tangent = shader->getAttribute(attributeName);
+    if (m_attribute_v_tangent == -1)
+        return false;
+
+    attributeName = "vertex_bitangent";
+    m_attribute_v_bitangent = shader->getAttribute(attributeName);
+    if (m_attribute_v_bitangent == -1)
         return false;
 
     return true;
@@ -84,6 +109,22 @@ void Geometry::upload() {
         glBindBuffer(GL_ARRAY_BUFFER, this->m_vbo_texCoords);
         glBufferData(GL_ARRAY_BUFFER, this->m_texCoords.size() * sizeof(this->m_texCoords[0]),
                      this->m_texCoords.data(), GL_STATIC_DRAW);
+        CHECK_GL_ERROR_LINE_FILE();
+    }
+
+    if (this->m_tangents.size() > 0) {
+        glGenBuffers(1, &this->m_vbo_tangents);
+        glBindBuffer(GL_ARRAY_BUFFER, this->m_vbo_tangents);
+        glBufferData(GL_ARRAY_BUFFER, this->m_tangents.size() * sizeof(this->m_tangents[0]),
+                     this->m_tangents.data(), GL_STATIC_DRAW);
+        CHECK_GL_ERROR_LINE_FILE();
+    }
+
+    if (this->m_bitangents.size() > 0) {
+        glGenBuffers(1, &this->m_vbo_bitangents);
+        glBindBuffer(GL_ARRAY_BUFFER, this->m_vbo_bitangents);
+        glBufferData(GL_ARRAY_BUFFER, this->m_bitangents.size() * sizeof(this->m_bitangents[0]),
+                     this->m_bitangents.data(), GL_STATIC_DRAW);
         CHECK_GL_ERROR_LINE_FILE();
     }
 
@@ -128,6 +169,34 @@ void Geometry::upload() {
                 0                         // offset of first element
             );
             glDisableVertexAttribArray(m_attribute_v_texCoords);
+        }
+
+        if (this->m_vbo_tangents != 0) {
+            glEnableVertexAttribArray(m_attribute_v_tangent);
+            glBindBuffer(GL_ARRAY_BUFFER, this->m_vbo_tangents);
+            glVertexAttribPointer(
+                m_attribute_v_tangent,  // attribute
+                3,                      // number of elements per vertex, here (x,y,z)
+                GL_FLOAT,               // the type of each element
+                GL_FALSE,               // take our values as-is
+                0,                      // no extra data between each position
+                0                       // offset of first element
+            );
+            glDisableVertexAttribArray(m_attribute_v_tangent);
+        }
+
+        if (this->m_vbo_bitangents != 0) {
+            glEnableVertexAttribArray(m_attribute_v_bitangent);
+            glBindBuffer(GL_ARRAY_BUFFER, this->m_vbo_bitangents);
+            glVertexAttribPointer(
+                m_attribute_v_bitangent,  // attribute
+                3,                        // number of elements per vertex, here (x,y,z)
+                GL_FLOAT,                 // the type of each element
+                GL_FALSE,                 // take our values as-is
+                0,                        // no extra data between each position
+                0                         // offset of first element
+            );
+            glDisableVertexAttribArray(m_attribute_v_bitangent);
         }
     }
 
@@ -221,6 +290,12 @@ void Geometry::draw(std::shared_ptr<vr::Shader> const& shader, const glm::mat4& 
         CHECK_GL_ERROR_LINE_FILE();
         if (m_vbo_texCoords != 0)
             glEnableVertexAttribArray(m_attribute_v_texCoords);
+
+        if (m_vbo_tangents != 0)
+            glEnableVertexAttribArray(m_attribute_v_tangent);
+
+        if (m_vbo_bitangents != 0)
+            glEnableVertexAttribArray(m_attribute_v_bitangent);
         CHECK_GL_ERROR_LINE_FILE();
     }
 
@@ -253,6 +328,12 @@ void Geometry::draw(std::shared_ptr<vr::Shader> const& shader, const glm::mat4& 
 
     if (this->m_vbo_texCoords != 0)
         glDisableVertexAttribArray(m_attribute_v_texCoords);
+
+    if (this->m_vbo_tangents != 0)
+        glDisableVertexAttribArray(m_attribute_v_tangent);
+
+    if (this->m_vbo_bitangents != 0)
+        glDisableVertexAttribArray(m_attribute_v_bitangent);
 
     if (m_useVAO)
         glBindVertexArray(0);

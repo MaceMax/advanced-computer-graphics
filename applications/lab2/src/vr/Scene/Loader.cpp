@@ -119,11 +119,11 @@ size_t ExtractMaterials(const aiScene* scene, MaterialVector& materials, const s
 
             std::string texturePath = findTexture(path.C_Str(), modelPath);
             if (texturePath.empty()) {
-                std::cerr << "Unable to find texture: " << path.C_Str() << std::endl;
+                std::cerr << "Unable to find diffuse texture: " << path.C_Str() << std::endl;
             } else {
                 std::shared_ptr<vr::Texture> texture = std::make_shared<vr::Texture>();
                 if (!texture->create(texturePath.c_str(), true, DIFFUSE_TEXTURE))
-                    std::cerr << "Error creating texture: " << texturePath << std::endl;
+                    std::cerr << "Error creating diffuse texture: " << texturePath << std::endl;
                 else
                     material->setTexture(texture, DIFFUSE_TEXTURE);
             }
@@ -137,11 +137,11 @@ size_t ExtractMaterials(const aiScene* scene, MaterialVector& materials, const s
             std::string texturePath = findTexture(path.C_Str(), modelPath);
 
             if (texturePath.empty()) {
-                std::cerr << "Unable to find texture: " << path.C_Str() << std::endl;
+                std::cerr << "Unable to find specular texture: " << path.C_Str() << std::endl;
             } else {
                 std::shared_ptr<vr::Texture> texture = std::make_shared<vr::Texture>();
                 if (!texture->create(texturePath.c_str(), true, SPECULAR_TEXTURE))
-                    std::cerr << "Error creating texture: " << texturePath << std::endl;
+                    std::cerr << "Error creating specular texture: " << texturePath << std::endl;
                 else
                     material->setTexture(texture, SPECULAR_TEXTURE);
             }
@@ -155,11 +155,11 @@ size_t ExtractMaterials(const aiScene* scene, MaterialVector& materials, const s
             std::string texturePath = findTexture(path.C_Str(), modelPath);
 
             if (texturePath.empty()) {
-                std::cerr << "Unable to find texture: " << path.C_Str() << std::endl;
+                std::cerr << "Unable to find normal texture: " << path.C_Str() << std::endl;
             } else {
                 std::shared_ptr<vr::Texture> texture = std::make_shared<vr::Texture>();
                 if (!texture->create(texturePath.c_str(), true, NORMAL_TEXTURE))
-                    std::cerr << "Error creating texture: " << texturePath << std::endl;
+                    std::cerr << "Error creating normal texture: " << texturePath << std::endl;
                 else
                     material->setTexture(texture, NORMAL_TEXTURE);
             }
@@ -173,11 +173,11 @@ size_t ExtractMaterials(const aiScene* scene, MaterialVector& materials, const s
             std::string texturePath = findTexture(path.C_Str(), modelPath);
 
             if (texturePath.empty()) {
-                std::cerr << "Unable to find texture: " << path.C_Str() << std::endl;
+                std::cerr << "Unable to find displacement texture: " << path.C_Str() << std::endl;
             } else {
                 std::shared_ptr<vr::Texture> texture = std::make_shared<vr::Texture>();
                 if (!texture->create(texturePath.c_str(), true, DISPLACEMENT_TEXTURE))
-                    std::cerr << "Error creating texture: " << texturePath << std::endl;
+                    std::cerr << "Error creating displacement texture: " << texturePath << std::endl;
                 else
                     material->setTexture(texture, DISPLACEMENT_TEXTURE);
             }
@@ -209,9 +209,6 @@ void parseNodes(aiNode* root_node, MaterialVector& materials, std::stack<glm::ma
 
     uint32_t num_meshes = root_node->mNumMeshes;
 
-    std::vector<glm::vec3> tangents;
-    std::vector<glm::vec2> tex_coords;
-
     for (uint32_t i = 0; i < num_meshes; i++) {
         aiMesh* mesh = aiScene->mMeshes[root_node->mMeshes[i]];
         uint32_t num_vertices = mesh->mNumVertices;
@@ -222,19 +219,18 @@ void parseNodes(aiNode* root_node, MaterialVector& materials, std::stack<glm::ma
         std::vector<glm::vec4> vertices(num_vertices);
         std::vector<glm::vec3> normals(num_vertices);
         std::vector<glm::vec2> texCoords(num_vertices);
-        std::vector<GLuint> elements;
+        std::vector<glm::vec3> tangents(num_vertices);
+        std::vector<glm::vec3> bitangents(num_vertices);
 
-        // tangents.resize(num_vertices);
+        std::vector<GLuint> elements;
 
         for (uint32_t j = 0; j < num_vertices; j++) {
             vertices[j] = glm::vec4(mesh->mVertices[j].x, mesh->mVertices[j].y, mesh->mVertices[j].z, 1);
             normals[j] = glm::vec3(mesh->mNormals[j].x, mesh->mNormals[j].y, mesh->mNormals[j].z);
 
-            glm::vec3 tangent;
             if (mesh->HasTangentsAndBitangents()) {
-                tangent.x = mesh->mTangents[j].x;
-                tangent.y = mesh->mTangents[j].y;
-                tangent.z = mesh->mTangents[j].z;
+                tangents[j] = glm::vec3(mesh->mTangents[j].x, mesh->mTangents[j].y, mesh->mTangents[j].z);
+                bitangents[j] = glm::vec3(mesh->mBitangents[j].x, mesh->mBitangents[j].y, mesh->mBitangents[j].z);
             }
 
             glm::vec2 tex_coord;
@@ -263,8 +259,7 @@ void parseNodes(aiNode* root_node, MaterialVector& materials, std::stack<glm::ma
                 elements.push_back(face.mIndices[k]);
             }
         }
-
-        std::shared_ptr<Geometry> loadedMesh(new Geometry(vertices, normals, texCoords, elements, mesh->mName.C_Str()));
+        std::shared_ptr<Geometry> loadedMesh(new Geometry(vertices, normals, texCoords, tangents, bitangents, elements, mesh->mName.C_Str()));
         loadedMesh->setInitialTransform(transformStack.top());
         loadedMesh->initShader(shader);
         loadedMesh->upload();
@@ -290,23 +285,25 @@ bool vr::load3DModelFile(const std::string& filename, std::shared_ptr<Group>& no
         return false;
     }
 
-    std::stack<glm::mat4> transformStack;
+    std::stack<glm::mat4>
+        transformStack;
     transformStack.push(glm::mat4());
 
     if (geometryMap != nullptr && geometryMap->find(filepath) != geometryMap->end()) {
         node->setChildren(geometryMap->at(filepath)->getChildren());
     } else {
         MaterialVector materials;
-
         Assimp::Importer importer;
+        std::cout << "Loading file: " << filepath << std::endl;
         const aiScene* aiScene = importer.ReadFile(filepath,
                                                    aiProcess_CalcTangentSpace |
                                                        aiProcess_GenSmoothNormals |
                                                        aiProcess_Triangulate |
                                                        aiProcess_JoinIdenticalVertices |
                                                        aiProcess_SortByPType);
-
+        std::cout << "Loaded file: " << filepath << std::endl;
         aiNode* root_node = aiScene->mRootNode;
+
         ExtractMaterials(aiScene, materials, filename);
         std::cout << "Found " << materials.size() << " materials" << std::endl;
         parseNodes(root_node, materials, transformStack, node, aiScene, shader);

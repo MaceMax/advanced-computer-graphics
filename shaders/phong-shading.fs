@@ -2,8 +2,9 @@
 
 // From vertex shader
 in vec4 position;  // position of the vertex (and fragment) in eye space
-in vec3 normal ;  // surface normal vector in eye space
+in vec3 normal;  // surface normal vector in eye space
 in vec2 texCoord; // Texture coordinate
+in mat3 TBN; // Tangent, bitangent and normal matrix
 
 // The end result of this shader
 out vec4 color;
@@ -58,7 +59,16 @@ uniform Textures textureLayers;
 
 void main()
 {
-  vec3 normalDirection = normalize(normal);
+  vec3 wNormal = normalize(normal);
+  // Check for normal map
+  if (material.activeTextures[3]) {
+    wNormal = texture(material.textures[3], texCoord).rgb;
+    wNormal = wNormal * 2.0 - 1.0;
+    wNormal = normalize(TBN * wNormal);
+  }  
+
+
+  vec3 normalDirection = wNormal;
   vec3 viewDirection = normalize(vec3(v_inv * vec4(0.0, 0.0, 0.0, 1.0) - position));
   vec3 lightDirection;
   float attenuation;

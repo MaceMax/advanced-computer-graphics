@@ -29,11 +29,14 @@ class Geometry : public Node {
      * @param useVAO Whether to use VAOs or not
      */
     Geometry(std::vector<glm::vec4> vertices, std::vector<glm::vec3> normals,
-             std::vector<glm::vec2> texCoords, std::vector<GLuint> indices,
+             std::vector<glm::vec2> texCoords, std::vector<glm::vec3> tangents,
+             std::vector<glm::vec3> bitangents, std::vector<GLuint> indices,
              const std::string& name = "Geometry", bool useVAO = true) : Node(name),
                                                                          m_vertices(vertices),
                                                                          m_normals(normals),
                                                                          m_texCoords(texCoords),
+                                                                         m_tangents(tangents),
+                                                                         m_bitangents(bitangents),
                                                                          m_indices(indices),
                                                                          m_useVAO(useVAO) {}
     ~Geometry();
@@ -103,6 +106,9 @@ class Geometry : public Node {
     std::vector<glm::vec4> m_vertices;
     std::vector<glm::vec3> m_normals;
     std::vector<glm::vec2> m_texCoords;
+    std::vector<glm::vec3> m_tangents;
+    std::vector<glm::vec3> m_bitangents;
+
     std::vector<GLuint> m_indices;
 
     glm::mat4 m_object2world;
@@ -111,10 +117,12 @@ class Geometry : public Node {
     GLint m_attribute_v_coord = -1;
     GLint m_attribute_v_normal = -1;
     GLint m_attribute_v_texCoords = -1;
+    GLint m_attribute_v_tangent = -1;
+    GLint m_attribute_v_bitangent = -1;
 
     bool m_useVAO;
     GLuint m_vao;
-    GLuint m_vbo_vertices = 0, m_vbo_normals = 0, m_vbo_texCoords = 0, m_ibo_elements = 0;
+    GLuint m_vbo_vertices = 0, m_vbo_normals = 0, m_vbo_texCoords = 0, m_ibo_elements = 0, m_vbo_tangents = 0, m_vbo_bitangents = 0;
 };
 
 }  // namespace vr
