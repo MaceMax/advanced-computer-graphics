@@ -24,6 +24,9 @@ void junk() {
 #include <glm/vec2.hpp>
 #include <iostream>
 #include <sstream>
+#include <thread>
+
+#define FPS_LIMIT 144.0
 
 // Weak pointer to the application, so we can access it in callbacks
 std::weak_ptr<vr::Application> g_applicationPtr;
@@ -78,6 +81,8 @@ GLFWwindow* initializeWindows(int width, int height) {
     glfwSetScrollCallback(window, scroll_mouse_callback);
 
     glfwSetWindowSizeCallback(window, window_size_callback);
+
+    glfwSwapInterval(0);
 
     // glad: load all OpenGL function pointers
     // ---------------------------------------
@@ -140,6 +145,7 @@ int main(int argc, char** argv) {
     glEnable(GL_DEPTH_TEST);
     glDisable(GL_FRAMEBUFFER_SRGB);
    
+    double lastTime = glfwGetTime();
     while (!glfwWindowShouldClose(window)) {
         application->update(window);
 
@@ -147,6 +153,13 @@ int main(int argc, char** argv) {
         glfwPollEvents();
 
         application->processInput(window);
+
+        // Limit the frame rate to 144 FPS
+        while (glfwGetTime() - lastTime < 1.0 / FPS_LIMIT) {
+            std::this_thread::sleep_for(std::chrono::milliseconds(1));
+        }
+        lastTime += 1.0 / FPS_LIMIT;
+
     }
 
     // Shutdown the application BEFORE we loose OpenGL Context
