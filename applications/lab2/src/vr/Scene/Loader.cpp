@@ -110,8 +110,10 @@ size_t ExtractMaterials(const aiScene* scene, MaterialVector& materials, const s
         if (result == AI_SUCCESS)
             material->setShininess(shiniess);
 
-        // ai_material->Get(AI_MATKEY_COLOR_EMISSIVE, color);
-        // material->setAmbient(glm::vec4(color.r, color.g, color.b, color.a));
+        result = ai_material->Get(AI_MATKEY_COLOR_EMISSIVE, color);
+        if (result == AI_SUCCESS) {
+            material->setEmission(glm::vec4(color.r, color.g, color.b, color.a));
+        }
 
         if (ai_material->GetTextureCount(aiTextureType_DIFFUSE) > 0) {
             aiString res("res\\");
@@ -147,10 +149,10 @@ size_t ExtractMaterials(const aiScene* scene, MaterialVector& materials, const s
             }
         }
 
-        if (ai_material->GetTextureCount(aiTextureType_HEIGHT) > 0) {
+        if (ai_material->GetTextureCount(aiTextureType_NORMALS) > 0) {
             aiString res("res\\");
             path.Clear();
-            ai_material->GetTexture(aiTextureType_HEIGHT, 0, &path);
+            ai_material->GetTexture(aiTextureType_NORMALS, 0, &path);
 
             std::string texturePath = findTexture(path.C_Str(), modelPath);
 
@@ -162,6 +164,24 @@ size_t ExtractMaterials(const aiScene* scene, MaterialVector& materials, const s
                     std::cerr << "Error creating normal texture: " << texturePath << std::endl;
                 else
                     material->setTexture(texture, NORMAL_TEXTURE);
+            }
+        }
+
+        if (ai_material->GetTextureCount(aiTextureType_EMISSIVE) > 0) {
+            aiString res("res\\");
+            path.Clear();
+            ai_material->GetTexture(aiTextureType_EMISSIVE, 0, &path);
+
+            std::string texturePath = findTexture(path.C_Str(), modelPath);
+
+            if (texturePath.empty()) {
+                std::cerr << "Unable to find emissive texture: " << path.C_Str() << std::endl;
+            } else {
+                std::shared_ptr<vr::Texture> texture = std::make_shared<vr::Texture>();
+                if (!texture->create(texturePath.c_str(), true, EMISSION_TEXTURE))
+                    std::cerr << "Error creating emissive texture: " << texturePath << std::endl;
+                else
+                    material->setTexture(texture, EMISSION_TEXTURE);
             }
         }
 
@@ -294,18 +314,14 @@ bool vr::load3DModelFile(const std::string& filename, std::shared_ptr<Group>& no
     } else {
         MaterialVector materials;
         Assimp::Importer importer;
-        std::cout << "Loading file: " << filepath << std::endl;
         const aiScene* aiScene = importer.ReadFile(filepath,
                                                    aiProcess_CalcTangentSpace |
                                                        aiProcess_GenSmoothNormals |
                                                        aiProcess_Triangulate |
                                                        aiProcess_JoinIdenticalVertices |
                                                        aiProcess_SortByPType);
-        std::cout << "Loaded file: " << filepath << std::endl;
         aiNode* root_node = aiScene->mRootNode;
-
         ExtractMaterials(aiScene, materials, filename);
-        std::cout << "Found " << materials.size() << " materials" << std::endl;
         parseNodes(root_node, materials, transformStack, node, aiScene, shader);
         if (geometryMap != nullptr)
             geometryMap->insert(std::make_pair(filepath, node));

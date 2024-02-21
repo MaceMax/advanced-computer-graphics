@@ -15,7 +15,7 @@ namespace vr {
 /// Simple class for storing material properties
 class Material {
    private:
-    glm::vec4 m_ambient, m_diffuse, m_specular;
+    glm::vec4 m_ambient, m_diffuse, m_specular, m_emission;
 
     GLfloat m_shininess;
 
@@ -28,10 +28,12 @@ class Material {
     glm::vec4 getAmbient() const;
     glm::vec4 getSpecular() const;
     glm::vec4 getDiffuse() const;
+    glm::vec4 getEmission() const;
 
     void setAmbient(const glm::vec4& color);
     void setSpecular(const glm::vec4& color);
     void setDiffuse(const glm::vec4& color);
+    void setEmission(const glm::vec4& color);
     void setShininess(float s);
 
     /**

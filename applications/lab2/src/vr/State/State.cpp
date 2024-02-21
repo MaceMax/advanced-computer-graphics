@@ -169,6 +169,7 @@ void State::apply() {
             if (m_textures[i])
                 m_textures[i]->bind();
         }
+
         m_shader->setIntVector("textureLayers.textures", slots);
         m_shader->setIntVector("textureLayers.activeTextures", slotActive);
     } else {

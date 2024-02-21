@@ -1,0 +1,461 @@
+{
+  "accessors": [
+    {
+      "bufferView": 2,
+      "componentType": 5126,
+      "count": 2676,
+      "max": [
+        1.275680661201477,
+        0.001149684190750122,
+        0.9272441267967224
+      ],
+      "min": [
+        -1.2755659818649292,
+        -0.3811403512954712,
+        -1.3280906677246094
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 2,
+      "byteOffset": 32112,
+      "componentType": 5126,
+      "count": 2676,
+      "max": [
+        0.9926348328590393,
+        1.0,
+        0.9913375377655029
+      ],
+      "min": [
+        -0.9926351308822632,
+        -1.0,
+        -1.0
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 3,
+      "componentType": 5126,
+      "count": 2676,
+      "max": [
+        1.0,
+        0.9928069114685059,
+        0.9891309142112732,
+        1.0
+      ],
+      "min": [
+        -0.9999932646751404,
+        -1.0,
+        -0.996715784072876,
+        1.0
+      ],
+      "type": "VEC4"
+    },
+    {
+      "bufferView": 1,
+      "componentType": 5126,
+      "count": 2676,
+      "max": [
+        0.9997751712799072,
+        0.7283252477645874
+      ],
+      "min": [
+        0.00022474807337857783,
+        0.00022474807337857783
+      ],
+      "type": "VEC2"
+    },
+    {
+      "bufferView": 0,
+      "componentType": 5125,
+      "count": 13704,
+      "type": "SCALAR"
+    },
+    {
+      "bufferView": 2,
+      "byteOffset": 64224,
+      "componentType": 5126,
+      "count": 4,
+      "max": [
+        1.0,
+        1.9997713565826416,
+        -8.700042963027954e-05
+      ],
+      "min": [
+        -1.0,
+        -0.00022870302200317383,
+        -8.700042963027954e-05
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 2,
+      "byteOffset": 64272,
+      "componentType": 5126,
+      "count": 4,
+      "max": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "min": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 3,
+      "byteOffset": 42816,
+      "componentType": 5126,
+      "count": 4,
+      "max": [
+        1.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "min": [
+        1.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "type": "VEC4"
+    },
+    {
+      "bufferView": 1,
+      "byteOffset": 21408,
+      "componentType": 5126,
+      "count": 4,
+      "max": [
+        1.0,
+        1.0
+      ],
+      "min": [
+        0.0,
+        0.0
+      ],
+      "type": "VEC2"
+    },
+    {
+      "bufferView": 0,
+      "byteOffset": 54816,
+      "componentType": 5125,
+      "count": 6,
+      "type": "SCALAR"
+    }
+  ],
+  "asset": {
+    "extras": {
+      "author": "SusanKing (https://sketchfab.com/krolzuzannapl)",
+      "license": "CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)",
+      "source": "https://sketchfab.com/3d-models/neon-heart-wall-decoration-00a256cc8f6b44038f718a78a6fd4cbc",
+      "title": "Neon heart (wall decoration)"
+    },
+    "generator": "Sketchfab-12.66.0",
+    "version": "2.0"
+  },
+  "bufferViews": [
+    {
+      "buffer": 0,
+      "byteLength": 54840,
+      "name": "floatBufferViews",
+      "target": 34963
+    },
+    {
+      "buffer": 0,
+      "byteLength": 21440,
+      "byteOffset": 54840,
+      "byteStride": 8,
+      "name": "floatBufferViews",
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteLength": 64320,
+      "byteOffset": 76280,
+      "byteStride": 12,
+      "name": "floatBufferViews",
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteLength": 42880,
+      "byteOffset": 140600,
+      "byteStride": 16,
+      "name": "floatBufferViews",
+      "target": 34962
+    }
+  ],
+  "buffers": [
+    {
+      "byteLength": 183480,
+      "uri": "scene.bin"
+    }
+  ],
+  "images": [
+    {
+      "uri": "textures/wall__0_baseColor.jpeg"
+    },
+    {
+      "uri": "textures/wall__0_metallicRoughness.png"
+    },
+    {
+      "uri": "textures/wall__0_normal.png"
+    },
+    {
+      "uri": "textures/neon_heart_baseColor.jpeg"
+    },
+    {
+      "uri": "textures/neon_heart_metallicRoughness.png"
+    },
+    {
+      "uri": "textures/neon_heart_emissive.jpeg"
+    },
+    {
+      "uri": "textures/neon_heart_normal.png"
+    }
+  ],
+  "materials": [
+    {
+      "doubleSided": true,
+      "name": "wall__0",
+      "normalTexture": {
+        "index": 2
+      },
+      "occlusionTexture": {
+        "index": 1
+      },
+      "pbrMetallicRoughness": {
+        "baseColorTexture": {
+          "index": 0
+        },
+        "metallicRoughnessTexture": {
+          "index": 1
+        }
+      }
+    },
+    {
+      "doubleSided": true,
+      "emissiveFactor": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "emissiveTexture": {
+        "index": 5
+      },
+      "name": "neon_heart",
+      "normalTexture": {
+        "index": 6
+      },
+      "occlusionTexture": {
+        "index": 4
+      },
+      "pbrMetallicRoughness": {
+        "baseColorTexture": {
+          "index": 3
+        },
+        "metallicRoughnessTexture": {
+          "index": 4
+        }
+      }
+    }
+  ],
+  "meshes": [
+    {
+      "name": "heart_neon_heart_0",
+      "primitives": [
+        {
+          "attributes": {
+            "NORMAL": 1,
+            "POSITION": 0,
+            "TANGENT": 2,
+            "TEXCOORD_0": 3
+          },
+          "indices": 4,
+          "material": 1,
+          "mode": 4
+        }
+      ]
+    },
+    {
+      "name": "wall__0",
+      "primitives": [
+        {
+          "attributes": {
+            "NORMAL": 6,
+            "POSITION": 5,
+            "TANGENT": 7,
+            "TEXCOORD_0": 8
+          },
+          "indices": 9,
+          "material": 0,
+          "mode": 4
+        }
+      ]
+    }
+  ],
+  "nodes": [
+    {
+      "children": [
+        1
+      ],
+      "matrix": [
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        2.220446049250313e-16,
+        -1.0,
+        0.0,
+        0.0,
+        1.0,
+        2.220446049250313e-16,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "name": "Sketchfab_model"
+    },
+    {
+      "children": [
+        2
+      ],
+      "matrix": [
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0,
+        0.0,
+        0.0,
+        -1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "name": "3f4029ba3e35400793b1304a04647e81.fbx"
+    },
+    {
+      "children": [
+        3,
+        5
+      ],
+      "name": "RootNode"
+    },
+    {
+      "children": [
+        4
+      ],
+      "matrix": [
+        27.454952239990234,
+        0.0,
+        0.0,
+        0.0,
+        -0.0,
+        -4.472979471609493e-06,
+        -27.454952239989872,
+        0.0,
+        0.0,
+        27.454952239989872,
+        -4.472979471609493e-06,
+        0.0,
+        -0.0057332683354616165,
+        85.4762954711914,
+        -8.794776916503906,
+        1.0
+      ],
+      "name": "heart"
+    },
+    {
+      "mesh": 0,
+      "name": "heart_neon_heart_0"
+    },
+    {
+      "children": [
+        6
+      ],
+      "matrix": [
+        76.8813705444336,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        76.88137054443352,
+        3.3605914398843126e-06,
+        0.0,
+        0.0,
+        -3.3605914398843126e-06,
+        76.88137054443352,
+        0.0,
+        5.169878828456423e-24,
+        0.0015556812286376953,
+        -8.819656372070313,
+        1.0
+      ],
+      "name": "wall"
+    },
+    {
+      "mesh": 1,
+      "name": "wall__0"
+    }
+  ],
+  "samplers": [
+    {
+      "magFilter": 9729,
+      "minFilter": 9987,
+      "wrapS": 10497,
+      "wrapT": 10497
+    }
+  ],
+  "scene": 0,
+  "scenes": [
+    {
+      "name": "Sketchfab_Scene",
+      "nodes": [
+        0
+      ]
+    }
+  ],
+  "textures": [
+    {
+      "sampler": 0,
+      "source": 0
+    },
+    {
+      "sampler": 0,
+      "source": 1
+    },
+    {
+      "sampler": 0,
+      "source": 2
+    },
+    {
+      "sampler": 0,
+      "source": 3
+    },
+    {
+      "sampler": 0,
+      "source": 4
+    },
+    {
+      "sampler": 0,
+      "source": 5
+    },
+    {
+      "sampler": 0,
+      "source": 6
+    }
+  ]
+}

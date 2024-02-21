@@ -19,8 +19,9 @@ Material::Material() : m_shininess(32) {
     m_ambient = glm::vec4(0.04, 0.04, 0.04, 1.0);
     m_diffuse = glm::vec4(0.8, 0.8, 0.8, 1.0);
     m_specular = glm::vec4(1.0, 1.0, 1.0, 1.0);
+    m_emission = glm::vec4(0.0, 0.0, 0.0, 1.0);
 
-    m_textures.resize(8);
+    m_textures.resize(MAX_MATERIAL_TEXTURES);
 }
 
 glm::vec4 Material::getAmbient() const { return m_ambient; }
@@ -31,6 +32,7 @@ void Material::setAmbient(const glm::vec4& color) { m_ambient = color; }
 void Material::setSpecular(const glm::vec4& color) { m_specular = color; }
 void Material::setDiffuse(const glm::vec4& color) { m_diffuse = color; }
 void Material::setShininess(float s) { m_shininess = s; }
+void Material::setEmission(const glm::vec4& color) { m_emission = color; }
 
 void Material::apply(std::shared_ptr<vr::Shader> shader) {
     GLint loc = 0;
@@ -39,6 +41,7 @@ void Material::apply(std::shared_ptr<vr::Shader> shader) {
     shader->setVec4("material.ambient", m_ambient);
     shader->setVec4("material.specular", m_specular);
     shader->setVec4("material.diffuse", m_diffuse);
+    shader->setVec4("material.emission", m_emission);
     shader->setFloat("material.shininess", m_shininess);
 
     std::vector<int> slotActive;

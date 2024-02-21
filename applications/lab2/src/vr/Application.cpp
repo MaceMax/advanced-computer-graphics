@@ -70,9 +70,9 @@ bool Application::initResources(const std::string& model_filename, const std::st
     if (m_scene->getLights().empty()) {
         std::cout << "No lights in scene, adding a default light" << std::endl;
         std::shared_ptr<Light> light = std::make_shared<Light>(glm::vec4(0.0, -2.0, 2.0, 1.0),
+                                                               glm::vec4(0.4, 0.4, 0.4, 1.0),
                                                                glm::vec4(1.0, 1.0, 1.0, 1.0),
-                                                               glm::vec4(1.0, 1.0, 1.0, 1.0),
-                                                               glm::vec4(1.0, 1.0, 1.0, 1.0));
+                                                               glm::vec4(0.8, 0.8, 0.8, 1.0));
         m_scene->add(light);
 
         BoundingBox box = m_scene->calculateBoundingBox();

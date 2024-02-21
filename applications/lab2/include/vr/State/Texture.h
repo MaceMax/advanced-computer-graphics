@@ -19,6 +19,7 @@ namespace vr {
 #define MATERIAL_TEXTURES_BASE_SLOT 1
 #define TEXTURES_BASE_SLOT 9
 #define MAX_TEXTURES 10
+#define MAX_MATERIAL_TEXTURES 8
 
 class Texture {
    public:

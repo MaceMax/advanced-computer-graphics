@@ -23,6 +23,7 @@ struct Material
     vec4 ambient;
     vec4 diffuse;
     vec4 specular;
+    vec4 emission;
 
     float shininess;
     bool activeTextures[MAX_MATERIAL_TEXTURES];
@@ -37,6 +38,7 @@ struct LightSource
   vec4 ambient;
   vec4 diffuse;
   vec4 specular;
+
   float constant;
   float linear;
   float quadratic;
@@ -73,10 +75,11 @@ void main()
   vec3 lightDirection;
   float attenuation;
   vec3 totalLighting = vec3(0.0, 0.0, 0.0);
-
+  
   vec4 diffuseColor = material.diffuse;
   vec4 specularColor = material.specular;
   vec4 ambientColor = material.ambient;
+  vec4 emissionColor = material.emission;
 
   if (material.activeTextures[0])
   {
@@ -89,6 +92,11 @@ void main()
       specularColor = texture(material.textures[1], texCoord);
   }
 
+  if (material.activeTextures[5])
+  {
+      emissionColor = texture(material.textures[5], texCoord);
+  }
+  
   vec3 ambientReflection = vec3(0.0, 0.0, 0.0);
   if (lightingEnabled == 1) {
       // for all light sources
@@ -117,7 +125,7 @@ void main()
               * max(0.0, dot(normalDirection, lightDirection));
 
             vec3 specularReflection;
-            if (dot(normalDirection, lightDirection) < 0.0) // light source on the wrong side?
+            if (material.shininess == 0.0 || dot(normalDirection, lightDirection) < 0.0) // light source on the wrong side?
             {
               specularReflection = vec3(0.0, 0.0, 0.0); // no specular reflection
             }
@@ -133,7 +141,7 @@ void main()
   }
 
   ambientReflection = ambientReflection * vec3(ambientColor) * vec3(material.ambient);
-  totalLighting += ambientReflection;
+  totalLighting = totalLighting + ambientReflection + vec3(emissionColor);
 
   vec4 blendedColor;
   int activeTextureCount = 0;
