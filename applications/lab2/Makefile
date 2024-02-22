@@ -367,6 +367,30 @@ src/vr/Nodes/Group.cpp.s:
 	cd /home/macemax/University/advanced-computer-graphics && $(MAKE) $(MAKESILENT) -f applications/lab2/CMakeFiles/lab2.dir/build.make applications/lab2/CMakeFiles/lab2.dir/src/vr/Nodes/Group.cpp.s
 .PHONY : src/vr/Nodes/Group.cpp.s
 
+src/vr/Nodes/LightNode.o: src/vr/Nodes/LightNode.cpp.o
+.PHONY : src/vr/Nodes/LightNode.o
+
+# target to build an object file
+src/vr/Nodes/LightNode.cpp.o:
+	cd /home/macemax/University/advanced-computer-graphics && $(MAKE) $(MAKESILENT) -f applications/lab2/CMakeFiles/lab2.dir/build.make applications/lab2/CMakeFiles/lab2.dir/src/vr/Nodes/LightNode.cpp.o
+.PHONY : src/vr/Nodes/LightNode.cpp.o
+
+src/vr/Nodes/LightNode.i: src/vr/Nodes/LightNode.cpp.i
+.PHONY : src/vr/Nodes/LightNode.i
+
+# target to preprocess a source file
+src/vr/Nodes/LightNode.cpp.i:
+	cd /home/macemax/University/advanced-computer-graphics && $(MAKE) $(MAKESILENT) -f applications/lab2/CMakeFiles/lab2.dir/build.make applications/lab2/CMakeFiles/lab2.dir/src/vr/Nodes/LightNode.cpp.i
+.PHONY : src/vr/Nodes/LightNode.cpp.i
+
+src/vr/Nodes/LightNode.s: src/vr/Nodes/LightNode.cpp.s
+.PHONY : src/vr/Nodes/LightNode.s
+
+# target to generate assembly for a file
+src/vr/Nodes/LightNode.cpp.s:
+	cd /home/macemax/University/advanced-computer-graphics && $(MAKE) $(MAKESILENT) -f applications/lab2/CMakeFiles/lab2.dir/build.make applications/lab2/CMakeFiles/lab2.dir/src/vr/Nodes/LightNode.cpp.s
+.PHONY : src/vr/Nodes/LightNode.cpp.s
+
 src/vr/Nodes/LodNode.o: src/vr/Nodes/LodNode.cpp.o
 .PHONY : src/vr/Nodes/LodNode.o
 
@@ -655,6 +679,30 @@ src/vr/Timer.cpp.s:
 	cd /home/macemax/University/advanced-computer-graphics && $(MAKE) $(MAKESILENT) -f applications/lab2/CMakeFiles/lab2.dir/build.make applications/lab2/CMakeFiles/lab2.dir/src/vr/Timer.cpp.s
 .PHONY : src/vr/Timer.cpp.s
 
+src/vr/Visitors/DepthVisitor.o: src/vr/Visitors/DepthVisitor.cpp.o
+.PHONY : src/vr/Visitors/DepthVisitor.o
+
+# target to build an object file
+src/vr/Visitors/DepthVisitor.cpp.o:
+	cd /home/macemax/University/advanced-computer-graphics && $(MAKE) $(MAKESILENT) -f applications/lab2/CMakeFiles/lab2.dir/build.make applications/lab2/CMakeFiles/lab2.dir/src/vr/Visitors/DepthVisitor.cpp.o
+.PHONY : src/vr/Visitors/DepthVisitor.cpp.o
+
+src/vr/Visitors/DepthVisitor.i: src/vr/Visitors/DepthVisitor.cpp.i
+.PHONY : src/vr/Visitors/DepthVisitor.i
+
+# target to preprocess a source file
+src/vr/Visitors/DepthVisitor.cpp.i:
+	cd /home/macemax/University/advanced-computer-graphics && $(MAKE) $(MAKESILENT) -f applications/lab2/CMakeFiles/lab2.dir/build.make applications/lab2/CMakeFiles/lab2.dir/src/vr/Visitors/DepthVisitor.cpp.i
+.PHONY : src/vr/Visitors/DepthVisitor.cpp.i
+
+src/vr/Visitors/DepthVisitor.s: src/vr/Visitors/DepthVisitor.cpp.s
+.PHONY : src/vr/Visitors/DepthVisitor.s
+
+# target to generate assembly for a file
+src/vr/Visitors/DepthVisitor.cpp.s:
+	cd /home/macemax/University/advanced-computer-graphics && $(MAKE) $(MAKESILENT) -f applications/lab2/CMakeFiles/lab2.dir/build.make applications/lab2/CMakeFiles/lab2.dir/src/vr/Visitors/DepthVisitor.cpp.s
+.PHONY : src/vr/Visitors/DepthVisitor.cpp.s
+
 src/vr/Visitors/RenderVisitor.o: src/vr/Visitors/RenderVisitor.cpp.o
 .PHONY : src/vr/Visitors/RenderVisitor.o
 
@@ -788,6 +836,9 @@ help:
 	@echo "... src/vr/Nodes/Group.o"
 	@echo "... src/vr/Nodes/Group.i"
 	@echo "... src/vr/Nodes/Group.s"
+	@echo "... src/vr/Nodes/LightNode.o"
+	@echo "... src/vr/Nodes/LightNode.i"
+	@echo "... src/vr/Nodes/LightNode.s"
 	@echo "... src/vr/Nodes/LodNode.o"
 	@echo "... src/vr/Nodes/LodNode.i"
 	@echo "... src/vr/Nodes/LodNode.s"
@@ -824,6 +875,9 @@ help:
 	@echo "... src/vr/Timer.o"
 	@echo "... src/vr/Timer.i"
 	@echo "... src/vr/Timer.s"
+	@echo "... src/vr/Visitors/DepthVisitor.o"
+	@echo "... src/vr/Visitors/DepthVisitor.i"
+	@echo "... src/vr/Visitors/DepthVisitor.s"
 	@echo "... src/vr/Visitors/RenderVisitor.o"
 	@echo "... src/vr/Visitors/RenderVisitor.i"
 	@echo "... src/vr/Visitors/RenderVisitor.s"

@@ -96,6 +96,29 @@ bool Texture::create(const char* image, bool isMaterialTexture, unsigned int slo
     return true;
 }
 
+void Texture::createDepthTexture(unsigned int width, unsigned int height, unsigned int slot) {
+    if (m_valid)
+        cleanup();
+
+    m_type = GL_TEXTURE_2D;
+
+    glGenTextures(1, &m_id);
+
+    m_textureSlot = DEPTH_TEXTURE_BASE_SLOT + slot;
+    glActiveTexture(GL_TEXTURE0 + m_textureSlot);
+    glBindTexture(GL_TEXTURE_2D, m_id);
+
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, width, height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+    glBindTexture(GL_TEXTURE_2D, 0);
+
+    m_valid = true;
+}
+
 Texture::Texture() : m_id(0), m_type(0), m_valid(false), m_textureSlot(0) {
 }
 

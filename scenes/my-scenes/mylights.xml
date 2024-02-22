@@ -1,14 +1,33 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Scene>
-    <State>
-        <Lighting enabled="true">
-            <Light enabled="false" position="0 1 0 0" ambient="1 1 1 1" diffuse="0.1 0.1 0.1 1" specular="0 0 0 1"/>
-            <Light position="0 1 0 0" ambient="0.4 0.4 0.4 1" diffuse="0.1 0.1 0.1 1" specular="0 0 0 1"/>
-            <Light position="0 17 0 1" diffuse="1 0 0 1" specular="1 1 1 1" constant="1" linear="0.045" quadratic="0.0075"/>
-            <Light position="10 17 0 1" diffuse="0 0 1 1" specular="1 1 1 1" constant="1" linear="0.045" quadratic="0.0075"/>
-            <Light position="5 20 5 1" diffuse="0 1 0 1" specular="1 1 1 1" constant="1" linear="0.045" quadratic="0.0075"/>
-        </Lighting>
-    </State>
+    <Light enabled="true" position="0 1 0 0" ambient="1 1 1 1" diffuse="0.1 0.1 0.1 1" specular="0 0 0 1"/>
+    <Light position="0 1 0 0" ambient="0.4 0.4 0.4 1" diffuse="0.1 0.1 0.1 1" specular="0 0 0 1"/>
+    <Transform name="Transform1" translate="0 0 0" rotate="0 0 0" scale="1 1 1">
+        <Callbacks>
+            <AnimationCallback speed="0.5" loop="true">
+                <Frame duration="1" translate="100 2 0" rotate="0 0 0" scale="1 1 1"/>
+                <Frame duration="1" translate="0 5 100" rotate="0 0 0" scale="1 1 1"/>
+                <Frame duration="1" translate="-100 2 0" rotate="0 0 0" scale="1 1 1"/>
+                <Frame duration="1" translate="0 5 -100" rotate="0 0 0" scale="1 1 1"/>
+                <Frame duration="1" translate="100 2 0" rotate="0 0 0" scale="1 1 1"/>
+            </AnimationCallback>
+        </Callbacks>
+        <Light position="5 20 5 1" diffuse="0 1 0 1" specular="1 1 1 1" constant="1" linear="0.045" quadratic="0.0075"/>
+    </Transform>
+    <Transform name="Transform1" translate="0 0 0" rotate="0 0 0" scale="1 1 1">
+        <Callbacks>
+            <AnimationCallback speed="1" loop="true">
+                <Frame duration="0.25" translate="0 5 100" rotate="0 0 0" scale="1 1 1"/>
+                <Frame duration="0.25" translate="-100 2 0" rotate="0 0 0" scale="1 1 1"/>
+                <Frame duration="10" translate="0 5 -100" rotate="0 0 0" scale="1 1 1"/>
+                <Frame duration="0.25" translate="100 2 0" rotate="0 0 0" scale="1 1 1"/>
+                <Frame duration="0.25" translate="0 5 100" rotate="0 0 0" scale="1 1 1"/>
+            </AnimationCallback>
+        </Callbacks>
+        <Light position="0 17 0 1" diffuse="1 0 0 1" specular="1 1 1 1" constant="1" linear="0.045" quadratic="0.0075"/>
+    </Transform>
+
+    <Light position="10 17 0 1" diffuse="0 0 1 1" specular="1 1 1 1" constant="1" linear="0.045" quadratic="0.0075"/>
     <Transform name="Transform1" scale="1 1 1" translate="0 0 0" rotate="0 0 0">
         <Geometry name="Mountain" filepath="models/Terrain/France_GameMap.stl"/>
     </Transform>

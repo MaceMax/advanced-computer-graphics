@@ -6,6 +6,7 @@
 #include <vr/FileSystem.h>
 #include <vr/Nodes/Geometry.h>
 #include <vr/Nodes/Group.h>
+#include <vr/Nodes/LightNode.h>
 #include <vr/Nodes/LodNode.h>
 #include <vr/Nodes/Transform.h>
 #include <vr/Scene/Loader.h>
@@ -411,58 +412,6 @@ std::string getAttribute(rapidxml::xml_node<>* node, const std::string& attribut
     return attrib->value();
 }
 
-LightVector parseLights(std::vector<std::string> xmlpath, rapidxml::xml_node<>* light_node) {
-    LightVector lights;
-    for (rapidxml::xml_node<>* child = light_node->first_node(); child; child = child->next_sibling()) {
-        xmlpath.push_back(child->name());
-        std::string name = std::string(child->name());
-
-        if (name != "Light")
-            throw std::runtime_error("Node (" + name + ") Lighting node can only contain Light nodes: " + pathToString(xmlpath));
-
-        std::string enabled = getAttribute(child, "enabled");
-        bool enabled_val = true;
-        if (!enabled.empty())
-            enabled_val = readValue<bool>(enabled);
-
-        std::string position = getAttribute(child, "position");
-        glm::vec4 pos;
-        if (!getVec<glm::vec4>(pos, position))
-            throw std::runtime_error("Node (" + name + ") Invalid position in: " + pathToString(xmlpath));
-
-        std::string ambient = getAttribute(child, "ambient");
-        glm::vec4 amb;
-        if (!getVec<glm::vec4>(amb, ambient))
-            throw std::runtime_error("Node (" + name + ") Invalid diffuse in: " + pathToString(xmlpath));
-
-        std::string diffuse = getAttribute(child, "diffuse");
-        glm::vec4 diff;
-        if (!getVec<glm::vec4>(diff, diffuse))
-            throw std::runtime_error("Node (" + name + ") Invalid diffuse in: " + pathToString(xmlpath));
-
-        std::string specular = getAttribute(child, "specular");
-        glm::vec4 spec;
-        if (!getVec<glm::vec4>(spec, specular))
-            throw std::runtime_error("Node (" + name + ") Invalid specular in: " + pathToString(xmlpath));
-
-        std::shared_ptr<Light> light = std::make_shared<Light>(pos, amb, diff, spec);
-
-        std::string constant = getAttribute(child, "constant");
-        std::string linear = getAttribute(child, "linear");
-        std::string quadratic = getAttribute(child, "quadratic");
-
-        if (!constant.empty() && !linear.empty() && !quadratic.empty()) {
-            light->setAttenuation(readValue<float>(constant), readValue<float>(linear), readValue<float>(quadratic));
-        }
-
-        light->setEnabled(enabled_val);
-
-        lights.push_back(light);
-    }
-
-    return lights;
-}
-
 TextureVector parseTextures(std::vector<std::string> xmlpath, rapidxml::xml_node<>* texture_node) {
     TextureVector textures;
     int slot = 0;
@@ -504,10 +453,6 @@ State parseState(std::vector<std::string> xmlpath, rapidxml::xml_node<>* state_n
 
         if (!enabled.empty())
             state.setLightingEnabled(readValue<bool>(enabled));
-
-        LightVector lights = parseLights(xmlpath, lightingNode);
-        for (auto l : lights)
-            state.addLight(l);
     }
 
     rapidxml::xml_node<>* shaderNode = state_node->first_node("Shader");
@@ -735,7 +680,7 @@ UpdateCallbackVector parseUpdateCallback(std::vector<std::string> xmlpath, rapid
     return updateCallbacks;
 }
 // Parses XML nodes recursively
-void parseSceneNode(std::vector<std::string> xmlpath, rapidxml::xml_node<>* node_node, GeometryMap& geometryMap, std::shared_ptr<Group>& node, const std::shared_ptr<Shader>& shader) {
+void parseSceneNode(std::vector<std::string> xmlpath, rapidxml::xml_node<>* node_node, GeometryMap& geometryMap, std::shared_ptr<Group>& node, const std::shared_ptr<Shader>& shader, LightVector& lights) {
     if (node_node->type() == rapidxml::node_comment || node_node->type() == rapidxml::node_doctype)
         return;
 
@@ -759,7 +704,7 @@ void parseSceneNode(std::vector<std::string> xmlpath, rapidxml::xml_node<>* node
 
         if (name == "Group") {
             std::shared_ptr<Group> groupNode = nodeName.empty() ? std::make_shared<Group>() : std::make_shared<Group>(nodeName);
-            parseSceneNode(xmlpath, child, geometryMap, groupNode, newShader);
+            parseSceneNode(xmlpath, child, geometryMap, groupNode, newShader, lights);
             if (state)
                 groupNode->setState(state);
             node->addChild(groupNode);
@@ -811,7 +756,7 @@ void parseSceneNode(std::vector<std::string> xmlpath, rapidxml::xml_node<>* node
 
             std::shared_ptr<Group> groupTransform = std::dynamic_pointer_cast<Group>(transformNode);
 
-            parseSceneNode(xmlpath, child, geometryMap, groupTransform, newShader);
+            parseSceneNode(xmlpath, child, geometryMap, groupTransform, newShader, lights);
 
             if (state)
                 transformNode->setState(state);
@@ -856,6 +801,56 @@ void parseSceneNode(std::vector<std::string> xmlpath, rapidxml::xml_node<>* node
                 for (auto c : updateCallbacks)
                     lod->addUpdateCallback(c);
             }
+        } else if (name == "Light") {
+            std::string enabled = getAttribute(child, "enabled");
+            bool enabled_val = true;
+            if (!enabled.empty())
+                enabled_val = readValue<bool>(enabled);
+
+            std::string position = getAttribute(child, "position");
+            glm::vec4 pos;
+            if (!getVec<glm::vec4>(pos, position))
+                throw std::runtime_error("Node (" + name + ") Invalid position in: " + pathToString(xmlpath));
+
+            std::string ambient = getAttribute(child, "ambient");
+            glm::vec4 amb;
+            if (!getVec<glm::vec4>(amb, ambient))
+                throw std::runtime_error("Node (" + name + ") Invalid diffuse in: " + pathToString(xmlpath));
+
+            std::string diffuse = getAttribute(child, "diffuse");
+            glm::vec4 diff;
+            if (!getVec<glm::vec4>(diff, diffuse))
+                throw std::runtime_error("Node (" + name + ") Invalid diffuse in: " + pathToString(xmlpath));
+
+            std::string specular = getAttribute(child, "specular");
+            glm::vec4 spec;
+            if (!getVec<glm::vec4>(spec, specular))
+                throw std::runtime_error("Node (" + name + ") Invalid specular in: " + pathToString(xmlpath));
+
+            std::shared_ptr<Light> light = std::make_shared<Light>(pos, amb, diff, spec);
+
+            std::string constant = getAttribute(child, "constant");
+            std::string linear = getAttribute(child, "linear");
+            std::string quadratic = getAttribute(child, "quadratic");
+
+            if (!constant.empty() && !linear.empty() && !quadratic.empty()) {
+                light->setAttenuation(readValue<float>(constant), readValue<float>(linear), readValue<float>(quadratic));
+            }
+
+            light->setEnabled(enabled_val);
+            lights.push_back(light);
+
+            std::shared_ptr<LightNode> lightNode = std::make_shared<LightNode>(light, nodeName);
+
+            rapidxml::xml_node<>* callbacksNode = child->first_node("Callbacks");
+            if (callbacksNode) {
+                xmlpath.push_back(callbacksNode->name());
+                UpdateCallbackVector updateCallbacks = parseUpdateCallback(xmlpath, callbacksNode);
+                for (auto c : updateCallbacks)
+                    lightNode->addUpdateCallback(c);
+            }
+
+            node->addChild(lightNode);
         }
 
         xmlpath.pop_back();
@@ -903,7 +898,9 @@ bool vr::loadSceneFile(const std::string& sceneFile, std::shared_ptr<Scene>& sce
         }
 
         GeometryMap geometryMap;
-        parseSceneNode(xmlpath, root_node, geometryMap, scene->getRoot(), scene->getRoot()->getState()->getShader());
+        LightVector lights;
+        parseSceneNode(xmlpath, root_node, geometryMap, scene->getRoot(), scene->getRoot()->getState()->getShader(), lights);
+        scene->setLights(lights);
 
         xmlpath.pop_back();  // scene
     } catch (rapidxml::parse_error& error) {

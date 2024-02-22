@@ -1,6 +1,7 @@
 #include <vr/Callbacks/UpdateCallback.h>
 #include <vr/Nodes/Geometry.h>
 #include <vr/Nodes/Group.h>
+#include <vr/Nodes/LightNode.h>
 #include <vr/Nodes/LodNode.h>
 #include <vr/Nodes/Transform.h>
 #include <vr/Visitors/RenderVisitor.h>
@@ -73,4 +74,9 @@ void RenderVisitor::visit(LodNode* lodNode) {
     if (lodNode->hasState()) {
         m_stateStack.pop();
     }
+}
+
+void RenderVisitor::visit(LightNode* lightNode) {
+    glm::mat4 t_mat = m_matrixStack.top();
+    lightNode->getLight()->setTransform(t_mat);
 }

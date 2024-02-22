@@ -15,6 +15,8 @@ Scene::Scene() {
     m_renderVisitor->setActiveCamera(m_camera);
     m_updateVisitor = std::make_shared<UpdateVisitor>();
     m_updateVisitor->setActiveCamera(m_camera);
+    m_depthVisitor = std::make_shared<DepthVisitor>();
+    m_depthVisitor->setActiveCamera(m_camera);
 }
 
 std::shared_ptr<Scene> Scene::getInstance() {
@@ -41,11 +43,17 @@ bool Scene::initShaders(const std::string& vshader_filename, const std::string& 
 }
 
 void Scene::add(std::shared_ptr<Light> light) {
+    m_lights.push_back(light);
     m_root->getState()->addLight(light);
 }
 
 const LightVector Scene::getLights() {
-    return m_root->getState()->getLights();
+    return m_lights;
+}
+
+void Scene::setLights(LightVector lights) {
+    m_lights = lights;
+    m_root->getState()->setLights(m_lights);
 }
 
 std::shared_ptr<Camera> Scene::getCamera() {
@@ -63,6 +71,14 @@ void Scene::cleanup() {
 
     if (m_root) {
         m_root = nullptr;
+    }
+
+    if (m_depthVisitor) {
+        m_depthVisitor = nullptr;
+    }
+
+    if (m_lights.size() > 0) {
+        m_lights.clear();
     }
 }
 
@@ -83,5 +99,21 @@ BoundingBox Scene::calculateBoundingBox() {
 
 void Scene::render() {
     m_updateVisitor->visit(m_root.get());
+
+    renderDepthMaps();
+
     m_renderVisitor->visit(m_root.get());
+}
+
+void Scene::renderDepthMaps() {
+    glDisable(GL_CULL_FACE);
+    for (auto& light : m_lights) {
+        glClear(GL_DEPTH_BUFFER_BIT);
+        m_depthVisitor->setupRenderState(light->getDepthMap().id(), light->getView(), light->getProjection());
+        m_depthVisitor->visit(m_root.get());
+    }
+
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    glViewport(0, 0, m_camera->getScreenSize().x, m_camera->getScreenSize().y);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }

@@ -1,5 +1,6 @@
 #include <vr/Nodes/Geometry.h>
 #include <vr/Nodes/Group.h>
+#include <vr/Nodes/LightNode.h>
 #include <vr/Nodes/LodNode.h>
 #include <vr/Nodes/Transform.h>
 #include <vr/Visitors/UpdateVisitor.h>
@@ -48,5 +49,13 @@ void UpdateVisitor::visit(LodNode* lodNode) {
     Node* node = lodNode->getChild(m_activeCamera->getPosition());
     if (node) {
         node->accept(*this);
+    }
+}
+
+void UpdateVisitor::visit(LightNode* lightNode) {
+    if (lightNode->hasCallbacks()) {
+        for (auto& callback : lightNode->getUpdateCallbacks()) {
+            callback->execute(*lightNode);
+        }
     }
 }

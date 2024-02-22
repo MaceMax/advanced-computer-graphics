@@ -2,13 +2,15 @@
 #include <vr/Application.h>
 #include <vr/FileSystem.h>
 #include <vr/Nodes/Geometry.h>
+#include <vr/Nodes/LightNode.h>
 #include <vr/Scene/Loader.h>
 #include <vr/Scene/Scene.h>
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
+#include <glm/mat4x4.hpp>
 #include <glm/vec3.hpp>
+#include <glm/vec4.hpp>
 #include <iostream>
 
 using namespace vr;
@@ -69,7 +71,7 @@ bool Application::initResources(const std::string& model_filename, const std::st
 
     if (m_scene->getLights().empty()) {
         std::cout << "No lights in scene, adding a default light" << std::endl;
-        std::shared_ptr<Light> light = std::make_shared<Light>(glm::vec4(0.0, -2.0, 2.0, 1.0),
+        std::shared_ptr<Light> light = std::make_shared<Light>(glm::vec4(0.0, 1.0, 0.0, 0.0),
                                                                glm::vec4(0.4, 0.4, 0.4, 1.0),
                                                                glm::vec4(1.0, 1.0, 1.0, 1.0),
                                                                glm::vec4(0.8, 0.8, 0.8, 1.0));
@@ -86,6 +88,35 @@ bool Application::initResources(const std::string& model_filename, const std::st
         glm::vec4 position;
         position = glm::vec4(eye + glm::vec3(3, 2, 0), position.w);
         light->setPosition(position);
+
+        std::shared_ptr<LightNode> lightNode = std::make_shared<LightNode>(light);
+        m_sceneRoot->addChild(lightNode);
+    }
+
+    // Calculate the view and projection matrices for every light and initialize the depth maps.
+    BoundingBox box = m_scene->calculateBoundingBox();
+    glm::vec3 center = box.getCenter();
+    float radius = box.getRadius();
+
+    int i = 0;
+    for (auto light : m_scene->getLights()) {
+        // If the light is directional, we want to look at the center of the scene from the direction of the light
+        if (light->getPosition().w == 0) {
+            glm::vec3 lightDir = glm::normalize(glm::vec3(light->getPosition()));
+
+            // Calculate up vector that is not parallel to lightDir
+            glm::vec3 up = glm::abs(lightDir.y) < 0.999 ? glm::vec3(0.0, 1.0, 0.0) : glm::vec3(1.0, 0.0, 0.0);
+
+            glm::mat4 view = glm::lookAt(center - lightDir, center, up);
+            glm::mat4 proj = glm::ortho(-radius, radius, -radius, radius, -radius, 2 * radius);
+
+            light->setView(view);
+            light->setProjection(proj);
+        } else {
+        }
+
+        light->initDepthMap(i);
+        i++;
     }
 
 #if 0
@@ -153,7 +184,6 @@ void Application::initView() {
 
 void Application::render(GLFWwindow* window) {
     glClearColor(m_clearColor[0], m_clearColor[1], m_clearColor[2], m_clearColor[3]);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     m_scene->render();
     m_fpsCounter->render(window);

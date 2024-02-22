@@ -107,6 +107,10 @@ LightVector const State::getLights() {
     return m_lights;
 }
 
+void State::setLights(LightVector lights) {
+    m_lights = lights;
+}
+
 void State::setMaterial(std::shared_ptr<Material> material) {
     m_material = material;
 }

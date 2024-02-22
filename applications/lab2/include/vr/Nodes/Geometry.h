@@ -85,7 +85,7 @@ class Geometry : public Node {
      * @param shader The shader to use
      * @param modelMatrix  The model matrix
      */
-    void draw(std::shared_ptr<vr::Shader> const& shader, const glm::mat4& modelMatrix);
+    void draw(std::shared_ptr<vr::Shader> const& shader, const glm::mat4& modelMatrix, bool depthPass = false);
 
     /**
      * @brief Draws the bounding box of the geometry

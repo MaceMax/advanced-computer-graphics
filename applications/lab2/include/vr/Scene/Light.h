@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vr/State/Shader.h>
+#include <vr/State/Texture.h>
 
 #include <glm/glm.hpp>
 #include <memory>
@@ -37,11 +38,32 @@ class Light {
     void setEnabled(bool enabled);
 
     /**
+     * @brief Set the Transform matrix of the light
+     *
+     * @param model The transform matrix
+     */
+    void setTransform(glm::mat4 model) { m_model = model; }
+
+    /**
+     * @brief Get the Transform matrix of the light
+     *
+     * @return glm::mat4 The transform matrix
+     */
+    glm::mat4 getTransform() const { return m_model; }
+
+    /**
      * @brief Set the position of the light
      *
      * @param position The position of the light
      */
     void setPosition(glm::vec4 position);
+
+    /**
+     * @brief Returns the position of the light.
+     *
+     * @return glm::vec4  The position of the light
+     */
+    glm::vec4 getPosition() const { return position; }
 
     /**
      * @brief Set the ambient color of the light
@@ -65,6 +87,20 @@ class Light {
     void setSpecular(glm::vec4 specular);
 
     /**
+     * @brief Get the depth map of the light
+     *
+     * @return const Texture& The depth map
+     */
+    const Texture& getDepthMap();
+
+    /**
+     * @brief Initilize the depth map texture for the light
+     *
+     * @param slot The texture slot to bind the depth map to
+     */
+    void initDepthMap(unsigned int slot);
+
+    /**
      * @brief Set the attenuation of the light
      *
      * @param constant The constant attenuation
@@ -73,8 +109,15 @@ class Light {
      */
     void setAttenuation(float constant, float linear, float quadratic);
 
+    glm::mat4 getProjection() const { return m_projection; }
+    void setProjection(const glm::mat4& projection) { m_projection = projection; }
+
+    glm::mat4 getView() const { return m_view; }
+    void setView(const glm::mat4& view) { m_view = view; }
+
    private:
     bool enabled;
+    glm::mat4 m_model;
     glm::vec4 position;
     glm::vec4 ambient;
     glm::vec4 diffuse;
@@ -82,6 +125,11 @@ class Light {
     float constant;
     float linear;
     float quadratic;
+
+    // Shadow mapping
+    glm::mat4 m_projection;
+    glm::mat4 m_view;
+    Texture m_depthMap;
 
     friend class Scene;
 };

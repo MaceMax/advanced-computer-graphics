@@ -23,7 +23,9 @@ class State {
 
     void addLight(std::shared_ptr<Light> light);
     void setLightEnabled(size_t idx, bool enabled);
+
     LightVector const getLights();
+    void setLights(LightVector lights);
 
     void setMaterial(std::shared_ptr<Material> material);
     std::shared_ptr<Material> const getMaterial();

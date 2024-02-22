@@ -9,6 +9,7 @@
 #include "Light.h"
 #include "vr/Nodes/Node.h"
 #include "vr/State/Shader.h"
+#include "vr/Visitors/DepthVisitor.h"
 #include "vr/Visitors/RenderVisitor.h"
 #include "vr/Visitors/UpdateVisitor.h"
 
@@ -59,6 +60,11 @@ class Scene {
     const LightVector getLights();
 
     /**
+     * Set the lightsources in the scene
+     */
+    void setLights(LightVector lights);
+
+    /**
     Get the camera
     \return The camera
     */
@@ -82,6 +88,11 @@ class Scene {
     */
     void render();
 
+    /**
+     * Renders the depth maps for all lights in the scene
+     */
+    void renderDepthMaps();
+
    private:
     /**
      * Private constructor for the scene class.
@@ -90,6 +101,9 @@ class Scene {
 
     std::shared_ptr<RenderVisitor> m_renderVisitor;
     std::shared_ptr<UpdateVisitor> m_updateVisitor;
+    std::shared_ptr<DepthVisitor> m_depthVisitor;
+    // LightNode need to be also stored in the scene as they are needed for rendering depth maps
+    LightVector m_lights;
 
     static std::shared_ptr<Scene> instance;
     std::shared_ptr<vr::Shader> m_shader;

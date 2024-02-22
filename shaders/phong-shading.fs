@@ -58,6 +58,7 @@ uniform LightSource lights[MaxNumberOfLights];
 // The front surface material
 uniform Material material;
 uniform Textures textureLayers;
+uniform sampler2D depthMaps[MaxNumberOfLights];
 
 void main()
 {

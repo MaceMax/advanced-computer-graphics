@@ -20,6 +20,10 @@ namespace vr {
 #define TEXTURES_BASE_SLOT 9
 #define MAX_TEXTURES 10
 #define MAX_MATERIAL_TEXTURES 8
+#define DEPTH_TEXTURE_BASE_SLOT 17
+#define MAX_DEPTH_TEXTURES 10
+
+#define DEPTH_MAP_RESOLUTION 1024
 
 class Texture {
    public:
@@ -38,6 +42,14 @@ class Texture {
     bool create(const char* image, bool isMaterialTexture, unsigned int slot = 0, GLenum texType = GL_TEXTURE_2D, GLenum pixelType = GL_UNSIGNED_BYTE);
 
     /**
+     * @brief Creates a depth texture
+     *
+     * @param width the width of the texture
+     * @param height the height of the texture
+     */
+    void createDepthTexture(unsigned int width, unsigned int height, unsigned int slot);
+
+    /**
      * @brief Checks if the texture is valid
      *
      * @return bool true if the texture is valid, false otherwise
@@ -45,6 +57,8 @@ class Texture {
     bool isValid();
 
     ~Texture();
+
+    GLuint id() const { return m_id; }
 
     /// Assigns a texture unit to a texture
     void texUnit(GLuint program, const char* uniform, GLuint unit);

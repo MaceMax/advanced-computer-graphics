@@ -234,7 +234,7 @@ void Geometry::buildGeometry(std::vector<glm::vec4> vertices, std::vector<glm::v
     m_indices = indices;
 }
 
-void Geometry::draw(std::shared_ptr<vr::Shader> const& shader, const glm::mat4& modelMatrix) {
+void Geometry::draw(std::shared_ptr<vr::Shader> const& shader, const glm::mat4& modelMatrix, bool depthPass) {
     if (m_useVAO) {
         glBindVertexArray(m_vao);
         CHECK_GL_ERROR_LINE_FILE();
@@ -307,8 +307,12 @@ void Geometry::draw(std::shared_ptr<vr::Shader> const& shader, const glm::mat4& 
     Transform normal vectors with transpose of inverse of upper left
     3x3 model matrix (ex-gl_NormalMatrix):
     */
-    glm::mat3 m_3x3_inv_transp = glm::transpose(glm::inverse(glm::mat3(obj2World)));
-    shader->setMat3("m_3x3_inv_transp", m_3x3_inv_transp);
+
+    if (!depthPass) {
+        glm::mat3 m_3x3_inv_transp = glm::transpose(glm::inverse(glm::mat3(obj2World)));
+        shader->setMat3("m_3x3_inv_transp", m_3x3_inv_transp);
+    }
+
     /* Push each element in buffer_vertices to the vertex shader */
     if (this->m_ibo_elements != 0) {
         if (!m_useVAO)

@@ -13,10 +13,19 @@ Light::Light(glm::vec4 position, glm::vec4 ambient, glm::vec4 diffuse, glm::vec4
     this->ambient = ambient;
     this->diffuse = diffuse;
     this->specular = specular;
+    this->m_model = glm::mat4(1.0f);
 
     this->constant = 1.0f;
     this->linear = 0.09f;
     this->quadratic = 0.032f;
+}
+
+void Light::initDepthMap(unsigned int slot) {
+    m_depthMap.createDepthTexture(DEPTH_MAP_RESOLUTION, DEPTH_MAP_RESOLUTION, slot);
+}
+
+const Texture& Light::getDepthMap() {
+    return m_depthMap;
 }
 
 void Light::setEnabled(bool enabled) {
@@ -53,12 +62,21 @@ void Light::apply(std::shared_ptr<vr::Shader> shader, size_t idx) {
     GLint loc = -1;
     std::string uniform_name;
 
+    glm::vec4 world_position = m_model * position;
+
     uniform_name = prefix + "enabled";
     shader->setInt(uniform_name, enabled);
     shader->setVec4(prefix + "ambient", this->ambient);
     shader->setVec4(prefix + "diffuse", this->diffuse);
     shader->setVec4(prefix + "specular", this->specular);
-    shader->setVec4(prefix + "position", this->position);
+    shader->setVec4(prefix + "position", world_position);
+
+    std::string depthPrefix = "depthMaps[";
+    depthPrefix += std::to_string(idx);
+    depthPrefix += "]";
+
+    shader->setInt(depthPrefix, DEPTH_TEXTURE_BASE_SLOT + idx);
+    m_depthMap.bind();
 
     if (position.w != 0) {
         shader->setFloat(prefix + "constant", this->constant);
