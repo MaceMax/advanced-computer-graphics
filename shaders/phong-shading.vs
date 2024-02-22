@@ -6,14 +6,16 @@ layout(location = 2) in vec2 vertex_texCoord;
 layout(location = 3) in vec3 vertex_tangent;
 layout(location = 4) in vec3 vertex_bitangent;
 
-
 out vec4 position;  // position of the vertex (and fragment) in world space
 out vec3 normal;  // surface normal vector in world space
 out vec2 texCoord;
 out mat3 TBN;  // TBN matrix 
 
+const int MaxNumberOfLights = 10;
+
 // model, view and projection transform
 uniform mat4 m, v, p;
+uniform mat4 lsm[MaxNumberOfLights]; // Either we pass the entire light struct from here or just the lightSpacePos for each light.
 
 // Inverse transpose of model matrix for transforming normals
 uniform mat3 m_3x3_inv_transp;
