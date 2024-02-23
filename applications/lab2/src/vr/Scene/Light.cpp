@@ -55,26 +55,23 @@ void Light::setAttenuation(float constant, float linear, float quadratic) {
 }
 
 void Light::apply(std::shared_ptr<vr::Shader> shader, size_t idx) {
-    std::stringstream str;
-    str << "lights[" << idx << "].";
-    std::string prefix = str.str();
-
-    GLint loc = -1;
-    std::string uniform_name;
-
+    std::string prefix = constructPrefix("lights", idx, ".");
     glm::vec4 world_position = m_model * position;
 
-    uniform_name = prefix + "enabled";
+    std::string uniform_name = prefix + "enabled";
     shader->setInt(uniform_name, enabled);
     shader->setVec4(prefix + "ambient", this->ambient);
     shader->setVec4(prefix + "diffuse", this->diffuse);
     shader->setVec4(prefix + "specular", this->specular);
     shader->setVec4(prefix + "position", world_position);
 
-    std::string depthPrefix = "depthMaps[";
-    depthPrefix += std::to_string(idx);
-    depthPrefix += "]";
+    std::string lightSpacePrefix = constructPrefix("lightSpaceMatrix", idx);
+    shader->setMat4(lightSpacePrefix, m_projection * m_view);
 
+    std::string activeLightprefix = constructPrefix("activeLights", idx);
+    shader->setInt(activeLightprefix, enabled);
+
+    std::string depthPrefix = constructPrefix("depthMaps", idx);
     shader->setInt(depthPrefix, DEPTH_TEXTURE_BASE_SLOT + idx);
     m_depthMap.bind();
 
@@ -84,4 +81,8 @@ void Light::apply(std::shared_ptr<vr::Shader> shader, size_t idx) {
         shader->setFloat(prefix + "quadratic", this->quadratic);
     }
     CHECK_GL_ERROR_LINE_FILE();
+}
+
+std::string Light::constructPrefix(const std::string& prefix, size_t idx, const std::string& suffix) {
+    return prefix + "[" + std::to_string(idx) + "]" + suffix;
 }

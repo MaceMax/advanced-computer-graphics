@@ -1,10 +1,13 @@
 #version 410 core
 
+const int MaxNumberOfLights = 10;
+
 // From vertex shader
 in vec4 position;  // position of the vertex (and fragment) in eye space
 in vec3 normal;  // surface normal vector in eye space
 in vec2 texCoord; // Texture coordinate
 in mat3 TBN; // Tangent, bitangent and normal matrix
+in vec4 positionLightSpace[MaxNumberOfLights]; // Position of the vertex in light space
 
 // The end result of this shader
 out vec4 color;
@@ -50,7 +53,7 @@ struct Textures
   sampler2D textures[MAX_TEXTURES];
 };
  
-const int MaxNumberOfLights = 10;
+
 
 // This is the uniforms that our program communicates with
 uniform LightSource lights[MaxNumberOfLights];
@@ -60,9 +63,37 @@ uniform Material material;
 uniform Textures textureLayers;
 uniform sampler2D depthMaps[MaxNumberOfLights];
 
+float calculateShadow(vec4 fragPosLightSpace, vec3 lightDirection, vec3 nNormal, int index)
+{
+
+  vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
+  projCoords = projCoords * 0.5 + 0.5;
+ 
+  if (projCoords.z > 1.0) {
+    return 0.0;
+  }
+
+  float shadow = 0.0;
+  float currentDepth = projCoords.z;
+  float bias = 0.005 * tan(acos(dot(lightDirection, nNormal)));
+  bias = clamp(bias, 0.0, 0.01);    
+  
+  vec2 texelSize = 1.0 / textureSize(depthMaps[index], 0);
+  for(int x = -1; x <= 1; ++x)
+  {
+    for(int y = -1; y <= 1; ++y)
+    {
+      float pcfDepth = texture(depthMaps[index], projCoords.xy + vec2(x, y) * texelSize).r; 
+      shadow += currentDepth - bias > pcfDepth  ? 0.95 : 0.0;        
+    }
+  }
+  
+  return shadow / 9.0;
+}
+
 void main()
 {
-  vec3 wNormal = normalize(normal);
+  vec3 wNormal = normal;
   // Check for normal map
   if (material.activeTextures[3]) {
     wNormal = texture(material.textures[3], texCoord).rgb;
@@ -99,6 +130,7 @@ void main()
   }
   
   vec3 ambientReflection = vec3(0.0, 0.0, 0.0);
+  float shadow = 0.0;
   if (lightingEnabled == 1) {
       // for all light sources
       for (int index = 0; index < numberOfLights; index++) 
@@ -110,6 +142,7 @@ void main()
               attenuation = 1.0; // no attenuation
               lightDirection = normalize(vec3(light.position));
               ambientReflection = vec3(light.ambient); // A scene should not have more than one directional light
+              shadow = calculateShadow(positionLightSpace[index], lightDirection, normalDirection, index);
             }
             else // point light or spotlight (or other kind of light) 
             {
@@ -135,7 +168,7 @@ void main()
               specularReflection = attenuation * vec3(light.specular) * vec3(specularColor)
                 * pow(max(0.0, dot(reflect(-lightDirection, normalDirection), viewDirection)), material.shininess);
             }
-            totalLighting += diffuseReflection + specularReflection;
+            totalLighting += (1.0 - shadow) * (diffuseReflection + specularReflection);
         }       
         
       }
@@ -166,3 +199,4 @@ void main()
   
   color = vec4(totalLighting, alpha);
 }
+

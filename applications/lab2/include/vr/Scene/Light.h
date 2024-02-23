@@ -131,6 +131,8 @@ class Light {
     glm::mat4 m_view;
     Texture m_depthMap;
 
+    std::string constructPrefix(const std::string& prefix, size_t idx, const std::string& suffix = "");
+
     friend class Scene;
 };
 typedef std::vector<std::shared_ptr<Light> > LightVector;

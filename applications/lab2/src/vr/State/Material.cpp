@@ -16,7 +16,7 @@ using namespace vr;
 
 /// Simple class for storing material properties
 Material::Material() : m_shininess(32) {
-    m_ambient = glm::vec4(0.04, 0.04, 0.04, 1.0);
+    m_ambient = glm::vec4(0.4, 0.4, 0.4, 1.0);
     m_diffuse = glm::vec4(0.8, 0.8, 0.8, 1.0);
     m_specular = glm::vec4(1.0, 1.0, 1.0, 1.0);
     m_emission = glm::vec4(0.0, 0.0, 0.0, 1.0);

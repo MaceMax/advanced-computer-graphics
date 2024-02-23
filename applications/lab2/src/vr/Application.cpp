@@ -107,7 +107,7 @@ bool Application::initResources(const std::string& model_filename, const std::st
             // Calculate up vector that is not parallel to lightDir
             glm::vec3 up = glm::abs(lightDir.y) < 0.999 ? glm::vec3(0.0, 1.0, 0.0) : glm::vec3(1.0, 0.0, 0.0);
 
-            glm::mat4 view = glm::lookAt(center - lightDir, center, up);
+            glm::mat4 view = glm::lookAt(center + lightDir, center, up);
             glm::mat4 proj = glm::ortho(-radius, radius, -radius, radius, -radius, 2 * radius);
 
             light->setView(view);

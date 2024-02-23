@@ -23,7 +23,7 @@ namespace vr {
 #define DEPTH_TEXTURE_BASE_SLOT 17
 #define MAX_DEPTH_TEXTURES 10
 
-#define DEPTH_MAP_RESOLUTION 1024
+#define DEPTH_MAP_RESOLUTION 4096
 
 class Texture {
    public:
