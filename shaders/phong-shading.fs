@@ -65,7 +65,6 @@ uniform sampler2D depthMaps[MaxNumberOfLights];
 
 float calculateShadow(vec4 fragPosLightSpace, vec3 lightDirection, vec3 nNormal, int index)
 {
-
   vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
   projCoords = projCoords * 0.5 + 0.5;
  
@@ -75,25 +74,26 @@ float calculateShadow(vec4 fragPosLightSpace, vec3 lightDirection, vec3 nNormal,
 
   float shadow = 0.0;
   float currentDepth = projCoords.z;
-  float bias = 0.005 * tan(acos(dot(lightDirection, nNormal)));
-  bias = clamp(bias, 0.0, 0.01);    
-  
+  float bias = max(0.005 * (1.0 - dot(nNormal, lightDirection)), 0.005);  
+
   vec2 texelSize = 1.0 / textureSize(depthMaps[index], 0);
-  for(int x = -1; x <= 1; ++x)
+
+  int kernelSize = 10;
+  for(int x = -kernelSize; x <= kernelSize; ++x)
   {
-    for(int y = -1; y <= 1; ++y)
+    for(int y = -kernelSize; y <= kernelSize; ++y)
     {
       float pcfDepth = texture(depthMaps[index], projCoords.xy + vec2(x, y) * texelSize).r; 
       shadow += currentDepth - bias > pcfDepth  ? 0.95 : 0.0;        
     }
   }
   
-  return shadow / 9.0;
+  return shadow / ((2 * kernelSize + 1) * (2 * kernelSize + 1));
 }
 
 void main()
 {
-  vec3 wNormal = normal;
+  vec3 wNormal = normalize(normal);
   // Check for normal map
   if (material.activeTextures[3]) {
     wNormal = texture(material.textures[3], texCoord).rgb;
@@ -174,8 +174,8 @@ void main()
       }
   }
 
-  ambientReflection = ambientReflection * vec3(ambientColor) * vec3(material.ambient);
-  totalLighting = totalLighting + ambientReflection + vec3(emissionColor);
+  ambientReflection = ambientReflection * vec3(ambientColor);
+  totalLighting = totalLighting + ambientReflection + vec3(material.emission);
 
   vec4 blendedColor;
   int activeTextureCount = 0;

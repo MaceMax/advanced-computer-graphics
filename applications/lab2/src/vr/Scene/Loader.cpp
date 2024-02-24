@@ -306,9 +306,11 @@ bool vr::load3DModelFile(const std::string& filename, std::shared_ptr<Group>& no
         return false;
     }
 
-    std::stack<glm::mat4>
-        transformStack;
+    std::stack<glm::mat4> transformStack;
     transformStack.push(glm::mat4());
+    // IF the model is the ground plane, scale to 100x100
+    if (filename == "models/GroundPlane/scene.gltf")
+        transformStack.push(glm::scale(transformStack.top(), glm::vec3(50.0f, 1.0f, 50.0f)));
 
     if (geometryMap != nullptr && geometryMap->find(filepath) != geometryMap->end()) {
         node->setChildren(geometryMap->at(filepath)->getChildren());
@@ -895,6 +897,21 @@ bool vr::loadSceneFile(const std::string& sceneFile, std::shared_ptr<Scene>& sce
             std::shared_ptr<State> rootState = scene->getRoot()->getState();
             std::shared_ptr<State> newRootState = std::make_shared<State>(parseState(xmlpath, stateNode));
             scene->getRoot()->setState(*(rootState) + *(newRootState));
+        }
+
+        // Check attribute to see if we should add a ground plane
+        std::string groundPlane = getAttribute(root_node, "groundPlane");
+        bool enabled_val = false;
+        if (!groundPlane.empty())
+            enabled_val = readValue<bool>(groundPlane);
+
+        if (enabled_val) {
+            std::shared_ptr<Group> groundPlaneNode = std::make_shared<Group>("GroundPlane", true);
+
+            if (!load3DModelFile("models/GroundPlane/scene.gltf", groundPlaneNode, scene->getRoot()->getState()->getShader())) {
+                return false;
+            }
+            scene->getRoot()->addChild(groundPlaneNode);
         }
 
         GeometryMap geometryMap;

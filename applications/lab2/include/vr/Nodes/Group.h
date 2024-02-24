@@ -15,7 +15,7 @@ class Group : public Node {
      *
      * @param name
      */
-    Group(const std::string& name = "Group") : Node(name) {}
+    Group(const std::string& name = "Group", bool excludeFromBoundingBox = false) : m_excludeFromBoundingBox(excludeFromBoundingBox), Node(name) {}
 
     virtual void accept(NodeVisitor& visitor) override;
 
@@ -50,6 +50,7 @@ class Group : public Node {
 
    protected:
     NodeVector m_children;
+    bool m_excludeFromBoundingBox;
 };
 
 }  // namespace vr

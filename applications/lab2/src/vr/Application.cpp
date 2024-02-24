@@ -3,6 +3,7 @@
 #include <vr/FileSystem.h>
 #include <vr/Nodes/Geometry.h>
 #include <vr/Nodes/LightNode.h>
+#include <vr/Nodes/Transform.h>
 #include <vr/Scene/Loader.h>
 #include <vr/Scene/Scene.h>
 
@@ -39,6 +40,13 @@ bool Application::initResources(const std::string& model_filename, const std::st
         geometryGroup->addChild(createDefaultGeometry(m_sceneRoot->getState()->getShader()));
 
         m_sceneRoot->addChild(geometryGroup);
+
+        std::shared_ptr<Group> groundPlaneNode = std::make_shared<Group>("GroundPlane", true);
+        // Always add a ground plane to the scene
+        if (!load3DModelFile("models/GroundPlane/scene.gltf", groundPlaneNode, m_sceneRoot->getState()->getShader())) {
+            return false;
+        }
+        m_sceneRoot->addChild(groundPlaneNode);
     } else {
         std::string ext = vr::FileSystem::getFileExtension(model_filename);
 
@@ -66,13 +74,20 @@ bool Application::initResources(const std::string& model_filename, const std::st
             } else {
                 m_sceneRoot->addChild(geometryGroup);
             }
+
+            std::shared_ptr<Group> groundPlaneNode = std::make_shared<Group>("GroundPlane", true);
+            // Always add a ground plane to the scene
+            if (!load3DModelFile("models/GroundPlane/scene.gltf", groundPlaneNode, m_sceneRoot->getState()->getShader())) {
+                return false;
+            }
+            m_sceneRoot->addChild(groundPlaneNode);
         }
     }
 
     if (m_scene->getLights().empty()) {
         std::cout << "No lights in scene, adding a default light" << std::endl;
         std::shared_ptr<Light> light = std::make_shared<Light>(glm::vec4(0.0, 1.0, 0.0, 0.0),
-                                                               glm::vec4(0.4, 0.4, 0.4, 1.0),
+                                                               glm::vec4(0.1, 0.1, 0.1, 1.0),
                                                                glm::vec4(1.0, 1.0, 1.0, 1.0),
                                                                glm::vec4(0.8, 0.8, 0.8, 1.0));
         m_scene->add(light);
@@ -108,7 +123,9 @@ bool Application::initResources(const std::string& model_filename, const std::st
             glm::vec3 up = glm::abs(lightDir.y) < 0.999 ? glm::vec3(0.0, 1.0, 0.0) : glm::vec3(1.0, 0.0, 0.0);
 
             glm::mat4 view = glm::lookAt(center + lightDir, center, up);
-            glm::mat4 proj = glm::ortho(-radius, radius, -radius, radius, -radius, 2 * radius);
+            // Multiply by 10 is a temporary fix to make sure the whole scene is visible
+            // Need to calculate it based on the ground plane
+            glm::mat4 proj = glm::ortho(-radius, radius, -radius, radius, -radius, 10 * radius);
 
             light->setView(view);
             light->setProjection(proj);

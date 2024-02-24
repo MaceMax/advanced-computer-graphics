@@ -20,6 +20,10 @@ void Group::setChildren(NodeVector& children) {
 
 BoundingBox Group::calculateBoundingBox(glm::mat4 t_mat) {
     BoundingBox bbox;
+
+    if (m_excludeFromBoundingBox)
+        return bbox;
+
     for (auto child : m_children) {
         bbox.expand(child->calculateBoundingBox(t_mat));
     }

@@ -106,13 +106,11 @@ void Scene::render() {
 }
 
 void Scene::renderDepthMaps() {
-    glCullFace(GL_FRONT);
     for (auto& light : m_lights) {
         glClear(GL_DEPTH_BUFFER_BIT);
         m_depthVisitor->setupRenderState(light->getDepthMap().id(), light->getView(), light->getProjection());
         m_depthVisitor->visit(m_root.get());
     }
-    glCullFace(GL_BACK);
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glViewport(0, 0, m_camera->getScreenSize().x, m_camera->getScreenSize().y);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

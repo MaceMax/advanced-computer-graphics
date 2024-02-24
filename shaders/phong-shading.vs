@@ -30,18 +30,17 @@ void main()
 
   position = mv * vertex_position;
   normal = normalize(m_3x3_inv_transp * vertex_normal);
-
-  vec3 T = normalize(vec3(m * vec4(vertex_tangent, 0.0)));
-  vec3 B = normalize(vec3(m * vec4(vertex_bitangent, 0.0)));
-  vec3 N = normalize(vec3(m * vec4(vertex_normal, 0.0)));
-
   for (int i = 0; i < MaxNumberOfLights; i++)
   {
     if (activeLights[i])
     {
-      positionLightSpace[i] = lightSpaceMatrix[i] * vertex_position;
+      positionLightSpace[i] = lightSpaceMatrix[i] * m * vertex_position;
     }
   }
+
+  vec3 T = normalize(vec3(m * vec4(vertex_tangent, 0.0)));
+  vec3 B = normalize(vec3(m * vec4(vertex_bitangent, 0.0)));
+  vec3 N = normalize(vec3(m * vec4(vertex_normal, 0.0)));
 
   TBN = mat3(T, B, N);
 

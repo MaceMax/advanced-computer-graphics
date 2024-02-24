@@ -36,8 +36,7 @@ void DepthVisitor::setupRenderState(GLuint depthTexture, const glm::mat4& lightV
 
 void DepthVisitor::visit(Geometry* geometry) {
     m_depthShader->use();
-    m_depthShader->setMat4("v", m_lightView);
-    m_depthShader->setMat4("p", m_lightProjection);
+    m_depthShader->setMat4("lsm", m_lightProjection * m_lightView);
     geometry->draw(m_depthShader, m_matrixStack.top(), true);
 }
 

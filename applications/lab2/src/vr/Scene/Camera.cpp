@@ -32,7 +32,7 @@ Camera::Camera(bool isLightCamera) : m_isLightCamera(isLightCamera),
     m_screenSize[0] = 1280;
     m_screenSize[1] = 720;
 
-    m_nearFar = glm::vec2(0.1, 100);
+    m_nearFar = glm::vec2(0.1, 1000);
 
     // glfwGetTime is called only once, the first time this function is called
     m_lastTime = (float)glfwGetTime();
