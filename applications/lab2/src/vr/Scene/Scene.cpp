@@ -37,6 +37,7 @@ bool Scene::initShaders(const std::string& vshader_filename, const std::string& 
     std::shared_ptr<State> state = std::make_shared<State>(m_shader);
     state->setMaterial(std::make_shared<Material>());
     state->setLightingEnabled(true);
+    state->setShadowEnabled(true);
     m_root->setState(state);
 
     return true;

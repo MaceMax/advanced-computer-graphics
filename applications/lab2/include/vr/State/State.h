@@ -13,7 +13,7 @@ class State {
     State(std::shared_ptr<Shader> shader = nullptr) : m_shader(shader),
                                                       lightingEnabled(-1),
                                                       cullFaceEnabled(-1),
-                                                      shadowEnabled(true) {}
+                                                      shadowEnabled(-1) {}
     // + operator overload. Combines two states into one. Returns a shared pointer to the new state.
     std::shared_ptr<State> operator+(const State& other) const;
     State& operator+=(const State& other);
@@ -47,7 +47,7 @@ class State {
    private:
     int lightingEnabled;
     int cullFaceEnabled;
-    bool shadowEnabled;
+    int shadowEnabled;
 
     LightVector m_lights;
     TextureVector m_textures;

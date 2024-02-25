@@ -61,7 +61,7 @@ uniform LightSource lights[MaxNumberOfLights];
 // The front surface material
 uniform Material material;
 uniform Textures textureLayers;
-uniform bool shadowsEnabled;
+uniform int shadowsEnabled;
 uniform sampler2D depthMaps[MaxNumberOfLights];
 
 float calculateShadow(vec4 fragPosLightSpace, vec3 lightDirection, vec3 nNormal, int index)
@@ -143,7 +143,7 @@ void main()
               attenuation = 1.0; // no attenuation
               lightDirection = normalize(vec3(light.position));
               ambientReflection = vec3(light.ambient); // A scene should not have more than one directional light
-              if (shadowsEnabled) 
+              if (shadowsEnabled == 1) 
                 shadow = calculateShadow(positionLightSpace[index], lightDirection, normalDirection, index);
             }
             else // point light or spotlight (or other kind of light) 

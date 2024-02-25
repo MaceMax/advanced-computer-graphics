@@ -9,6 +9,11 @@ using namespace vr;
 std::shared_ptr<State> State::operator+(const State& childState) const {
     std::shared_ptr<State> newState = std::make_shared<State>();
     // Child state has precedence. If child state has a value, use it. Otherwise, use parent state's value.
+    if (childState.shadowEnabled != -1) {
+        newState->shadowEnabled = childState.shadowEnabled;
+    } else {
+        newState->shadowEnabled = shadowEnabled;
+    }
 
     if (childState.lightingEnabled != -1) {
         newState->lightingEnabled = childState.lightingEnabled;
@@ -151,7 +156,7 @@ void State::apply() {
     // Update number of lights
     m_shader->setInt("numberOfLights", m_lights.size());
     m_shader->setInt("lightingEnabled", lightingEnabled);
-    m_shader->setBool("shadowsEnabled", shadowEnabled);
+    m_shader->setInt("shadowsEnabled", shadowEnabled);
 
     // Apply lightsources
     size_t i = 0;
