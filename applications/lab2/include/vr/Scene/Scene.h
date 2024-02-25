@@ -81,7 +81,7 @@ class Scene {
     Compute a bounding box for the whole scene
     \return A bounding box for the whole scene
     */
-    BoundingBox calculateBoundingBox();
+    BoundingBox calculateSceneBoundingBox(bool excludeGround = true);
 
     /**
     Render the whole scene
@@ -93,22 +93,46 @@ class Scene {
      */
     void renderDepthMaps();
 
+    /**
+     * Returns the selected light in the scene
+     */
+    std::shared_ptr<Light> getSelectedLight();
+
+    /**
+     * Sets the selected light in the scene
+     */
+    void setSelectedLight(int index);
+
+    /**
+     * Set the ground plane
+     */
+    void setGroundPlane(std::shared_ptr<Group> ground);
+
+    /**
+     * Toggle the shadows in the scene
+     */
+    void toggleShadows();
+
    private:
     /**
      * Private constructor for the scene class.
      */
     Scene();
 
+    bool m_shadowsEnabled = true;
+
     std::shared_ptr<RenderVisitor> m_renderVisitor;
     std::shared_ptr<UpdateVisitor> m_updateVisitor;
     std::shared_ptr<DepthVisitor> m_depthVisitor;
     // LightNode need to be also stored in the scene as they are needed for rendering depth maps
     LightVector m_lights;
+    int selectedLight = 0;
 
     static std::shared_ptr<Scene> instance;
     std::shared_ptr<vr::Shader> m_shader;
     std::shared_ptr<Camera> m_camera;
     std::shared_ptr<Group> m_root;
+    std::shared_ptr<Group> m_groundPlane;
 };
 
 }  // namespace vr

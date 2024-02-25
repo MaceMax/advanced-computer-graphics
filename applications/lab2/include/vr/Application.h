@@ -6,6 +6,7 @@
 #include "vr/Scene/Camera.h"
 #include "vr/FPSCounter.h"
 #include "vr/Scene/Scene.h"
+#define TRANSLATION_SPEED 1.0f
 
 namespace vr {
 
@@ -42,6 +43,8 @@ class Application {
 
     std::shared_ptr<Geometry> createDefaultGeometry(const std::shared_ptr<Shader>& shader);
 
+    void toggleShadows();
+
    private:
     // Parent of all to be rendered
     std::shared_ptr<Scene> m_scene;
@@ -50,5 +53,6 @@ class Application {
     std::string m_loadedFilename, m_loadedVShader, m_loadedFShader;
     glm::uvec2 m_screenSize;
     glm::f32vec4 m_clearColor;
+    float m_lastFrameTime = 0.0f;
 };
 }  // namespace vr

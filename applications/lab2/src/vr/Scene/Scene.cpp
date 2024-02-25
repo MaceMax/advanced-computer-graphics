@@ -60,6 +60,10 @@ std::shared_ptr<Camera> Scene::getCamera() {
     return m_camera;
 }
 
+void Scene::setGroundPlane(std::shared_ptr<Group> ground) {
+    m_groundPlane = ground;
+}
+
 void Scene::cleanup() {
     if (m_shader) {
         m_shader = nullptr;
@@ -80,6 +84,10 @@ void Scene::cleanup() {
     if (m_lights.size() > 0) {
         m_lights.clear();
     }
+
+    if (m_groundPlane) {
+        m_groundPlane = nullptr;
+    }
 }
 
 void Scene::useProgram() {
@@ -90,28 +98,46 @@ std::shared_ptr<Group>& Scene::getRoot() {
     return m_root;
 }
 
-BoundingBox Scene::calculateBoundingBox() {
+void Scene::toggleShadows() {
+    m_shadowsEnabled = !m_shadowsEnabled;
+    m_root->getState()->setShadowEnabled(m_shadowsEnabled);
+}
+
+std::shared_ptr<Light> Scene::getSelectedLight() {
+    return m_lights[selectedLight];
+}
+
+BoundingBox Scene::calculateSceneBoundingBox(bool excludeGround) {
     BoundingBox box;
 
+    if (m_groundPlane != nullptr)
+        m_groundPlane->setExclude(excludeGround);
+
     box.expand(m_root->calculateBoundingBox(glm::mat4(1.0f)));
+
+    // Should be excluded by default
+    if (m_groundPlane != nullptr)
+        m_groundPlane->setExclude(true);
+
     return box;
 }
 
 void Scene::render() {
     m_updateVisitor->visit(m_root.get());
 
-    renderDepthMaps();
+    if (m_shadowsEnabled)
+        renderDepthMaps();
+
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    glViewport(0, 0, m_camera->getScreenSize().x, m_camera->getScreenSize().y);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     m_renderVisitor->visit(m_root.get());
 }
 
 void Scene::renderDepthMaps() {
     for (auto& light : m_lights) {
-        glClear(GL_DEPTH_BUFFER_BIT);
         m_depthVisitor->setupRenderState(light->getDepthMap().id(), light->getView(), light->getProjection());
         m_depthVisitor->visit(m_root.get());
     }
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
-    glViewport(0, 0, m_camera->getScreenSize().x, m_camera->getScreenSize().y);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }

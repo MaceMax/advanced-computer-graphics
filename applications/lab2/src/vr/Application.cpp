@@ -47,6 +47,7 @@ bool Application::initResources(const std::string& model_filename, const std::st
             return false;
         }
         m_sceneRoot->addChild(groundPlaneNode);
+        m_scene->setGroundPlane(groundPlaneNode);
     } else {
         std::string ext = vr::FileSystem::getFileExtension(model_filename);
 
@@ -81,6 +82,7 @@ bool Application::initResources(const std::string& model_filename, const std::st
                 return false;
             }
             m_sceneRoot->addChild(groundPlaneNode);
+            m_scene->setGroundPlane(groundPlaneNode);
         }
     }
 
@@ -92,7 +94,7 @@ bool Application::initResources(const std::string& model_filename, const std::st
                                                                glm::vec4(0.8, 0.8, 0.8, 1.0));
         m_scene->add(light);
 
-        BoundingBox box = m_scene->calculateBoundingBox();
+        BoundingBox box = m_scene->calculateSceneBoundingBox();
         float radius = box.getRadius();
         // Compute the diagonal and a suitable distance so we can see the whole thing
         float distance = radius * 1.5f;
@@ -109,32 +111,13 @@ bool Application::initResources(const std::string& model_filename, const std::st
     }
 
     // Calculate the view and projection matrices for every light and initialize the depth maps.
-    BoundingBox box = m_scene->calculateBoundingBox();
-    glm::vec3 center = box.getCenter();
-    float radius = box.getRadius();
+    BoundingBox sceneBox = m_scene->calculateSceneBoundingBox(true);
+    BoundingBox sceneBounds = m_scene->calculateSceneBoundingBox(false);
 
-    int i = 0;
-    for (auto light : m_scene->getLights()) {
-        // If the light is directional, we want to look at the center of the scene from the direction of the light
-        if (light->getPosition().w == 0) {
-            glm::vec3 lightDir = glm::normalize(glm::vec3(light->getPosition()));
-
-            // Calculate up vector that is not parallel to lightDir
-            glm::vec3 up = glm::abs(lightDir.y) < 0.999 ? glm::vec3(0.0, 1.0, 0.0) : glm::vec3(1.0, 0.0, 0.0);
-
-            glm::mat4 view = glm::lookAt(center + lightDir, center, up);
-            // Multiply by 10 is a temporary fix to make sure the whole scene is visible
-            // Need to calculate it based on the ground plane
-            glm::mat4 proj = glm::ortho(-radius, radius, -radius, radius, -radius, 10 * radius);
-
-            light->setView(view);
-            light->setProjection(proj);
-        } else {
-        }
-
-        light->initDepthMap(i);
-        i++;
-    }
+    // Initialize the depth maps for all lights
+    LightVector lights = m_scene->getLights();
+    for (int i = 0; i < lights.size(); i++)
+        lights[i]->init(i, sceneBox, sceneBounds.getRadius());
 
 #if 0
   std::shared_ptr<Mesh> ground(new Mesh);
@@ -176,7 +159,7 @@ void Application::setClearColor(const glm::f32vec4& clearColor) {
 
 void Application::initView() {
     // Compute a bounding box around the whole scene
-    BoundingBox box = m_scene->calculateBoundingBox();
+    BoundingBox box = m_scene->calculateSceneBoundingBox();
     float radius = box.getRadius();
 
     // Compute the diagonal and a suitable distance so we can see the whole thing
@@ -187,7 +170,7 @@ void Application::initView() {
 
     // Set the position/direction of the camera
     getCamera()->set(eye, direction, glm::vec3(0.0, 1.0, 0.0));
-    getCamera()->setNearFar(glm::vec2(0.1, distance * 20));
+    getCamera()->setNearFar(glm::vec2(0.1, distance * 100));
 
     // Compute the default movement speed based on the radius of the scene
     getCamera()->setSpeed(0.7f * radius);
@@ -214,6 +197,42 @@ void Application::update(GLFWwindow* window) {
 
 void Application::processInput(GLFWwindow* window) {
     getCamera()->processInput(window);
+
+    float currentTime = glfwGetTime();
+    float deltaTime = currentTime - m_lastFrameTime;
+    m_lastFrameTime = currentTime;
+
+    glm::vec4 deltaPosition = glm::vec4(0.0f);
+
+    std::shared_ptr<Light> light = m_scene->getSelectedLight();
+    glm::vec4 position = light->getPosition();
+
+    if (glfwGetKey(window, GLFW_KEY_J) == GLFW_PRESS)
+        deltaPosition.x -= TRANSLATION_SPEED * deltaTime;  // Move light source along the negative x-axis
+
+    if (glfwGetKey(window, GLFW_KEY_L) == GLFW_PRESS)
+        deltaPosition.x += TRANSLATION_SPEED * deltaTime;  // Move light source along the positive x-axis
+
+    if (glfwGetKey(window, GLFW_KEY_I) == GLFW_PRESS)
+        deltaPosition.y -= TRANSLATION_SPEED * deltaTime;  // Move light source along the negative y-axis
+
+    if (glfwGetKey(window, GLFW_KEY_K) == GLFW_PRESS)
+        deltaPosition.y += TRANSLATION_SPEED * deltaTime;  // Move light source along the positive y-axis
+
+    if (glfwGetKey(window, GLFW_KEY_U) == GLFW_PRESS)
+        deltaPosition.z -= TRANSLATION_SPEED * deltaTime;  // Move light source along the negative z-axis
+
+    if (glfwGetKey(window, GLFW_KEY_O) == GLFW_PRESS)
+        deltaPosition.z += TRANSLATION_SPEED * deltaTime;  // Move light source along the positive z-axis
+
+    if (glm::length(deltaPosition) > 0.0f) {
+        position += deltaPosition;
+        light->setPosition(position);
+    }
+}
+
+void Application::toggleShadows() {
+    m_scene->toggleShadows();
 }
 
 void Application::setScreenSize(unsigned int width, unsigned int height) {

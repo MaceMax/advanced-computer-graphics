@@ -10,7 +10,10 @@ typedef std::vector<std::shared_ptr<Texture>> TextureVector;
 class State {
    public:
     // Default constructor
-    State(std::shared_ptr<Shader> shader = nullptr) : m_shader(shader), lightingEnabled(-1), cullFaceEnabled(-1) {}
+    State(std::shared_ptr<Shader> shader = nullptr) : m_shader(shader),
+                                                      lightingEnabled(-1),
+                                                      cullFaceEnabled(-1),
+                                                      shadowEnabled(true) {}
     // + operator overload. Combines two states into one. Returns a shared pointer to the new state.
     std::shared_ptr<State> operator+(const State& other) const;
     State& operator+=(const State& other);
@@ -36,11 +39,15 @@ class State {
     void setShader(std::shared_ptr<Shader> shader);
     std::shared_ptr<Shader> const& getShader();
 
+    void setShadowEnabled(bool enabled);
+    bool ShadowEnabled();
+
     void apply();
 
    private:
     int lightingEnabled;
     int cullFaceEnabled;
+    bool shadowEnabled;
 
     LightVector m_lights;
     TextureVector m_textures;

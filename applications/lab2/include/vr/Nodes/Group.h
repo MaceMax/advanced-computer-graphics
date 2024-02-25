@@ -48,6 +48,11 @@ class Group : public Node {
      */
     void setChildren(NodeVector& children);
 
+    /**
+     * @brief set the exclude from bounding box flag
+     */
+    void setExclude(bool exclude) { m_excludeFromBoundingBox = exclude; }
+
    protected:
     NodeVector m_children;
     bool m_excludeFromBoundingBox;

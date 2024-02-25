@@ -51,6 +51,11 @@ void keyboard_callback(GLFWwindow* window, int key, int scancode, int action, in
     if (key == GLFW_KEY_SPACE && action == GLFW_PRESS)
         if (auto app = g_applicationPtr.lock())
             app->initView();
+
+    if (key == GLFW_KEY_T && action == GLFW_PRESS)
+        if (auto app = g_applicationPtr.lock())
+            app->toggleShadows();
+
 }
 
 void window_size_callback(GLFWwindow* window, int width, int height) {

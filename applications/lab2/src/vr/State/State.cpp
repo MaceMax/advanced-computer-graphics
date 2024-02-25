@@ -135,6 +135,14 @@ std::shared_ptr<Shader> const& State::getShader() {
     return m_shader;
 }
 
+void State::setShadowEnabled(bool enabled) {
+    shadowEnabled = enabled;
+}
+
+bool State::ShadowEnabled() {
+    return shadowEnabled;
+}
+
 void State::apply() {
     if (m_shader == nullptr)
         return;
@@ -143,12 +151,13 @@ void State::apply() {
     // Update number of lights
     m_shader->setInt("numberOfLights", m_lights.size());
     m_shader->setInt("lightingEnabled", lightingEnabled);
+    m_shader->setBool("shadowsEnabled", shadowEnabled);
 
     // Apply lightsources
     size_t i = 0;
     if (m_lights.size() != 0 && lightingEnabled) {
         for (auto l : m_lights) {
-            l->apply(m_shader, i);
+            l->apply(m_shader, i, shadowEnabled);
             i++;
         }
     }

@@ -20,8 +20,24 @@ Light::Light(glm::vec4 position, glm::vec4 ambient, glm::vec4 diffuse, glm::vec4
     this->quadratic = 0.032f;
 }
 
-void Light::initDepthMap(unsigned int slot) {
+void Light::init(unsigned int slot, BoundingBox sceneBounds, float groundRadius) {
     m_depthMap.createDepthTexture(DEPTH_MAP_RESOLUTION, DEPTH_MAP_RESOLUTION, slot);
+    m_sceneCenter = sceneBounds.getCenter();
+    m_sceneRadius = sceneBounds.getRadius();
+    m_farPlane = groundRadius;
+    updateShadowMatrices();
+}
+
+void Light::updateShadowMatrices() {
+    if (position.w == 0) {
+        glm::vec3 lightDir = glm::normalize(glm::vec3(position));
+        glm::vec3 up = glm::abs(lightDir.y) < 0.999 ? glm::vec3(0.0, 1.0, 0.0) : glm::vec3(1.0, 0.0, 0.0);
+        glm::mat4 view = glm::lookAt(lightDir + m_sceneCenter, m_sceneCenter, up);
+        glm::mat4 proj = glm::ortho(-m_sceneRadius, m_sceneRadius, -m_sceneRadius, m_sceneRadius, -m_sceneRadius, m_farPlane);
+
+        m_view = view;
+        m_projection = proj;
+    }
 }
 
 const Texture& Light::getDepthMap() {
@@ -34,6 +50,7 @@ void Light::setEnabled(bool enabled) {
 
 void Light::setPosition(glm::vec4 position) {
     this->position = position;
+    updateShadowMatrices();
 }
 
 void Light::setAmbient(glm::vec4 ambient) {
@@ -54,7 +71,7 @@ void Light::setAttenuation(float constant, float linear, float quadratic) {
     this->quadratic = quadratic;
 }
 
-void Light::apply(std::shared_ptr<vr::Shader> shader, size_t idx) {
+void Light::apply(std::shared_ptr<vr::Shader> shader, size_t idx, bool shadowsEnabled) {
     std::string prefix = constructPrefix("lights", idx, ".");
     glm::vec4 world_position = m_model * position;
 
@@ -71,9 +88,11 @@ void Light::apply(std::shared_ptr<vr::Shader> shader, size_t idx) {
     std::string activeLightprefix = constructPrefix("activeLights", idx);
     shader->setInt(activeLightprefix, enabled);
 
-    std::string depthPrefix = constructPrefix("depthMaps", idx);
-    shader->setInt(depthPrefix, DEPTH_TEXTURE_BASE_SLOT + idx);
-    m_depthMap.bind();
+    if (shadowsEnabled) {
+        std::string depthPrefix = constructPrefix("depthMaps", idx);
+        shader->setInt(depthPrefix, DEPTH_TEXTURE_BASE_SLOT + idx);
+        m_depthMap.bind();
+    }
 
     if (position.w != 0) {
         shader->setFloat(prefix + "constant", this->constant);

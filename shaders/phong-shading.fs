@@ -61,6 +61,7 @@ uniform LightSource lights[MaxNumberOfLights];
 // The front surface material
 uniform Material material;
 uniform Textures textureLayers;
+uniform bool shadowsEnabled;
 uniform sampler2D depthMaps[MaxNumberOfLights];
 
 float calculateShadow(vec4 fragPosLightSpace, vec3 lightDirection, vec3 nNormal, int index)
@@ -74,7 +75,7 @@ float calculateShadow(vec4 fragPosLightSpace, vec3 lightDirection, vec3 nNormal,
 
   float shadow = 0.0;
   float currentDepth = projCoords.z;
-  float bias = max(0.005 * (1.0 - dot(nNormal, lightDirection)), 0.005);  
+  float bias = max(0.002 * (1.0 - dot(nNormal, lightDirection)), 0.001);  
 
   vec2 texelSize = 1.0 / textureSize(depthMaps[index], 0);
 
@@ -142,7 +143,8 @@ void main()
               attenuation = 1.0; // no attenuation
               lightDirection = normalize(vec3(light.position));
               ambientReflection = vec3(light.ambient); // A scene should not have more than one directional light
-              shadow = calculateShadow(positionLightSpace[index], lightDirection, normalDirection, index);
+              if (shadowsEnabled) 
+                shadow = calculateShadow(positionLightSpace[index], lightDirection, normalDirection, index);
             }
             else // point light or spotlight (or other kind of light) 
             {

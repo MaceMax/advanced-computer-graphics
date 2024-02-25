@@ -7,6 +7,8 @@
 #include <memory>
 #include <vector>
 
+#include "vr/BoundingBox.h"
+
 namespace vr {
 
 /// Simple class that store light properties and apply them to Uniforms
@@ -27,8 +29,9 @@ class Light {
      *
      * @param shader The shader to apply the light to
      * @param idx The index of the light in the shader
+     * @param shadowEnabled True if shadow mapping is enabled, false otherwise
      */
-    void apply(std::shared_ptr<vr::Shader> shader, size_t idx);
+    void apply(std::shared_ptr<vr::Shader> shader, size_t idx, bool shadowEnabled);
 
     /**
      * @brief Set the enabled state of the light
@@ -94,11 +97,14 @@ class Light {
     const Texture& getDepthMap();
 
     /**
-     * @brief Initilize the depth map texture for the light
+     * @brief Initilize the depth map texture for the light and
+     *  the view and projection matrices for shadow mapping
      *
      * @param slot The texture slot to bind the depth map to
+     * @param sceneBounds The bounding box of the scene. Does not include the ground plane.
+     * @param groundRadius The radius of the scene bounding box which includes the ground plane.
      */
-    void initDepthMap(unsigned int slot);
+    void init(unsigned int slot, BoundingBox sceneBounds, float groundRadius);
 
     /**
      * @brief Set the attenuation of the light
@@ -108,6 +114,11 @@ class Light {
      * @param quadratic The quadratic attenuation
      */
     void setAttenuation(float constant, float linear, float quadratic);
+
+    /**
+     * @brief Update the view and projection matrices for shadow mapping
+     */
+    void updateShadowMatrices();
 
     glm::mat4 getProjection() const { return m_projection; }
     void setProjection(const glm::mat4& projection) { m_projection = projection; }
@@ -127,6 +138,9 @@ class Light {
     float quadratic;
 
     // Shadow mapping
+    float m_sceneRadius;
+    glm::vec3 m_sceneCenter;
+    float m_farPlane;
     glm::mat4 m_projection;
     glm::mat4 m_view;
     Texture m_depthMap;

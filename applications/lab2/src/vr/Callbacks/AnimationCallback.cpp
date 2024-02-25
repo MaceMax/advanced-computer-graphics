@@ -11,6 +11,12 @@ void AnimationCallback::execute(Transform& node) {
     auto currentTime = std::chrono::high_resolution_clock::now();
     float elapsedTime = std::chrono::duration_cast<std::chrono::duration<float>>(currentTime - m_startTime).count();
 
+    // Store the initial transform
+    if (firstLoop) {
+        m_initialTransform = node.getMatrix();
+        firstLoop = false;
+    }
+
     elapsedTime *= m_speed;
 
     if (isDone)
@@ -22,24 +28,24 @@ void AnimationCallback::execute(Transform& node) {
         nextFrame = 0;
     }
 
-    if (!m_loop && nextFrame == 0) {
-        m_currentFrame = 0;
-        m_startTime = currentTime;
-        isDone = true;
-        return;
-    } else if (m_loop && nextFrame == 0) {
-        m_currentFrame = 0;
-        m_startTime = currentTime;
-        return;
-    }
-
     // Calculate the interpolation factor
     float t = elapsedTime / m_frames[m_currentFrame].m_duration;
     if (t > 1.0f) {
-        t = 1.0f;
+        if (!m_loop && nextFrame == 0) {
+            m_currentFrame = 0;
+            m_startTime = currentTime;
+            isDone = true;
+            return;
+        } else if (m_loop && nextFrame == 0) {
+            m_currentFrame = 0;
+            m_startTime = currentTime;
+            return;
+        }
+
         m_currentFrame = nextFrame;
         m_startTime = currentTime;
-    }
+    } else if (m_loop && nextFrame == 0)
+        return;
 
     // Decompose the transformation matrices into translation, rotation, and scale
     glm::vec3 translation1, translation2, scale1, scale2;
@@ -59,7 +65,7 @@ void AnimationCallback::execute(Transform& node) {
                           glm::mat4_cast(rotation) *
                           glm::scale(glm::mat4(1.0f), scale);
 
-    node.setMatrix(transform);
+    node.setMatrix(m_initialTransform * transform);
 }
 
 void AnimationCallback::addFrame(AnimationFrame frame) {

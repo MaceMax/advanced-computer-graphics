@@ -25,13 +25,13 @@ void DepthVisitor::setupRenderState(GLuint depthTexture, const glm::mat4& lightV
     m_lightProjection = lightProjection;
 
     glViewport(0, 0, DEPTH_MAP_RESOLUTION, DEPTH_MAP_RESOLUTION);
-    // Bind the framebuffer
     glBindFramebuffer(GL_FRAMEBUFFER, fbo);
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, m_depthTexture, 0);
 
     if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
         std::cerr << "Framebuffer is not complete" << std::endl;
     }
+    glClear(GL_DEPTH_BUFFER_BIT);
 }
 
 void DepthVisitor::visit(Geometry* geometry) {

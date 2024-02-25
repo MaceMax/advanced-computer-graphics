@@ -25,8 +25,10 @@ class AnimationCallback : public UpdateCallback {
    private:
     std::chrono::high_resolution_clock::time_point m_startTime;
     std::vector<AnimationFrame> m_frames;
+    glm::mat4 m_initialTransform;
     int m_currentFrame = 0;
     float m_speed;
+    bool firstLoop = true;
     bool m_loop = false;
     bool isDone = false;
 };

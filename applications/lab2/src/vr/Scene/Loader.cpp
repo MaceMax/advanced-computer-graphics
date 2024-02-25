@@ -310,7 +310,7 @@ bool vr::load3DModelFile(const std::string& filename, std::shared_ptr<Group>& no
     transformStack.push(glm::mat4());
     // IF the model is the ground plane, scale to 100x100
     if (filename == "models/GroundPlane/scene.gltf")
-        transformStack.push(glm::scale(transformStack.top(), glm::vec3(50.0f, 1.0f, 50.0f)));
+        transformStack.push(glm::scale(transformStack.top(), glm::vec3(100.0f, 1.0f, 100.0f)));
 
     if (geometryMap != nullptr && geometryMap->find(filepath) != geometryMap->end()) {
         node->setChildren(geometryMap->at(filepath)->getChildren());
@@ -912,6 +912,7 @@ bool vr::loadSceneFile(const std::string& sceneFile, std::shared_ptr<Scene>& sce
                 return false;
             }
             scene->getRoot()->addChild(groundPlaneNode);
+            scene->setGroundPlane(groundPlaneNode);
         }
 
         GeometryMap geometryMap;
