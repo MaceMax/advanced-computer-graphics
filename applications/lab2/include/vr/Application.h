@@ -45,6 +45,8 @@ class Application {
 
     void toggleShadows();
 
+    void selectLight(int idx);
+
    private:
     // Parent of all to be rendered
     std::shared_ptr<Scene> m_scene;

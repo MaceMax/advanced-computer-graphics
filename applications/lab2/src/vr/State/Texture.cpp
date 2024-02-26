@@ -96,28 +96,43 @@ bool Texture::create(const char* image, bool isMaterialTexture, unsigned int slo
     return true;
 }
 
-void Texture::createDepthTexture(unsigned int width, unsigned int height, unsigned int slot) {
+void Texture::createDepthTexture(unsigned int width, unsigned int height, unsigned int slot, bool isDirectional) {
     if (m_valid)
         cleanup();
 
-    m_type = GL_TEXTURE_2D;
+    if (isDirectional)
+        m_type = GL_TEXTURE_2D;
+    else
+        m_type = GL_TEXTURE_CUBE_MAP;
 
     glGenTextures(1, &m_id);
 
     m_textureSlot = DEPTH_TEXTURE_BASE_SLOT + slot;
     glActiveTexture(GL_TEXTURE0 + m_textureSlot);
-    glBindTexture(GL_TEXTURE_2D, m_id);
+    glBindTexture(m_type, m_id);
 
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, width, height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
-    float borderColor[] = {1.0, 1.0, 1.0, 1.0};
-    glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
+    if (isDirectional)
+        glTexImage2D(m_type, 0, GL_DEPTH_COMPONENT, width, height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+    else
+        for (unsigned int i = 0; i < 6; i++) {
+            glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_DEPTH_COMPONENT, width, height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+        }
 
-    glBindTexture(GL_TEXTURE_2D, 0);
+    glTexParameteri(m_type, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(m_type, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
+    if (isDirectional) {
+        glTexParameteri(m_type, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+        glTexParameteri(m_type, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+        float borderColor[] = {1.0, 1.0, 1.0, 1.0};
+        glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
+    } else {
+        glTexParameteri(m_type, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameteri(m_type, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        glTexParameteri(m_type, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+    }
+
+    glBindTexture(m_type, 0);
     m_valid = true;
 }
 

@@ -47,7 +47,7 @@ class Texture {
      * @param width the width of the texture
      * @param height the height of the texture
      */
-    void createDepthTexture(unsigned int width, unsigned int height, unsigned int slot);
+    void createDepthTexture(unsigned int width, unsigned int height, unsigned int slot, bool isDirectional = true);
 
     /**
      * @brief Checks if the texture is valid

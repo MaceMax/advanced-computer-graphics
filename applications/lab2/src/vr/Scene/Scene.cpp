@@ -104,6 +104,13 @@ void Scene::toggleShadows() {
     m_root->getState()->setShadowEnabled(m_shadowsEnabled);
 }
 
+void Scene::setSelectedLight(int index) {
+    selectedLight = index;
+    if (index < 0 || index >= m_lights.size()) {
+        selectedLight = m_lights.size() - 1;
+    }
+}
+
 std::shared_ptr<Light> Scene::getSelectedLight() {
     return m_lights[selectedLight];
 }
@@ -116,6 +123,9 @@ BoundingBox Scene::calculateSceneBoundingBox(bool excludeGround) {
 
     box.expand(m_root->calculateBoundingBox(glm::mat4(1.0f)));
 
+    if (!excludeGround && m_groundPlane != nullptr)
+        m_groundRadius = box.getRadius();
+
     // Should be excluded by default
     if (m_groundPlane != nullptr)
         m_groundPlane->setExclude(true);
@@ -127,7 +137,9 @@ void Scene::render() {
     m_updateVisitor->visit(m_root.get());
 
     if (m_shadowsEnabled)
-        renderDepthMaps();
+        renderDepthMaps(m_updateVisitor->sceneChanged());
+
+    m_updateVisitor->setSceneChanged(false);
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glViewport(0, 0, m_camera->getScreenSize().x, m_camera->getScreenSize().y);
@@ -136,9 +148,16 @@ void Scene::render() {
     m_renderVisitor->visit(m_root.get());
 }
 
-void Scene::renderDepthMaps() {
+void Scene::renderDepthMaps(bool sceneChanged) {
+    BoundingBox sbox;
+    if (sceneChanged)
+        sbox = calculateSceneBoundingBox(true);
+
     for (auto& light : m_lights) {
-        m_depthVisitor->setupRenderState(light->getDepthMap().id(), light->getView(), light->getProjection());
+        if (sceneChanged)
+            light->setShadowParams(sbox.getRadius(), sbox.getCenter(), m_groundRadius);
+
+        m_depthVisitor->setupRenderState(light);
         m_depthVisitor->visit(m_root.get());
     }
 }

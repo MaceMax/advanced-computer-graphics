@@ -2,6 +2,8 @@
 
 <Scene groundPlane="true">
     <!-- Simple keyframe animation -->
+    <Light position="0 1 -5 1" ambient="0.2 0.2 0.2 1" diffuse="1 1 1 1" specular="1 1 1 1"/>
+    <Light position="5 2 0 1" ambient="0.2 0.2 0.2 1" diffuse="0.8 0.8 0 1" specular="1 1 0 1"/>
     <Transform name="Transform1" translate="0 0.4 0" rotate="0 0 0" scale="1 1 1">
         <Callbacks>
             <AnimationCallback speed="1.5" loop="true">
@@ -32,10 +34,5 @@
             <Geometry name="Suzanne" filepath="models/suzanne.obj"/>
         </Transform>
     </Transform>
-    <Transform name="Transform1" translate="5 1.9 5" rotate="30 0 0" scale="1 1 1">
-        <Transform name="InnerTransform" translate="0 0 0">
-            
-            <Geometry name="Suzanne" filepath="models/texturedBox.obj"/>
-        </Transform>
-    </Transform>
+    
 </Scene>

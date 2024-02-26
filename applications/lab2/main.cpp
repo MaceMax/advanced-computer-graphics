@@ -56,6 +56,14 @@ void keyboard_callback(GLFWwindow* window, int key, int scancode, int action, in
         if (auto app = g_applicationPtr.lock())
             app->toggleShadows();
 
+    // Select lights with 0-9 keys
+    if (key >= GLFW_KEY_0 && key <= GLFW_KEY_9 && action == GLFW_PRESS) {
+        if (auto app = g_applicationPtr.lock()) {
+            int lightIdx = key - GLFW_KEY_0;
+            app->selectLight(lightIdx);
+        }
+    }
+
 }
 
 void window_size_callback(GLFWwindow* window, int width, int height) {

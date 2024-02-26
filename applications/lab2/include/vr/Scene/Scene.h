@@ -90,8 +90,10 @@ class Scene {
 
     /**
      * Renders the depth maps for all lights in the scene
+     *
+     * \param sceneChanged True if the scene has changed since the last render
      */
-    void renderDepthMaps();
+    void renderDepthMaps(bool sceneChanged);
 
     /**
      * Returns the selected light in the scene
@@ -133,6 +135,7 @@ class Scene {
     std::shared_ptr<Camera> m_camera;
     std::shared_ptr<Group> m_root;
     std::shared_ptr<Group> m_groundPlane;
+    float m_groundRadius = 0.0f;
 };
 
 }  // namespace vr

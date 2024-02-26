@@ -16,11 +16,17 @@ void UpdateVisitor::visit(Geometry* geometry) {
 }
 
 void UpdateVisitor::visit(Transform* transform) {
+    // Mark the scene as changed if the transform is dirty
+    // First set the dirty flag to false
+    transform->setDirty(false);
+
     if (transform->hasCallbacks()) {
         for (auto& callback : transform->getUpdateCallbacks()) {
             callback->execute(*transform);
         }
     }
+
+    m_sceneChanged = m_sceneChanged || transform->Dirty();
 
     for (auto& child : transform->getChildren()) {
         child->accept(*this);

@@ -25,9 +25,25 @@ class Transform : public Group {
      * @return glm::mat4 The transformation matrix
      */
     glm::mat4 getMatrix();
+
+    /**
+     * @brief Returns the dirty flag of the transform node
+     *
+     * @return bool True if the transform node is dirty, false otherwise
+     */
+    bool Dirty() const { return isDirty; }
+
+    /**
+     * @brief Sets the dirty flag of the transform node
+     *
+     * @param dirty The dirty flag
+     */
+    void setDirty(bool dirty) { isDirty = dirty; }
+
     virtual BoundingBox calculateBoundingBox(glm::mat4 t_mat) override;
 
    private:
     glm::mat4 t_matrix;
+    bool isDirty;
 };
 }  // namespace vr

@@ -7,6 +7,7 @@ void Transform::accept(NodeVisitor& visitor) {
 }
 
 void Transform::setMatrix(const glm::mat4& matrix) {
+    isDirty = true;
     t_matrix = matrix;
 }
 

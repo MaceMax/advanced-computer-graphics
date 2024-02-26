@@ -195,6 +195,10 @@ void Application::update(GLFWwindow* window) {
     render(window);
 }
 
+void Application::selectLight(int idx) {
+    m_scene->setSelectedLight(idx);
+}
+
 void Application::processInput(GLFWwindow* window) {
     getCamera()->processInput(window);
 
@@ -207,23 +211,25 @@ void Application::processInput(GLFWwindow* window) {
     std::shared_ptr<Light> light = m_scene->getSelectedLight();
     glm::vec4 position = light->getPosition();
 
+    float translationSpeed = position.w == 0 ? TRANSLATION_SPEED : TRANSLATION_SPEED * 10.0f;
+
     if (glfwGetKey(window, GLFW_KEY_J) == GLFW_PRESS)
-        deltaPosition.x -= TRANSLATION_SPEED * deltaTime;  // Move light source along the negative x-axis
+        deltaPosition.x -= translationSpeed * deltaTime;  // Move light source along the negative x-axis
 
     if (glfwGetKey(window, GLFW_KEY_L) == GLFW_PRESS)
-        deltaPosition.x += TRANSLATION_SPEED * deltaTime;  // Move light source along the positive x-axis
+        deltaPosition.x += translationSpeed * deltaTime;  // Move light source along the positive x-axis
 
     if (glfwGetKey(window, GLFW_KEY_I) == GLFW_PRESS)
-        deltaPosition.y -= TRANSLATION_SPEED * deltaTime;  // Move light source along the negative y-axis
+        deltaPosition.y += translationSpeed * deltaTime;  // Move light source along the positive y-axis
 
     if (glfwGetKey(window, GLFW_KEY_K) == GLFW_PRESS)
-        deltaPosition.y += TRANSLATION_SPEED * deltaTime;  // Move light source along the positive y-axis
+        deltaPosition.y -= translationSpeed * deltaTime;  // Move light source along the negative y-axis
 
     if (glfwGetKey(window, GLFW_KEY_U) == GLFW_PRESS)
-        deltaPosition.z -= TRANSLATION_SPEED * deltaTime;  // Move light source along the negative z-axis
+        deltaPosition.z -= translationSpeed * deltaTime;  // Move light source along the negative z-axis
 
     if (glfwGetKey(window, GLFW_KEY_O) == GLFW_PRESS)
-        deltaPosition.z += TRANSLATION_SPEED * deltaTime;  // Move light source along the positive z-axis
+        deltaPosition.z += translationSpeed * deltaTime;  // Move light source along the positive z-axis
 
     if (glm::length(deltaPosition) > 0.0f) {
         position += deltaPosition;

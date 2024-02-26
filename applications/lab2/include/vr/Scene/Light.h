@@ -120,6 +120,30 @@ class Light {
      */
     void updateShadowMatrices();
 
+    /**
+     * @brief Set shadow mapping parameters
+     *
+     * @param sceneRadius The radius of the scene bounding box
+     * @param sceneCenter The center of the scene bounding box
+     * @param farPlane The far plane of the shadow map
+     */
+    void setShadowParams(float sceneRadius, glm::vec3 sceneCenter, float farPlane);
+
+    /**
+     * @brief Returns the shadow matrix for the light at the given index
+     *
+     * @param idx The index of the shadow matrix
+     * @return glm::mat4 The shadow matrix
+     */
+    glm::mat4 getShadowMatrix(size_t idx) const { return m_shadowMatrices[idx]; }
+
+    /**
+     * @brief Returns the far plane of the shadow map
+     *
+     * @return float The far plane
+     */
+    float getFarPlane() const { return m_farPlane; }
+
     glm::mat4 getProjection() const { return m_projection; }
     void setProjection(const glm::mat4& projection) { m_projection = projection; }
 
@@ -143,6 +167,8 @@ class Light {
     float m_farPlane;
     glm::mat4 m_projection;
     glm::mat4 m_view;
+    // Used for point lights
+    std::vector<glm::mat4> m_shadowMatrices;
     Texture m_depthMap;
 
     std::string constructPrefix(const std::string& prefix, size_t idx, const std::string& suffix = "");

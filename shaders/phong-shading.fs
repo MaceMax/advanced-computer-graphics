@@ -45,6 +45,7 @@ struct LightSource
   float constant;
   float linear;
   float quadratic;
+  float farPlane;
 };
 
 struct Textures
@@ -61,10 +62,23 @@ uniform LightSource lights[MaxNumberOfLights];
 // The front surface material
 uniform Material material;
 uniform Textures textureLayers;
+
+// Shadow mapping
 uniform int shadowsEnabled;
 uniform sampler2D depthMaps[MaxNumberOfLights];
+uniform samplerCube cubeDepthMaps[MaxNumberOfLights];
+uniform vec3 viewPos;
 
-float calculateShadow(vec4 fragPosLightSpace, vec3 lightDirection, vec3 nNormal, int index)
+vec3 sampleOffsetDirections[20] = vec3[]
+(
+   vec3( 1,  1,  1), vec3( 1, -1,  1), vec3(-1, -1,  1), vec3(-1,  1,  1), 
+   vec3( 1,  1, -1), vec3( 1, -1, -1), vec3(-1, -1, -1), vec3(-1,  1, -1),
+   vec3( 1,  1,  0), vec3( 1, -1,  0), vec3(-1, -1,  0), vec3(-1,  1,  0),
+   vec3( 1,  0,  1), vec3(-1,  0,  1), vec3( 1,  0, -1), vec3(-1,  0, -1),
+   vec3( 0,  1,  1), vec3( 0, -1,  1), vec3( 0, -1, -1), vec3( 0,  1, -1)
+);  
+
+float calculateDirectionalShadow(vec4 fragPosLightSpace, vec3 lightDirection, vec3 nNormal, int index)
 {
   vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
   projCoords = projCoords * 0.5 + 0.5;
@@ -75,7 +89,7 @@ float calculateShadow(vec4 fragPosLightSpace, vec3 lightDirection, vec3 nNormal,
 
   float shadow = 0.0;
   float currentDepth = projCoords.z;
-  float bias = max(0.002 * (1.0 - dot(nNormal, lightDirection)), 0.001);  
+  float bias = max(0.002 * (1.0 - dot(nNormal, lightDirection)), 0.001);
 
   vec2 texelSize = 1.0 / textureSize(depthMaps[index], 0);
 
@@ -90,6 +104,29 @@ float calculateShadow(vec4 fragPosLightSpace, vec3 lightDirection, vec3 nNormal,
   }
   
   return shadow / ((2 * kernelSize + 1) * (2 * kernelSize + 1));
+}
+
+float calculatePointShadow(vec3 fragPos, vec3 lightPos, int index)
+{
+  vec3 fragToLight = fragPos - lightPos;
+  float currentDepth = length(fragToLight);
+
+  // PCF
+  float shadow = 0.0;
+  float bias = 0.15;
+  int samples = 20;
+  float viewDistance = length(viewPos - fragPos);
+  float diskRadius = (1.0 + (viewDistance / lights[index].farPlane)) / 25.0;
+
+  for (int i = 0; i < samples; ++i)
+  {
+    float closestDepth = texture(cubeDepthMaps[index], fragToLight + sampleOffsetDirections[i] * diskRadius).r;
+    closestDepth *= lights[index].farPlane;  // Undo mapping [0;1]
+    if (currentDepth - bias > closestDepth)
+      shadow += 1.0;
+  }
+
+  return shadow / float(samples);
 }
 
 void main()
@@ -131,11 +168,11 @@ void main()
   }
   
   vec3 ambientReflection = vec3(0.0, 0.0, 0.0);
-  float shadow = 0.0;
   if (lightingEnabled == 1) {
       // for all light sources
       for (int index = 0; index < numberOfLights; index++) 
-      {
+      { 
+        float lightShadow = 0.0;
         LightSource light = lights[index];
         if (light.enabled) {
             if (0.0 == light.position.w) // directional light?
@@ -144,7 +181,7 @@ void main()
               lightDirection = normalize(vec3(light.position));
               ambientReflection = vec3(light.ambient); // A scene should not have more than one directional light
               if (shadowsEnabled == 1) 
-                shadow = calculateShadow(positionLightSpace[index], lightDirection, normalDirection, index);
+                lightShadow = calculateDirectionalShadow(positionLightSpace[index], lightDirection, normalDirection, index);
             }
             else // point light or spotlight (or other kind of light) 
             {
@@ -153,11 +190,11 @@ void main()
               float distance = length(positionToLightSource);
               lightDirection = normalize(positionToLightSource);
               attenuation = 1.0 / (light.constant + light.linear * distance + light.quadratic * (distance * distance));
+              if (shadowsEnabled == 1) 
+                lightShadow = calculatePointShadow(positionWorld.xyz, vec3(light.position), index);
             }
             
-        
-            vec3 diffuseReflection = attenuation
-              * vec3(light.diffuse) * vec3(diffuseColor)
+            vec3 diffuseReflection = vec3(light.diffuse) * vec3(diffuseColor)
               * max(0.0, dot(normalDirection, lightDirection));
 
             vec3 specularReflection;
@@ -167,10 +204,11 @@ void main()
             }
             else // light source on the right side
             {
-              specularReflection = attenuation * vec3(light.specular) * vec3(specularColor)
+              specularReflection =  vec3(light.specular) * vec3(specularColor)
                 * pow(max(0.0, dot(reflect(-lightDirection, normalDirection), viewDirection)), material.shininess);
             }
-            totalLighting += (1.0 - shadow) * (diffuseReflection + specularReflection);
+            
+            totalLighting += (1 - lightShadow) * (attenuation * (diffuseReflection + specularReflection));
         }       
         
       }

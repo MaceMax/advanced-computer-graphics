@@ -15,5 +15,10 @@ class UpdateVisitor : public NodeVisitor {
     void visit(Group* group) override;
     void visit(LodNode* lodNode) override;
     void visit(LightNode* lightNode) override;
+    bool sceneChanged() const { return m_sceneChanged; }
+    void setSceneChanged(bool changed) { m_sceneChanged = changed; }
+
+   private:
+    bool m_sceneChanged;
 };
 }  // namespace vr
