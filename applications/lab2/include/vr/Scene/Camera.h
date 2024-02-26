@@ -5,6 +5,7 @@
 #include <vr/State/Shader.h>
 #include <GLFW/glfw3.h>
 #include <memory>
+#include <glm/gtc/constants.hpp>
 
 namespace vr
 {
@@ -18,8 +19,9 @@ namespace vr
   public:
 
     /// Constructor
-    Camera(bool isLightCamera = false);
+    Camera();
 
+    Camera(float fov, float near, float far, glm::vec3 position, glm::vec3 lookAt, bool movementEnabled = true);
     /**
     Handle keyboard events
 
@@ -144,6 +146,7 @@ namespace vr
 
     glm::mat4 m_view;
     glm::mat4 m_projection;
+    glm::mat4 m_transform;
 
     glm::uvec2 m_screenSize;
     glm::vec2 m_nearFar;
@@ -152,8 +155,8 @@ namespace vr
     glm::vec3 m_direction;
     glm::vec3 m_up;
 
+    bool m_movementEnabled;
     bool m_firstClick;
-    bool m_isLightCamera;
     float m_speed;
     float m_fov;
     float m_horizontalAngle;
@@ -165,4 +168,5 @@ namespace vr
     double m_lastY;
   };
 
+    typedef std::vector<std::shared_ptr<Camera>> CameraVector;
 }

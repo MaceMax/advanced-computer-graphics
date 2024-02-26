@@ -10,13 +10,6 @@ using namespace vr;
 std::shared_ptr<Scene> Scene::instance = nullptr;
 
 Scene::Scene() {
-    m_camera = std::make_shared<Camera>();
-    m_renderVisitor = std::make_shared<RenderVisitor>();
-    m_renderVisitor->setActiveCamera(m_camera);
-    m_updateVisitor = std::make_shared<UpdateVisitor>();
-    m_updateVisitor->setActiveCamera(m_camera);
-    m_depthVisitor = std::make_shared<DepthVisitor>();
-    m_depthVisitor->setActiveCamera(m_camera);
 }
 
 std::shared_ptr<Scene> Scene::getInstance() {
@@ -27,6 +20,16 @@ std::shared_ptr<Scene> Scene::getInstance() {
 }
 
 bool Scene::initShaders(const std::string& vshader_filename, const std::string& fshader_filename) {
+    m_cameras.clear();
+    m_camera = std::make_shared<Camera>();
+    m_cameras.push_back(m_camera);
+    m_renderVisitor = std::make_shared<RenderVisitor>();
+    m_renderVisitor->setActiveCamera(m_camera);
+    m_updateVisitor = std::make_shared<UpdateVisitor>();
+    m_updateVisitor->setActiveCamera(m_camera);
+    m_depthVisitor = std::make_shared<DepthVisitor>();
+    m_depthVisitor->setActiveCamera(m_camera);
+
     m_shader = std::make_shared<vr::Shader>(vshader_filename, fshader_filename);
     if (!m_shader->valid())
         return false;
@@ -115,7 +118,36 @@ std::shared_ptr<Light> Scene::getSelectedLight() {
     return m_lights[selectedLight];
 }
 
-BoundingBox Scene::calculateSceneBoundingBox(bool excludeGround) {
+void Scene::addCamera(std::shared_ptr<Camera> camera) {
+    m_cameras.push_back(camera);
+}
+
+std::shared_ptr<Camera> Scene::getActiveCamera() {
+    return m_camera;
+}
+
+void Scene::setActiveCamera(int next) {
+    int next_index = selectedCamera + next;
+
+    if (next_index < 0) {
+        next_index = m_cameras.size() - 1;
+    } else if (next_index >= m_cameras.size()) {
+        next_index = 0;
+    }
+
+    selectedCamera = next_index;
+    m_camera = m_cameras[selectedCamera];
+    m_renderVisitor->setActiveCamera(m_camera);
+    m_updateVisitor->setActiveCamera(m_camera);
+    m_depthVisitor->setActiveCamera(m_camera);
+}
+
+CameraVector Scene::getCameras() {
+    return m_cameras;
+}
+
+BoundingBox
+Scene::calculateSceneBoundingBox(bool excludeGround) {
     BoundingBox box;
 
     if (m_groundPlane != nullptr)

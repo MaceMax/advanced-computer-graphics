@@ -2,7 +2,6 @@
 #include <glad/glad.h>
 #include <vr/Scene/Camera.h>
 
-#include <glm/gtc/constants.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtx/io.hpp>
@@ -14,15 +13,7 @@
 
 using namespace vr;
 
-Camera::Camera(bool isLightCamera) : m_isLightCamera(isLightCamera),
-                                     m_firstClick(true),
-                                     m_speed(3.0f),
-                                     m_fov(50),
-                                     m_horizontalAngle(glm::pi<float>()),
-                                     m_verticalAngle(0.0f),
-                                     m_mouseSpeed(1),
-                                     m_lastTime(0),
-                                     m_speedup(1) {
+Camera::Camera() : m_movementEnabled(true), m_firstClick(true), m_speed(3.0f), m_fov(50), m_horizontalAngle(glm::pi<float>()), m_verticalAngle(0.0f), m_mouseSpeed(1), m_lastTime(0), m_speedup(1) {
     m_direction = glm::vec3(0.0f, 0.0f, -1.0f);
     m_up = glm::vec3(0.0f, 1.0f, 0.0f);
     m_position = glm::vec3(0.0f, -1.0f, 0.0f);
@@ -38,6 +29,22 @@ Camera::Camera(bool isLightCamera) : m_isLightCamera(isLightCamera),
     m_lastTime = (float)glfwGetTime();
 }
 
+Camera::Camera(float fov, float near, float far, glm::vec3 position, glm::vec3 lookAt, bool movementEnabled) : m_movementEnabled(movementEnabled), m_firstClick(true), m_speed(3.0f), m_fov(fov), m_horizontalAngle(glm::pi<float>()), m_verticalAngle(0.0f), m_mouseSpeed(1), m_lastTime(0), m_speedup(1) {
+    m_up = glm::vec3(0.0f, 1.0f, 0.0f);
+    m_position = position;
+    m_direction = glm::normalize(lookAt - position);
+    m_view = glm::mat4(1.0f);
+    m_projection = glm::mat4(1.0f);
+
+    m_screenSize[0] = 1280;
+    m_screenSize[1] = 720;
+
+    m_nearFar = glm::vec2(near, far);
+
+    // glfwGetTime is called only once, the first time this function is called
+    m_lastTime = (float)glfwGetTime();
+}
+
 void Camera::set(glm::vec3 eye, glm::vec3 direction, glm::vec3 up) {
     m_position = eye;
     m_direction = direction;
@@ -47,12 +54,18 @@ void Camera::set(glm::vec3 eye, glm::vec3 direction, glm::vec3 up) {
 }
 
 void Camera::setTransform(glm::mat4 transform) {
+    if (m_movementEnabled)
+        return;
+
     glm::vec3 scale, translation, skew;
     glm::vec4 perspective;
     glm::quat direction;
     glm::decompose(transform, scale, direction, translation, skew, perspective);
 
+    // Transforming the camera must be done in some other way
+    std::cout << "m_position: " << m_position << " translation: " << translation << std::endl;
     m_position = translation;
+    std::cout << "m_position: " << m_position << std::endl;
     m_up = glm::vec3(0, 1, 0) * direction;
     m_direction = glm::vec3(0.0f, 0.0f, -1.0f) * direction;
 
@@ -69,6 +82,9 @@ glm::vec3 Camera::getPosition() const {
 }
 
 void Camera::handleMouse(GLFWwindow* window, double xpos, double ypos) {
+    if (!m_movementEnabled)
+        return;
+
     const float mouseSpeedMultiplier = 0.005f;  // Just to be able to use 1 as a good default value.
 
     double xDiff = xpos - m_lastX + m_screenSize[0] / 2;
@@ -97,13 +113,11 @@ void Camera::handleMouse(GLFWwindow* window, double xpos, double ypos) {
 }
 
 void Camera::processInput(GLFWwindow* window) {
-    // If the camera is a light camera, it should not be controlled by the user
-    if (m_isLightCamera)
-        return;
-
     // Compute time difference between current and last frame
     float currentTime = (float)glfwGetTime();
     float deltaTime = float(currentTime - m_lastTime);
+    if (!m_movementEnabled)
+        return;
 
     // Right vector
     glm::vec3 right = glm::vec3(

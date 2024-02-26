@@ -32,8 +32,8 @@ bool Application::initResources(const std::string& model_filename, const std::st
 
     if (!m_scene->initShaders(vshader_filename, fshader_filename))
         return false;
-    getCamera()->setScreenSize(m_screenSize);
 
+    getCamera()->setScreenSize(m_screenSize);
     std::shared_ptr<Group>& m_sceneRoot = m_scene->getRoot();
     if (model_filename.empty()) {
         std::shared_ptr<Group> geometryGroup = std::make_shared<Group>("default");
@@ -173,13 +173,20 @@ void Application::initView() {
     getCamera()->setNearFar(glm::vec2(0.1, distance * 100));
 
     // Compute the default movement speed based on the radius of the scene
-    getCamera()->setSpeed(0.7f * radius);
+    for (auto& camera : m_scene->getCameras()) {
+        camera->setSpeed(0.7f * radius);
+    }
 
     glEnable(GL_CULL_FACE);
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LESS);
     glFrontFace(GL_CCW);
     glCullFace(GL_BACK);
+}
+
+void Application::changeCamera(int next) {
+    m_scene->setActiveCamera(next);
+    getCamera()->setScreenSize(m_screenSize);
 }
 
 void Application::render(GLFWwindow* window) {
@@ -211,25 +218,23 @@ void Application::processInput(GLFWwindow* window) {
     std::shared_ptr<Light> light = m_scene->getSelectedLight();
     glm::vec4 position = light->getPosition();
 
-    float translationSpeed = position.w == 0 ? TRANSLATION_SPEED : TRANSLATION_SPEED * 10.0f;
-
     if (glfwGetKey(window, GLFW_KEY_J) == GLFW_PRESS)
-        deltaPosition.x -= translationSpeed * deltaTime;  // Move light source along the negative x-axis
+        deltaPosition.x -= TRANSLATION_SPEED * deltaTime;  // Move light source along the negative x-axis
 
     if (glfwGetKey(window, GLFW_KEY_L) == GLFW_PRESS)
-        deltaPosition.x += translationSpeed * deltaTime;  // Move light source along the positive x-axis
+        deltaPosition.x += TRANSLATION_SPEED * deltaTime;  // Move light source along the positive x-axis
 
     if (glfwGetKey(window, GLFW_KEY_I) == GLFW_PRESS)
-        deltaPosition.y += translationSpeed * deltaTime;  // Move light source along the positive y-axis
+        deltaPosition.y += TRANSLATION_SPEED * deltaTime;  // Move light source along the positive y-axis
 
     if (glfwGetKey(window, GLFW_KEY_K) == GLFW_PRESS)
-        deltaPosition.y -= translationSpeed * deltaTime;  // Move light source along the negative y-axis
+        deltaPosition.y -= TRANSLATION_SPEED * deltaTime;  // Move light source along the negative y-axis
 
     if (glfwGetKey(window, GLFW_KEY_U) == GLFW_PRESS)
-        deltaPosition.z -= translationSpeed * deltaTime;  // Move light source along the negative z-axis
+        deltaPosition.z -= TRANSLATION_SPEED * deltaTime;  // Move light source along the negative z-axis
 
     if (glfwGetKey(window, GLFW_KEY_O) == GLFW_PRESS)
-        deltaPosition.z += translationSpeed * deltaTime;  // Move light source along the positive z-axis
+        deltaPosition.z += TRANSLATION_SPEED * deltaTime;  // Move light source along the positive z-axis
 
     if (glm::length(deltaPosition) > 0.0f) {
         position += deltaPosition;
@@ -247,7 +252,7 @@ void Application::setScreenSize(unsigned int width, unsigned int height) {
 }
 
 std::shared_ptr<Camera> Application::getCamera() {
-    return m_scene->getCamera();
+    return m_scene->getActiveCamera();
 }
 
 std::shared_ptr<Geometry> Application::createDefaultGeometry(const std::shared_ptr<Shader>& shader) {

@@ -1,3 +1,4 @@
+#include <vr/Nodes/CameraNode.h>
 #include <vr/Nodes/Geometry.h>
 #include <vr/Nodes/Group.h>
 #include <vr/Nodes/LightNode.h>
@@ -62,6 +63,14 @@ void UpdateVisitor::visit(LightNode* lightNode) {
     if (lightNode->hasCallbacks()) {
         for (auto& callback : lightNode->getUpdateCallbacks()) {
             callback->execute(*lightNode);
+        }
+    }
+}
+
+void UpdateVisitor::visit(CameraNode* cameraNode) {
+    if (cameraNode->hasCallbacks()) {
+        for (auto& callback : cameraNode->getUpdateCallbacks()) {
+            callback->execute(*cameraNode);
         }
     }
 }

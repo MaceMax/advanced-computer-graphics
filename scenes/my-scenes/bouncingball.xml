@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <Scene groundPlane="true">
-    <!-- Simple keyframe animation -->
+    <Camera fov="90" near="0.1" far="1000" position="1 10 1" lookAt="0 0 0" movementEnabled="true"/>
     <Light position="0 1 -5 1" ambient="0.2 0.2 0.2 1" diffuse="1 1 1 1" specular="1 1 1 1"/>
     <Light position="5 2 0 1" ambient="0.2 0.2 0.2 1" diffuse="0.8 0.8 0 1" specular="1 1 0 1"/>
+    <!-- Simple keyframe animation -->
     <Transform name="Transform1" translate="0 0.4 0" rotate="0 0 0" scale="1 1 1">
         <Callbacks>
             <AnimationCallback speed="1.5" loop="true">
@@ -20,7 +21,7 @@
         </Callbacks>
         <Geometry name="Sphere" filepath="models/sphere.obj"/>
     </Transform>
-     <Transform name="Transform1" translate="5 50 2.5" rotate="0 0 0" scale="10 10 10">
+     <Transform name="Transform1" translate="5 2 2.5" rotate="0 0 0" scale="1 1 1">
         <Transform name="InnerTransform" translate="0 0 0">
             <Callbacks>
                 <AnimationCallback speed="0.3" loop="true">

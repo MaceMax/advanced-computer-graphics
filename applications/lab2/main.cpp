@@ -64,6 +64,16 @@ void keyboard_callback(GLFWwindow* window, int key, int scancode, int action, in
         }
     }
 
+    if (key == GLFW_KEY_RIGHT && action == GLFW_PRESS) {
+        if (auto app = g_applicationPtr.lock())
+            app->changeCamera(1);
+    }
+
+    if (key == GLFW_KEY_LEFT && action == GLFW_PRESS) {
+        if (auto app = g_applicationPtr.lock())
+            app->changeCamera(-1);
+    }
+
 }
 
 void window_size_callback(GLFWwindow* window, int width, int height) {

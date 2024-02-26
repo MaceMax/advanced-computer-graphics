@@ -20,6 +20,7 @@ class AnimationCallback : public UpdateCallback {
     void execute(Transform& node) override;
     void execute(LodNode& node) override {}
     void execute(LightNode& node) override {}
+    void execute(CameraNode& node) override {}
     void addFrame(AnimationFrame frame);
 
    private:

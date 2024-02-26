@@ -115,6 +115,26 @@ class Scene {
      */
     void toggleShadows();
 
+    /**
+     * Set the active camera
+     */
+    void setActiveCamera(int next);
+
+    /**
+     * Add a camera to the scene
+     */
+    void addCamera(std::shared_ptr<Camera> camera);
+
+    /**
+     * Get active camera
+     */
+    std::shared_ptr<Camera> getActiveCamera();
+
+    /**
+     * Get the scene cameras
+     */
+    CameraVector getCameras();
+
    private:
     /**
      * Private constructor for the scene class.
@@ -128,6 +148,8 @@ class Scene {
     std::shared_ptr<DepthVisitor> m_depthVisitor;
     // LightNode need to be also stored in the scene as they are needed for rendering depth maps
     LightVector m_lights;
+    CameraVector m_cameras;
+    int selectedCamera = 0;
     int selectedLight = 0;
 
     static std::shared_ptr<Scene> instance;

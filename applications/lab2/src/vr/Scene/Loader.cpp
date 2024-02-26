@@ -4,6 +4,7 @@
 #include <glad/glad.h>
 #include <vr/Callbacks/AnimationCallback.h>
 #include <vr/FileSystem.h>
+#include <vr/Nodes/CameraNode.h>
 #include <vr/Nodes/Geometry.h>
 #include <vr/Nodes/Group.h>
 #include <vr/Nodes/LightNode.h>
@@ -682,7 +683,8 @@ UpdateCallbackVector parseUpdateCallback(std::vector<std::string> xmlpath, rapid
     return updateCallbacks;
 }
 // Parses XML nodes recursively
-void parseSceneNode(std::vector<std::string> xmlpath, rapidxml::xml_node<>* node_node, GeometryMap& geometryMap, std::shared_ptr<Group>& node, const std::shared_ptr<Shader>& shader, LightVector& lights) {
+void parseSceneNode(std::vector<std::string> xmlpath, rapidxml::xml_node<>* node_node, GeometryMap& geometryMap,
+                    std::shared_ptr<Group>& node, const std::shared_ptr<Shader>& shader, LightVector& lights, CameraVector& cameras) {
     if (node_node->type() == rapidxml::node_comment || node_node->type() == rapidxml::node_doctype)
         return;
 
@@ -706,7 +708,7 @@ void parseSceneNode(std::vector<std::string> xmlpath, rapidxml::xml_node<>* node
 
         if (name == "Group") {
             std::shared_ptr<Group> groupNode = nodeName.empty() ? std::make_shared<Group>() : std::make_shared<Group>(nodeName);
-            parseSceneNode(xmlpath, child, geometryMap, groupNode, newShader, lights);
+            parseSceneNode(xmlpath, child, geometryMap, groupNode, newShader, lights, cameras);
             if (state)
                 groupNode->setState(state);
             node->addChild(groupNode);
@@ -758,7 +760,7 @@ void parseSceneNode(std::vector<std::string> xmlpath, rapidxml::xml_node<>* node
 
             std::shared_ptr<Group> groupTransform = std::dynamic_pointer_cast<Group>(transformNode);
 
-            parseSceneNode(xmlpath, child, geometryMap, groupTransform, newShader, lights);
+            parseSceneNode(xmlpath, child, geometryMap, groupTransform, newShader, lights, cameras);
 
             if (state)
                 transformNode->setState(state);
@@ -853,6 +855,51 @@ void parseSceneNode(std::vector<std::string> xmlpath, rapidxml::xml_node<>* node
             }
 
             node->addChild(lightNode);
+        } else if (name == "Camera") {
+            std::string fovString = getAttribute(child, "fov");
+            float fov = 50.0f;
+            if (!fovString.empty())
+                fov = readValue<float>(fovString);
+
+            std::string nearString = getAttribute(child, "near");
+            float near = 0.1f;
+            if (!nearString.empty())
+                near = readValue<float>(nearString);
+
+            std::string farString = getAttribute(child, "far");
+            float far = 1000.0f;
+            if (!farString.empty())
+                far = readValue<float>(farString);
+
+            std::string position = getAttribute(child, "position");
+            glm::vec3 pos = glm::vec3(0, 0, 0);
+            if (!position.empty())
+                getVec<glm::vec3>(pos, position);
+
+            std::string lookAt = getAttribute(child, "lookAt");
+            glm::vec3 look = glm::vec3(0, 0, 0);
+            if (!lookAt.empty())
+                getVec<glm::vec3>(look, lookAt);
+
+            std::string movementEnabled = getAttribute(child, "movementEnabled");
+            bool movementEnabled_val = true;
+            if (!movementEnabled.empty())
+                movementEnabled_val = readValue<bool>(movementEnabled);
+
+            std::shared_ptr<Camera>
+                camera = std::make_shared<Camera>(fov, near, far, pos, look, movementEnabled_val);
+            std::shared_ptr<CameraNode> cameraNode = std::make_shared<CameraNode>(camera, nodeName);
+            cameras.push_back(camera);
+
+            rapidxml::xml_node<>* callbacksNode = child->first_node("Callbacks");
+            if (callbacksNode) {
+                xmlpath.push_back(callbacksNode->name());
+                UpdateCallbackVector updateCallbacks = parseUpdateCallback(xmlpath, callbacksNode);
+                for (auto c : updateCallbacks)
+                    cameraNode->addUpdateCallback(c);
+            }
+
+            node->addChild(cameraNode);
         }
 
         xmlpath.pop_back();
@@ -917,8 +964,11 @@ bool vr::loadSceneFile(const std::string& sceneFile, std::shared_ptr<Scene>& sce
 
         GeometryMap geometryMap;
         LightVector lights;
-        parseSceneNode(xmlpath, root_node, geometryMap, scene->getRoot(), scene->getRoot()->getState()->getShader(), lights);
+        CameraVector cameras;
+        parseSceneNode(xmlpath, root_node, geometryMap, scene->getRoot(), scene->getRoot()->getState()->getShader(), lights, cameras);
         scene->setLights(lights);
+        for (auto c : cameras)
+            scene->addCamera(c);
 
         xmlpath.pop_back();  // scene
     } catch (rapidxml::parse_error& error) {

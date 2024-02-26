@@ -18,6 +18,7 @@ class DepthVisitor : public NodeVisitor {
     void visit(Group* group) override;
     void visit(LodNode* lodNode) override;
     void visit(LightNode* lightNode) override;
+    void visit(CameraNode* cameraNode) override;
     void setupRenderState(const std::shared_ptr<Light> light);
 
    private:

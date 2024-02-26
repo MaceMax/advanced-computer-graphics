@@ -18,6 +18,7 @@ class RenderVisitor : public NodeVisitor {
     void visit(Group* group) override;
     void visit(LodNode* lodNode) override;
     void visit(LightNode* lightNode) override;
+    void visit(CameraNode* cameraNode) override;
 
    private:
     std::stack<glm::mat4> m_matrixStack;

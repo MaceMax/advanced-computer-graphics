@@ -1,4 +1,5 @@
 #include <vr/Callbacks/UpdateCallback.h>
+#include <vr/Nodes/CameraNode.h>
 #include <vr/Nodes/Geometry.h>
 #include <vr/Nodes/Group.h>
 #include <vr/Nodes/LightNode.h>
@@ -80,4 +81,9 @@ void RenderVisitor::visit(LodNode* lodNode) {
 void RenderVisitor::visit(LightNode* lightNode) {
     glm::mat4 t_mat = m_matrixStack.top();
     lightNode->getLight()->setTransform(t_mat);
+}
+
+void RenderVisitor::visit(CameraNode* cameraNode) {
+    glm::mat4 t_mat = m_matrixStack.top();
+    cameraNode->getCamera()->setTransform(t_mat);
 }

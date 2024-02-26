@@ -319,6 +319,30 @@ src/vr/FileSystem.cpp.s:
 	cd /home/macemax/University/advanced-computer-graphics && $(MAKE) $(MAKESILENT) -f applications/lab2/CMakeFiles/lab2.dir/build.make applications/lab2/CMakeFiles/lab2.dir/src/vr/FileSystem.cpp.s
 .PHONY : src/vr/FileSystem.cpp.s
 
+src/vr/Nodes/CameraNode.o: src/vr/Nodes/CameraNode.cpp.o
+.PHONY : src/vr/Nodes/CameraNode.o
+
+# target to build an object file
+src/vr/Nodes/CameraNode.cpp.o:
+	cd /home/macemax/University/advanced-computer-graphics && $(MAKE) $(MAKESILENT) -f applications/lab2/CMakeFiles/lab2.dir/build.make applications/lab2/CMakeFiles/lab2.dir/src/vr/Nodes/CameraNode.cpp.o
+.PHONY : src/vr/Nodes/CameraNode.cpp.o
+
+src/vr/Nodes/CameraNode.i: src/vr/Nodes/CameraNode.cpp.i
+.PHONY : src/vr/Nodes/CameraNode.i
+
+# target to preprocess a source file
+src/vr/Nodes/CameraNode.cpp.i:
+	cd /home/macemax/University/advanced-computer-graphics && $(MAKE) $(MAKESILENT) -f applications/lab2/CMakeFiles/lab2.dir/build.make applications/lab2/CMakeFiles/lab2.dir/src/vr/Nodes/CameraNode.cpp.i
+.PHONY : src/vr/Nodes/CameraNode.cpp.i
+
+src/vr/Nodes/CameraNode.s: src/vr/Nodes/CameraNode.cpp.s
+.PHONY : src/vr/Nodes/CameraNode.s
+
+# target to generate assembly for a file
+src/vr/Nodes/CameraNode.cpp.s:
+	cd /home/macemax/University/advanced-computer-graphics && $(MAKE) $(MAKESILENT) -f applications/lab2/CMakeFiles/lab2.dir/build.make applications/lab2/CMakeFiles/lab2.dir/src/vr/Nodes/CameraNode.cpp.s
+.PHONY : src/vr/Nodes/CameraNode.cpp.s
+
 src/vr/Nodes/Geometry.o: src/vr/Nodes/Geometry.cpp.o
 .PHONY : src/vr/Nodes/Geometry.o
 
@@ -830,6 +854,9 @@ help:
 	@echo "... src/vr/FileSystem.o"
 	@echo "... src/vr/FileSystem.i"
 	@echo "... src/vr/FileSystem.s"
+	@echo "... src/vr/Nodes/CameraNode.o"
+	@echo "... src/vr/Nodes/CameraNode.i"
+	@echo "... src/vr/Nodes/CameraNode.s"
 	@echo "... src/vr/Nodes/Geometry.o"
 	@echo "... src/vr/Nodes/Geometry.i"
 	@echo "... src/vr/Nodes/Geometry.s"

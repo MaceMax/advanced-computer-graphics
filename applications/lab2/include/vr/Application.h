@@ -6,7 +6,7 @@
 #include "vr/Scene/Camera.h"
 #include "vr/FPSCounter.h"
 #include "vr/Scene/Scene.h"
-#define TRANSLATION_SPEED 1.0f
+#define TRANSLATION_SPEED 8.5f
 
 namespace vr {
 
@@ -46,6 +46,8 @@ class Application {
     void toggleShadows();
 
     void selectLight(int idx);
+
+    void changeCamera(int next);
 
    private:
     // Parent of all to be rendered

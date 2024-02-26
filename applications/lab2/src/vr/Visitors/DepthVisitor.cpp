@@ -1,3 +1,4 @@
+#include <vr/Nodes/CameraNode.h>
 #include <vr/Nodes/Geometry.h>
 #include <vr/Nodes/Group.h>
 #include <vr/Nodes/LightNode.h>
@@ -83,3 +84,5 @@ void DepthVisitor::visit(LodNode* lodNode) {
 }
 
 void DepthVisitor::visit(LightNode* lightNode) {}
+
+void DepthVisitor::visit(CameraNode* cameraNode) {}
