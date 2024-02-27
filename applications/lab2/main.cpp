@@ -45,9 +45,13 @@ void keyboard_callback(GLFWwindow* window, int key, int scancode, int action, in
         glfwSetWindowShouldClose(window, 1);
 
     if (key == GLFW_KEY_R && action == GLFW_PRESS)
-        if (auto app = g_applicationPtr.lock())
+        if (auto app = g_applicationPtr.lock()) {
             app->reloadScene();
-
+            int width, height;
+            glfwGetWindowSize(window, &width, &height);
+            app->getCamera()->setScreenSize(glm::uvec2(width, height));
+        }
+            
     if (key == GLFW_KEY_SPACE && action == GLFW_PRESS)
         if (auto app = g_applicationPtr.lock())
             app->initView();

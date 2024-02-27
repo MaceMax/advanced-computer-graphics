@@ -176,7 +176,6 @@ void Application::initView() {
     for (auto& camera : m_scene->getCameras()) {
         camera->setSpeed(0.7f * radius);
     }
-
     glEnable(GL_CULL_FACE);
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LESS);
