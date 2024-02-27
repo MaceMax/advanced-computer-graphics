@@ -1,33 +1,46 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Scene>
-    <Light position="0 1 1 0" diffuse="0.4 0.4 0.4 1" specular="0 0 0 1"/>
-    <Transform name="Transform1" translate="0 0 0" rotate="0 0 0" scale="1 1 1">
+<Scene groundPlane="true">
+    <Camera fov="90" near="0.1" far="1000" position="1 10 1" lookAt="0 0 0" movementEnabled="true"/>
+    <Light position="1 1 1 0" diffuse="0.1 0.1 0.1 1" specular="1 1 1 1"/>
+    <Transform name="Transform1" scale="1 1 1" translate="0 0 0" rotate="0 0 0">
+        <Transform name="Transform1" scale="1 1 1" translate="0 2 2" rotate="0 0 0">
+            <Light position="0 0 0 1" diffuse="0.8 0 0 1" specular="1 1 1 1"/>
+        </Transform>
+        <Transform name="Transform1" scale="1 1 1" translate="0 2 -2" rotate="0 0 0">
+            <Light position="0 0 0 1" diffuse="0 0 0.8 1" specular="1 1 1 1"/>
+        </Transform>
+        <Transform name="Transform1" scale="1 1 1" translate="2 2 0" rotate="0 0 0">
+            <Light position="0 0 0 1" diffuse="0.8 0 0.8 1" specular="1 1 1 1"/>
+        </Transform>
+         <Transform name="Transform1" scale="1 1 1" translate="-2 2 0" rotate="0 0 0">
+            <Light position="0 0 0 1" diffuse="0 1 0 1" specular="1 1 1 1"/>
+        </Transform>
         <Callbacks>
             <AnimationCallback speed="0.5" loop="true">
-                <Frame duration="1" translate="100 2 0" rotate="0 0 0" scale="1 1 1"/>
-                <Frame duration="1" translate="0 5 100" rotate="0 0 0" scale="1 1 1"/>
-                <Frame duration="1" translate="-100 2 0" rotate="0 0 0" scale="1 1 1"/>
-                <Frame duration="1" translate="0 5 -100" rotate="0 0 0" scale="1 1 1"/>
-                <Frame duration="1" translate="100 2 0" rotate="0 0 0" scale="1 1 1"/>
+                <Frame duration="0.25" translate="0 0 0" rotate="0 0 0" scale="1 1 1"/>
+                <Frame duration="0.25" translate="0 0 0" rotate="0 30 0" scale="1 1 1"/>
+                <Frame duration="0.25" translate="0 0 0" rotate="0 60 0" scale="1 1 1"/>
+                <Frame duration="0.25" translate="0 0 0" rotate="0 90 0" scale="1 1 1"/>
+                <Frame duration="0.25" translate="0 0 0" rotate="0 120 0" scale="1 1 1"/>
+                <Frame duration="0.25" translate="0 0 0" rotate="0 150 0" scale="1 1 1"/>
+                <Frame duration="0.25" translate="0 0 0" rotate="0 180 0" scale="1 1 1"/>
+                <Frame duration="0.25" translate="0 0 0" rotate="0 210 0" scale="1 1 1"/>
+                <Frame duration="0.25" translate="0 0 0" rotate="0 240 0" scale="1 1 1"/>
+                <Frame duration="0.25" translate="0 0 0" rotate="0 270 0" scale="1 1 1"/>
+                <Frame duration="0.25" translate="0 0 0" rotate="0 300 0" scale="1 1 1"/>
+                <Frame duration="0.25" translate="0 0 0" rotate="0 330 0" scale="1 1 1"/>
+                <Frame duration="0" translate="0 0 0" rotate="0 360 0" scale="1 1 1"/>
             </AnimationCallback>
         </Callbacks>
-        <Light position="5 20 5 1" diffuse="0 1 0 1" specular="1 1 1 1" constant="1" linear="0.045" quadratic="0.0075"/>
     </Transform>
-    <Transform name="Transform1" translate="0 0 0" rotate="0 0 0" scale="1 1 1">
-        <Callbacks>
-            <AnimationCallback speed="1" loop="true">
-                <Frame duration="0.25" translate="0 5 100" rotate="0 0 0" scale="1 1 1"/>
-                <Frame duration="0.25" translate="-100 2 0" rotate="0 0 0" scale="1 1 1"/>
-                <Frame duration="10" translate="0 5 -100" rotate="0 0 0" scale="1 1 1"/>
-                <Frame duration="0.25" translate="100 2 0" rotate="0 0 0" scale="1 1 1"/>
-                <Frame duration="0.25" translate="0 5 100" rotate="0 0 0" scale="1 1 1"/>
-            </AnimationCallback>
-        </Callbacks>
-        <Light position="0 17 0 1" diffuse="1 0 0 1" specular="1 1 1 1" constant="1" linear="0.045" quadratic="0.0075"/>
-    </Transform>
-
-    <Light position="10 17 0 1" diffuse="0 0 1 1" specular="1 1 1 1" constant="1" linear="0.045" quadratic="0.0075"/>
     <Transform name="Transform1" scale="1 1 1" translate="0 0 0" rotate="0 0 0">
-        <Geometry name="Mountain" filepath="models/Terrain/France_GameMap.stl"/>
+        <Geometry name="Cabinet" filepath="models/Cabinet/painted_wooden_cabinet_2k.gltf"/>
     </Transform>
+    <Transform name="Transform1" scale="1 1 1" translate="-0.3 1.18 0" rotate="0 0 0">
+        <Geometry name="Bust" filepath="models/Bust/marble_bust_01_2k.gltf"/>
+    </Transform>
+    <Transform name="Transform1" scale="1 1 1" translate="0.3 1.18 0" rotate="0 30 0">
+        <Geometry name="Chess" filepath="models/Chess/chess_set_1k.gltf"/>
+    </Transform>
+    
 </Scene>

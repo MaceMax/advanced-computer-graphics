@@ -1,0 +1,6 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Scene groundPlane="true">
+    <Transform name="Transform1" scale="1 1 1" translate="0 -0.03 0" rotate="0 0 0">
+        <Geometry name="Cabinet" filepath="models/RoadBarrier/concrete_road_barrier_02_2k.gltf"/>
+    </Transform>
+</Scene>

@@ -89,7 +89,7 @@ float calculateDirectionalShadow(vec4 fragPosLightSpace, vec3 lightDirection, ve
 
   float shadow = 0.0;
   float currentDepth = projCoords.z;
-  float bias = max(0.002 * (1.0 - dot(nNormal, lightDirection)), 0.005);
+  float bias = max(0.002 * (1.0 - dot(nNormal, lightDirection)), 0.0001);
 
   vec2 texelSize = 1.0 / textureSize(depthMaps[index], 0);
 
