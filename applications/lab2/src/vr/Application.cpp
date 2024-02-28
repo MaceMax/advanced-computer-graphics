@@ -38,7 +38,6 @@ bool Application::initResources(const std::string& model_filename, const std::st
     if (model_filename.empty()) {
         std::shared_ptr<Group> geometryGroup = std::make_shared<Group>("default");
         geometryGroup->addChild(createDefaultGeometry(m_sceneRoot->getState()->getShader()));
-
         m_sceneRoot->addChild(geometryGroup);
 
         std::shared_ptr<Group> groundPlaneNode = std::make_shared<Group>("GroundPlane", true);

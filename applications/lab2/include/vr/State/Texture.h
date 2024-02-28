@@ -46,6 +46,8 @@ class Texture {
      *
      * @param width the width of the texture
      * @param height the height of the texture
+     * @param slot the texture slot to use
+     * @param isDirectional boolean indicating if the texture is to be used for a directional light or not.
      */
     void createDepthTexture(unsigned int width, unsigned int height, unsigned int slot, bool isDirectional = true);
 

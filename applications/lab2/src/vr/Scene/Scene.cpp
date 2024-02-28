@@ -20,9 +20,12 @@ std::shared_ptr<Scene> Scene::getInstance() {
 }
 
 bool Scene::initShaders(const std::string& vshader_filename, const std::string& fshader_filename) {
+    m_lights.clear();
     m_cameras.clear();
+
     m_camera = std::make_shared<Camera>();
     m_cameras.push_back(m_camera);
+
     m_renderVisitor = std::make_shared<RenderVisitor>();
     m_renderVisitor->setActiveCamera(m_camera);
     m_updateVisitor = std::make_shared<UpdateVisitor>();

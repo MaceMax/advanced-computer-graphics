@@ -19,6 +19,14 @@ class DepthVisitor : public NodeVisitor {
     void visit(LodNode* lodNode) override;
     void visit(LightNode* lightNode) override;
     void visit(CameraNode* cameraNode) override;
+
+    /**
+     * @brief Is called before the traversal of the scene graph begins.
+     * This is done to set up the render state for the light, i.e bind
+     * the appropriate depth shader and texture.
+     *
+     * @param light The light to set up the render state for
+     */
     void setupRenderState(const std::shared_ptr<Light> light);
 
    private:
