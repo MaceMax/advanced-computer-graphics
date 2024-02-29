@@ -1,9 +1,13 @@
 #version 410 core
 
+const int MaxNumberOfLights = 10;
+
 // From vertex shader
 in vec4 position;  // position of the vertex (and fragment) in eye space
-in vec3 normal ;  // surface normal vector in eye space
+in vec3 normal;  // surface normal vector in eye space
 in vec2 texCoord; // Texture coordinate
+in mat3 TBN; // Tangent, bitangent and normal matrix
+in vec4 positionLightSpace[MaxNumberOfLights]; // Position of the vertex in light space
 
 // The end result of this shader
 out vec4 color;
@@ -13,7 +17,7 @@ uniform mat4 v_inv;
 uniform int numberOfLights;
 uniform int lightingEnabled;
 
-const int MAX_MATERIAL_TEXTURES=3;
+const int MAX_MATERIAL_TEXTURES=8;
 const int MAX_TEXTURES=10;
 
 // declaration of a Material structure
@@ -22,6 +26,7 @@ struct Material
     vec4 ambient;
     vec4 diffuse;
     vec4 specular;
+    vec4 emission;
 
     float shininess;
     bool activeTextures[MAX_MATERIAL_TEXTURES];
@@ -36,9 +41,11 @@ struct LightSource
   vec4 ambient;
   vec4 diffuse;
   vec4 specular;
+
   float constant;
   float linear;
   float quadratic;
+  float farPlane;
 };
 
 struct Textures
@@ -47,7 +54,7 @@ struct Textures
   sampler2D textures[MAX_TEXTURES];
 };
  
-const int MaxNumberOfLights = 10;
+
 
 // This is the uniforms that our program communicates with
 uniform LightSource lights[MaxNumberOfLights];
@@ -56,30 +63,129 @@ uniform LightSource lights[MaxNumberOfLights];
 uniform Material material;
 uniform Textures textureLayers;
 
+// Shadow mapping
+uniform int shadowsEnabled;
+uniform sampler2D depthMaps[MaxNumberOfLights];
+uniform samplerCube cubeDepthMaps[MaxNumberOfLights];
+uniform vec3 viewPos;
+
 // Toon parameters
 int toonLevels = 3;
 float toonScaleFactor = 1.0 / toonLevels;
 
+vec3 sampleOffsetDirections[20] = vec3[]
+(
+   vec3( 1,  1,  1), vec3( 1, -1,  1), vec3(-1, -1,  1), vec3(-1,  1,  1), 
+   vec3( 1,  1, -1), vec3( 1, -1, -1), vec3(-1, -1, -1), vec3(-1,  1, -1),
+   vec3( 1,  1,  0), vec3( 1, -1,  0), vec3(-1, -1,  0), vec3(-1,  1,  0),
+   vec3( 1,  0,  1), vec3(-1,  0,  1), vec3( 1,  0, -1), vec3(-1,  0, -1),
+   vec3( 0,  1,  1), vec3( 0, -1,  1), vec3( 0, -1, -1), vec3( 0,  1, -1)
+);  
+
+float calculateDirectionalShadow(vec4 fragPosLightSpace, vec3 lightDirection, vec3 nNormal, int index)
+{
+  vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
+  projCoords = projCoords * 0.5 + 0.5;
+ 
+  if (projCoords.z > 1.0) {
+    return 0.0;
+  }
+
+  float shadow = 0.0;
+  float currentDepth = projCoords.z;
+  float bias = max(0.002 * (1.0 - dot(nNormal, lightDirection)), 0.0001);
+
+  vec2 texelSize = 1.0 / textureSize(depthMaps[index], 0);
+
+  int kernelSize = 10;
+  for(int x = -kernelSize; x <= kernelSize; ++x)
+  {
+    for(int y = -kernelSize; y <= kernelSize; ++y)
+    {
+      float pcfDepth = texture(depthMaps[index], projCoords.xy + vec2(x, y) * texelSize).r; 
+      shadow += currentDepth - bias > pcfDepth  ? 0.95 : 0.0;        
+    }
+  }
+  
+  return shadow / ((2 * kernelSize + 1) * (2 * kernelSize + 1));
+}
+
+float calculatePointShadow(vec3 fragPos, vec3 lightPos, int index)
+{
+  vec3 fragToLight = fragPos - lightPos;
+  float currentDepth = length(fragToLight);
+
+  // PCF
+  float shadow = 0.0;
+  float bias = 0.15;
+  int samples = 20;
+  float viewDistance = length(viewPos - fragPos);
+  float diskRadius = (1.0 + (viewDistance / lights[index].farPlane)) / 25.0;
+
+  for (int i = 0; i < samples; ++i)
+  {
+    float closestDepth = texture(cubeDepthMaps[index], fragToLight + sampleOffsetDirections[i] * diskRadius).r;
+    closestDepth *= lights[index].farPlane;  // Undo mapping [0;1]
+    if (currentDepth - bias > closestDepth)
+      shadow += 1.0;
+  }
+
+  return shadow / float(samples);
+}
+
 void main()
 {
-  vec3 normalDirection = normalize(normal);
+  vec3 wNormal = normalize(normal);
+  // Check for normal map
+  if (material.activeTextures[3]) {
+    wNormal = texture(material.textures[3], texCoord).rgb;
+    wNormal = wNormal * 2.0 - 1.0;
+    wNormal = normalize(TBN * wNormal);
+  }  
+
+
+  vec3 normalDirection = wNormal;
   vec3 viewDirection = normalize(vec3(v_inv * vec4(0.0, 0.0, 0.0, 1.0) - position));
   vec3 lightDirection;
   float attenuation;
-
   vec3 totalLighting = vec3(0.0, 0.0, 0.0);
-
   
+  vec4 diffuseColor = material.diffuse;
+  vec4 specularColor = material.specular;
+  vec4 ambientColor = material.ambient;
+  vec4 emissionColor = material.emission;
+
+  if (material.activeTextures[0])
+  {
+    diffuseColor = texture(material.textures[0], texCoord);
+  }
+  float alpha = diffuseColor.a;
+
+  if (material.activeTextures[1])
+  {
+      specularColor = texture(material.textures[1], texCoord);
+  }
+
+  if (material.activeTextures[5])
+  {
+      emissionColor = texture(material.textures[5], texCoord);
+  }
+  
+  vec3 ambientReflection = vec3(0.0, 0.0, 0.0);
   if (lightingEnabled == 1) {
       // for all light sources
       for (int index = 0; index < numberOfLights; index++) 
-      {
+      { 
+        float lightShadow = 0.0;
         LightSource light = lights[index];
         if (light.enabled) {
             if (0.0 == light.position.w) // directional light?
             {
               attenuation = 1.0; // no attenuation
               lightDirection = normalize(vec3(light.position));
+              ambientReflection = vec3(light.ambient); // A scene should not have more than one directional light
+              if (shadowsEnabled == 1) 
+                lightShadow = calculateDirectionalShadow(positionLightSpace[index], lightDirection, normalDirection, index);
             }
             else // point light or spotlight (or other kind of light) 
             {
@@ -88,45 +194,40 @@ void main()
               float distance = length(positionToLightSource);
               lightDirection = normalize(positionToLightSource);
               attenuation = 1.0 / (light.constant + light.linear * distance + light.quadratic * (distance * distance));
+              if (shadowsEnabled == 1) 
+                lightShadow = calculatePointShadow(positionWorld.xyz, vec3(light.position), index);
             }
-            
-            vec3 ambientReflection = attenuation * vec3(light.ambient) * vec3(material.ambient); 
+
             // Toon calculations
             float diffFactor = dot(normalDirection, lightDirection);
 
             if (diffFactor > 0) {
               diffFactor = ceil(diffFactor * toonLevels) * toonScaleFactor;        
             }
-
-            vec3 diffuseReflection = attenuation
-              * vec3(light.diffuse) * vec3(material.diffuse)
+            
+            vec3 diffuseReflection = vec3(light.diffuse) * vec3(diffuseColor)
               * max(0.0, dot(normalDirection, lightDirection)) * diffFactor;
 
             vec3 specularReflection;
-            if (dot(normalDirection, lightDirection) < 0.0) // light source on the wrong side?
+            if (material.shininess == 0.0 || dot(normalDirection, lightDirection) < 0.0) // light source on the wrong side?
             {
               specularReflection = vec3(0.0, 0.0, 0.0); // no specular reflection
             }
             else // light source on the right side
             {
-              specularReflection = attenuation * vec3(light.specular) * vec3(material.specular)
+              specularReflection =  vec3(light.specular) * vec3(specularColor)
                 * pow(max(0.0, dot(reflect(-lightDirection, normalDirection), viewDirection)), material.shininess);
             }
-            totalLighting += ambientReflection + diffuseReflection + specularReflection;
+            
+            totalLighting += (1 - lightShadow) * (attenuation * (diffuseReflection + specularReflection));
         }       
         
       }
   }
 
-  // How we could check for a diffuse texture map
-  vec4 diffuseTex = vec4(0.0, 0.0, 0.0, 1.0);
-  if (material.activeTextures[0])
-  {
-    diffuseTex = texture2D(material.textures[0], texCoord);
-    totalLighting = totalLighting * diffuseTex.rgb;
-  }
-  float alpha = diffuseTex.a;
-  
+  ambientReflection = ambientReflection * vec3(ambientColor);
+  totalLighting = totalLighting + ambientReflection + vec3(material.emission);
+
   vec4 blendedColor;
   int activeTextureCount = 0;
 

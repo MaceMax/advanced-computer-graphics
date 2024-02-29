@@ -34,7 +34,7 @@ void Light::updateShadowMatrices() {
         glm::vec3 lightDir = glm::normalize(glm::vec3(world_position));
         glm::vec3 up = glm::abs(lightDir.y) < 0.999 ? glm::vec3(0.0, 1.0, 0.0) : glm::vec3(1.0, 0.0, 0.0);
         glm::mat4 view = glm::lookAt(lightDir + m_sceneCenter, m_sceneCenter, up);
-        glm::mat4 proj = glm::ortho(-m_sceneRadius, m_sceneRadius, -m_sceneRadius, m_sceneRadius, -m_sceneRadius, m_farPlane);
+        glm::mat4 proj = glm::ortho(-m_sceneRadius, m_sceneRadius, -m_sceneRadius, m_sceneRadius, 0.1f, m_farPlane);
 
         m_view = view;
         m_projection = proj;
