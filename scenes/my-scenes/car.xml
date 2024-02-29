@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<Scene>
-
+<Scene groundPlane="true">
     <Transform name="Transform1" translate="0 0 0" rotate="0 0 0" scale="1 1 1">
         <Geometry name="Cars1" filepath="models/porsche_911_gt3.glb"/>
     </Transform>
- 
 </Scene>

@@ -58,5 +58,18 @@ class Application {
     glm::uvec2 m_screenSize;
     glm::f32vec4 m_clearColor;
     float m_lastFrameTime = 0.0f;
+
+    const std::vector<glm::vec3> m_quad_vertices = {
+        glm::vec3(-1.0f, 1.0f, 0.0f),
+        glm::vec3(-1.0f, -1.0f, 0.0f),
+        glm::vec3(1.0f, -1.0f, 0.0f),
+        glm::vec3(1.0f, -1.0f, 0.0f),
+        glm::vec3(1.0f, 1.0f, 0.0f),
+        glm::vec3(-1.0f, 1.0f, 0.0f)
+    };
+
+    
+
+
 };
 }  // namespace vr
