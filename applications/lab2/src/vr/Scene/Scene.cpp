@@ -26,7 +26,7 @@ bool Scene::initShaders(const std::string& vshader_filename, const std::string& 
     m_camera = std::make_shared<Camera>();
     m_cameras.push_back(m_camera);
 
-    m_renderVisitor = std::make_shared<RenderVisitor>();
+    m_renderVisitor = std::make_shared<RenderVisitor>(m_camera->getScreenSize().x, m_camera->getScreenSize().y);
     m_renderVisitor->setActiveCamera(m_camera);
     m_updateVisitor = std::make_shared<UpdateVisitor>();
     m_updateVisitor->setActiveCamera(m_camera);
@@ -88,6 +88,10 @@ void Scene::cleanup() {
         m_depthVisitor = nullptr;
     }
 
+    if (m_renderVisitor) {
+        m_renderVisitor = nullptr;
+    }
+
     if (m_lights.size() > 0) {
         m_lights.clear();
     }
@@ -147,6 +151,10 @@ void Scene::setActiveCamera(int next) {
 
 CameraVector Scene::getCameras() {
     return m_cameras;
+}
+
+std::shared_ptr<Texture> Scene::getActiveSceneTexture() {
+    return m_renderVisitor->getTexture();
 }
 
 BoundingBox

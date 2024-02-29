@@ -135,6 +135,11 @@ class Scene {
      */
     CameraVector getCameras();
 
+    /**
+     * Get texture which contains the rendered scene.
+     */
+    std::shared_ptr<Texture> getActiveSceneTexture();
+
    private:
     /**
      * Private constructor for the scene class.

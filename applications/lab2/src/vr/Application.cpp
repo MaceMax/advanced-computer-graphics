@@ -21,6 +21,23 @@ Application::Application(unsigned int width, unsigned height) : m_screenSize(wid
     m_fpsCounter = std::make_shared<FPSCounter>();
     m_fpsCounter->setFontScale(0.5f);
     m_fpsCounter->setColor(glm::vec4(0.2, 1.0, 1.0, 1.0));
+
+    m_quad_shader = std::make_shared<Shader>("shaders/quad-shader.vs", "shaders/quad-shader.fs");
+
+    glGenVertexArrays(1, &m_quad_vao);
+    glGenBuffers(1, &m_quad_vbo);
+
+    glBindVertexArray(m_quad_vao);
+    glBindBuffer(GL_ARRAY_BUFFER, m_quad_vbo);
+
+    // Upload the quad vertices and texture coordinates to the GPU
+    glBufferData(GL_ARRAY_BUFFER, sizeof(m_quad_vertices), &m_quad_vertices[0], GL_STATIC_DRAW);
+
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
+    glBindVertexArray(0);
 }
 
 bool Application::initResources(const std::string& model_filename, const std::string& vshader_filename, std::string& fshader_filename) {
@@ -29,10 +46,8 @@ bool Application::initResources(const std::string& model_filename, const std::st
     m_loadedFilename = model_filename;
 
     m_scene = std::shared_ptr<Scene>(Scene::getInstance());
-
     if (!m_scene->initShaders(vshader_filename, fshader_filename))
         return false;
-
     getCamera()->setScreenSize(m_screenSize);
     std::shared_ptr<Group>& m_sceneRoot = m_scene->getRoot();
     if (model_filename.empty()) {
@@ -189,8 +204,8 @@ void Application::changeCamera(int next) {
 
 void Application::render(GLFWwindow* window) {
     glClearColor(m_clearColor[0], m_clearColor[1], m_clearColor[2], m_clearColor[3]);
-
     m_scene->render();
+
     m_fpsCounter->render(window);
 }
 

@@ -96,6 +96,27 @@ bool Texture::create(const char* image, bool isMaterialTexture, unsigned int slo
     return true;
 }
 
+bool Texture::createFramebufferTexture(unsigned int width, unsigned int height, GLenum texType, GLenum pixelType) {
+    if (m_valid)
+        cleanup();
+
+    m_type = texType;
+
+    glGenTextures(1, &m_id);
+
+    m_textureSlot = 32;
+    glActiveTexture(GL_TEXTURE0 + m_textureSlot);
+    glBindTexture(m_type, m_id);
+
+    glTexImage2D(m_type, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+    glTexParameteri(m_type, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(m_type, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+    glBindTexture(m_type, 0);
+    m_valid = true;
+    return true;
+}
+
 void Texture::createDepthTexture(unsigned int width, unsigned int height, unsigned int slot, bool isDirectional) {
     if (m_valid)
         cleanup();

@@ -59,13 +59,18 @@ class Application {
     glm::f32vec4 m_clearColor;
     float m_lastFrameTime = 0.0f;
 
-    const std::vector<glm::vec3> m_quad_vertices = {
-        glm::vec3(-1.0f, 1.0f, 0.0f),
-        glm::vec3(-1.0f, -1.0f, 0.0f),
-        glm::vec3(1.0f, -1.0f, 0.0f),
-        glm::vec3(1.0f, -1.0f, 0.0f),
-        glm::vec3(1.0f, 1.0f, 0.0f),
-        glm::vec3(-1.0f, 1.0f, 0.0f)
+    std::shared_ptr<Shader> m_quad_shader;
+    GLuint m_quad_vao, m_quad_vbo;
+
+    float m_quad_vertices[24] = { // vertex attributes for a quad that fills the entire screen in Normalized Device Coordinates.
+        // positions   // texCoords
+        -1.0f,  1.0f,  0.0f, 1.0f,
+        -1.0f, -1.0f,  0.0f, 0.0f,
+         1.0f, -1.0f,  1.0f, 0.0f,
+
+        -1.0f,  1.0f,  0.0f, 1.0f,
+         1.0f, -1.0f,  1.0f, 0.0f,
+         1.0f,  1.0f,  1.0f, 1.0f
     };
 
     

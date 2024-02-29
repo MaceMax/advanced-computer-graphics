@@ -30,7 +30,7 @@ class Texture {
     Texture();
 
     /**
-     * @brief Creates a texture
+     * @brief Creates a texture from an image file
      *
      * @param image The path to the image file
      * @param isMaterialTexture Boolean indicating if the texture is a material texture
@@ -40,6 +40,17 @@ class Texture {
      * @return bool true if the texture was created successfully, false otherwise
      */
     bool create(const char* image, bool isMaterialTexture, unsigned int slot = 0, GLenum texType = GL_TEXTURE_2D, GLenum pixelType = GL_UNSIGNED_BYTE);
+
+    /**
+     * @brief Creates a texture to be used as a framebuffer
+     *
+     * @param width The width of the texture
+     * @param height The height of the texture
+     * @param texType The type of texture
+     * @param pixelType The type of pixel
+     * @return bool true if the texture was created successfully, false otherwise
+     */
+    bool createFramebufferTexture(unsigned int width, unsigned int height, GLenum texType = GL_TEXTURE_2D, GLenum pixelType = GL_UNSIGNED_BYTE);
 
     /**
      * @brief Creates a depth texture
