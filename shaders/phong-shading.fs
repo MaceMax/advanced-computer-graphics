@@ -18,7 +18,7 @@ uniform int numberOfLights;
 uniform int lightingEnabled;
 
 const int MAX_MATERIAL_TEXTURES=8;
-const int MAX_TEXTURES=10;
+const int MAX_TEXTURES=2;
 
 // declaration of a Material structure
 struct Material

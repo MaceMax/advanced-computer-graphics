@@ -106,7 +106,7 @@ void Light::apply(std::shared_ptr<vr::Shader> shader, size_t idx, bool shadowsEn
     shader->setMat4(lightSpacePrefix, m_projection * m_view);
 
     std::string activeLightprefix = constructPrefix("activeLights", idx);
-    shader->setInt(activeLightprefix, enabled);
+    shader->setBool(activeLightprefix, enabled);
 
     if (shadowsEnabled) {
         std::string depthPrefix = position.w == 0 ? constructPrefix("depthMaps", idx) : constructPrefix("cubeDepthMaps", idx);
