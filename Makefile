@@ -175,6 +175,19 @@ lab2/fast:
 .PHONY : lab2/fast
 
 #=============================================================================
+# Target rules for targets named lab3
+
+# Build rule for target.
+lab3: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 lab3
+.PHONY : lab3
+
+# fast build rule for target.
+lab3/fast:
+	$(MAKE) $(MAKESILENT) -f applications/lab3/CMakeFiles/lab3.dir/build.make applications/lab3/CMakeFiles/lab3.dir/build
+.PHONY : lab3/fast
+
+#=============================================================================
 # Target rules for targets named viewer
 
 # Build rule for target.
@@ -200,6 +213,7 @@ help:
 	@echo "... list_install_components"
 	@echo "... rebuild_cache"
 	@echo "... lab2"
+	@echo "... lab3"
 	@echo "... viewer"
 .PHONY : help
 
