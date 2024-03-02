@@ -12,24 +12,17 @@
 namespace vr {
 class RenderVisitor : public NodeVisitor {
    public:
-    RenderVisitor(int width, int height);
+    RenderVisitor();
     void visit(Geometry* geometry) override;
     void visit(Transform* transform) override;
     void visit(Group* group) override;
     void visit(LodNode* lodNode) override;
     void visit(LightNode* lightNode) override;
     void visit(CameraNode* cameraNode) override;
-    std::shared_ptr<Texture> getTexture() { return texture; }
-    void rescaleFramebuffer(int width, int height);
-
-    void bindFBO();
-    void unbindFBO();
 
    private:
     std::stack<glm::mat4> m_matrixStack;
-    GLuint fbo;
-    GLuint rbo;
-    std::shared_ptr<Texture> texture;
+    std::shared_ptr<Shader> m_gshader;
 };
 
 }  // namespace vr

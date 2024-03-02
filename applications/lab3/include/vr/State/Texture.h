@@ -11,7 +11,7 @@ namespace vr {
 #define SPECULAR_TEXTURE 1
 #define DISPLACEMENT_TEXTURE 2
 #define NORMAL_TEXTURE 3
-#define AMBIENT_TEXTURE 4
+#define AMBIENT_OCCLUSION_TEXTURE 4
 #define EMISSION_TEXTURE 5
 #define METALLIC_TEXTURE 6
 #define ROUGHNESS_TEXTURE 7
@@ -20,12 +20,15 @@ namespace vr {
 #define TEXTURES_BASE_SLOT 9
 #define MAX_TEXTURES 2
 #define MAX_MATERIAL_TEXTURES 8
+
 #define DEPTH_TEXTURE_BASE_SLOT 11
 #define MAX_DEPTH_TEXTURES 10
 
 #define G_BUFFER_POSITION_SLOT 22
 #define G_BUFFER_ALBEDO_SLOT 23
 #define G_BUFFER_NORMAL_SLOT 24
+#define G_BUFFER_DEPTH_SLOT 25
+#define G_BUFFER_METALLIC_ROUGHNESS 26
 #define SCREEN_TEXTURE_SLOT 32
 
 #define DEPTH_MAP_RESOLUTION 2048
@@ -87,7 +90,7 @@ class Texture {
 
     GLuint id() const { return m_id; }
 
-    void rescale(unsigned int width, unsigned int height);
+    GLuint slot() const { return m_textureSlot; }
 
     /// Assigns a texture unit to a texture
     void texUnit(GLuint program, const char* uniform, GLuint unit);

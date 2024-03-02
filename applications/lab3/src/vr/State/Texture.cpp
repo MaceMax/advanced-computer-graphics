@@ -83,7 +83,7 @@ bool Texture::create(const char* image, bool isMaterialTexture, unsigned int slo
     glTexParameteri(texType, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
     // Assigns the image to the OpenGL Texture object
-    glTexImage2D(texType, 0, GL_RGBA, widthImg, heightImg, 0, texFormat, pixelType, bytes);
+    glTexImage2D(texType, 0, texFormat, widthImg, heightImg, 0, texFormat, pixelType, bytes);
     // Generates MipMaps
     glGenerateMipmap(texType);
 
@@ -112,19 +112,31 @@ bool Texture::createFramebufferTexture(unsigned int slot, unsigned int width, un
     if (slot == SCREEN_TEXTURE_SLOT) {
         m_texFormat = GL_RGB;
         m_pixelType = GL_UNSIGNED_BYTE;
-        glTexImage2D(m_type, 0, m_texFormat, width, height, 0, GL_RGB, m_pixelType, NULL);
+        glTexImage2D(m_type, 0, m_texFormat, width, height, 0, GL_RGBA, m_pixelType, NULL);
     }
 
     if (slot == G_BUFFER_NORMAL_SLOT || slot == G_BUFFER_POSITION_SLOT) {
-        m_texFormat = GL_RGB16F;
+        m_texFormat = GL_RGBA16F;
         m_pixelType = GL_FLOAT;
-        glTexImage2D(m_type, 0, m_texFormat, width, height, 0, GL_RGB, m_pixelType, NULL);
+        glTexImage2D(m_type, 0, m_texFormat, width, height, 0, GL_RGBA, m_pixelType, NULL);
     }
 
     if (slot == G_BUFFER_ALBEDO_SLOT) {
         m_texFormat = GL_RGBA;
         m_pixelType = GL_UNSIGNED_BYTE;
         glTexImage2D(m_type, 0, m_texFormat, width, height, 0, GL_RGBA, m_pixelType, NULL);
+    }
+
+    if (slot == G_BUFFER_DEPTH_SLOT) {
+        m_texFormat = GL_DEPTH_COMPONENT;
+        m_pixelType = GL_FLOAT;
+        glTexImage2D(m_type, 0, m_texFormat, width, height, 0, GL_DEPTH_COMPONENT, m_pixelType, NULL);
+    }
+
+    if (slot == G_BUFFER_METALLIC_ROUGHNESS) {
+        m_texFormat = GL_RGBA;
+        m_pixelType = GL_FLOAT;
+        glTexImage2D(m_type, 0, m_texFormat, width, height, 0, m_texFormat, m_pixelType, NULL);
     }
 
     glTexParameteri(m_type, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
@@ -186,29 +198,14 @@ Texture::~Texture() {
 }
 
 void Texture::rescale(unsigned int width, unsigned int height) {
-    if (m_valid) {
-        glBindTexture(m_type, m_id);
-        if (m_type == GL_TEXTURE_2D)
-            glTexImage2D(m_type, 0, m_texFormat, width, height, 0, m_texFormat, m_pixelType, NULL);
-        if (m_type == GL_TEXTURE_CUBE_MAP)
-            for (unsigned int i = 0; i < 6; i++) {
-                glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, m_texFormat, width, height, 0, m_texFormat, m_pixelType, NULL);
-            }
-        glBindTexture(m_type, 0);
-    }
+    if (m_valid)
+        cleanup();
+
+    createFramebufferTexture(m_textureSlot, width, height, m_type);
 }
 
 bool Texture::isValid() {
     return m_valid;
-}
-
-void Texture::rescale(unsigned int width, unsigned int height) {
-    if (m_valid) {
-        glBindTexture(m_type, m_id);
-        if (m_type == GL_TEXTURE_2D)
-            glTexImage2D(m_type, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
-        glBindTexture(m_type, 0);
-    }
 }
 
 void Texture::texUnit(GLuint program, const char* uniform, unsigned int unit) {

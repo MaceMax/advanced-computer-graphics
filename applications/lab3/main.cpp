@@ -78,6 +78,21 @@ void keyboard_callback(GLFWwindow* window, int key, int scancode, int action, in
             app->changeCamera(-1);
     }
 
+    if (key == GLFW_KEY_TAB && action == GLFW_PRESS) {
+        if (auto app = g_applicationPtr.lock())
+            app->toogleDebug();
+    }
+
+    if (key == GLFW_KEY_UP && action == GLFW_PRESS) {
+        if (auto app = g_applicationPtr.lock())
+            app->changeDebugTexture(1);
+    }
+
+    if (key == GLFW_KEY_DOWN && action == GLFW_PRESS) {
+        if (auto app = g_applicationPtr.lock())
+            app->changeDebugTexture(-1);
+    }
+
 }
 
 void window_size_callback(GLFWwindow* window, int width, int height) {
@@ -150,8 +165,8 @@ int main(int argc, char** argv) {
     if (argc > 1)
         model_filename = argv[1];
 
-    std::string v_shader_filename = "shaders/phong-shading.vs";
-    std::string f_shader_filename = "shaders/phong-shading.fs";
+    std::string v_shader_filename = "shaders/gbuffer.vs";
+    std::string f_shader_filename = "shaders/gbuffer.fs";
 
     if (argc < 2) {
         std::cerr << "Loading a default box built by \"hand\" " << std::endl;
@@ -167,7 +182,7 @@ int main(int argc, char** argv) {
     application->getCamera()->setFOV(60);
     application->initView();
 
-    glEnable(GL_BLEND);
+    glDisable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glEnable(GL_DEPTH_TEST);
     glDisable(GL_FRAMEBUFFER_SRGB);

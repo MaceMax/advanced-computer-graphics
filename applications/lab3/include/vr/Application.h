@@ -34,7 +34,11 @@ class Application {
 
     void reloadScene();
 
-    void renderToQuad(std::shared_ptr<Texture> texture);
+    void renderToQuad(std::shared_ptr<Texture> texture, int x, int y, int width, int height);
+
+    void renderDebug();
+
+    void toogleDebug();
 
     void render(GLFWwindow* window);
 
@@ -52,6 +56,8 @@ class Application {
 
     void changeCamera(int next);
 
+    void changeDebugTexture(int next);
+
    private:
     // Parent of all to be rendered
     std::shared_ptr<Scene> m_scene;
@@ -61,6 +67,9 @@ class Application {
     glm::uvec2 m_screenSize;
     glm::f32vec4 m_clearColor;
     float m_lastFrameTime = 0.0f;
+
+    bool m_debug = false;
+    int m_debugTexture = 0;
 
     std::shared_ptr<Shader> m_quad_shader;
     GLuint m_attribute_vertex, m_attribute_texcoord;
@@ -76,9 +85,5 @@ class Application {
          1.0f, -1.0f,  1.0f, 0.0f,
          1.0f,  1.0f,  1.0f, 1.0f
     };
-
-    
-
-
 };
 }  // namespace vr

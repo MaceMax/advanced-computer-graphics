@@ -148,22 +148,24 @@ bool State::ShadowEnabled() {
     return shadowEnabled;
 }
 
-void State::apply() {
+void State::apply(bool geometryPass) {
     if (m_shader == nullptr)
         return;
 
-    m_shader->use();
-    // Update number of lights
-    m_shader->setInt("numberOfLights", m_lights.size());
-    m_shader->setInt("lightingEnabled", lightingEnabled);
-    m_shader->setInt("shadowsEnabled", shadowEnabled);
+    // m_shader->use();
 
-    // Apply lightsources
-    size_t i = 0;
-    if (m_lights.size() != 0 && lightingEnabled) {
-        for (auto l : m_lights) {
-            l->apply(m_shader, i, shadowEnabled);
-            i++;
+    if (!geometryPass) {
+        // Update number of lights
+        m_shader->setInt("numberOfLights", m_lights.size());
+        m_shader->setInt("lightingEnabled", lightingEnabled);
+        m_shader->setInt("shadowsEnabled", shadowEnabled);
+        // Apply lightsources
+        size_t i = 0;
+        if (m_lights.size() != 0 && lightingEnabled) {
+            for (auto l : m_lights) {
+                l->apply(m_shader, i, shadowEnabled);
+                i++;
+            }
         }
     }
 
@@ -176,6 +178,7 @@ void State::apply() {
         glDisable(GL_CULL_FACE);
     }
 
+    /**
     std::vector<int> slotActive;
     std::vector<int> slots;
     slotActive.resize(m_textures.size());
@@ -199,4 +202,5 @@ void State::apply() {
         }
         m_shader->setIntVector("textureLayers.activeTextures", slotActive);
     }
+    */
 }

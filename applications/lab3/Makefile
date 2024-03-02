@@ -319,6 +319,30 @@ src/vr/FileSystem.cpp.s:
 	cd /home/macemax/University/advanced-computer-graphics && $(MAKE) $(MAKESILENT) -f applications/lab3/CMakeFiles/lab3.dir/build.make applications/lab3/CMakeFiles/lab3.dir/src/vr/FileSystem.cpp.s
 .PHONY : src/vr/FileSystem.cpp.s
 
+src/vr/Framebuffer/Gbuffer.o: src/vr/Framebuffer/Gbuffer.cpp.o
+.PHONY : src/vr/Framebuffer/Gbuffer.o
+
+# target to build an object file
+src/vr/Framebuffer/Gbuffer.cpp.o:
+	cd /home/macemax/University/advanced-computer-graphics && $(MAKE) $(MAKESILENT) -f applications/lab3/CMakeFiles/lab3.dir/build.make applications/lab3/CMakeFiles/lab3.dir/src/vr/Framebuffer/Gbuffer.cpp.o
+.PHONY : src/vr/Framebuffer/Gbuffer.cpp.o
+
+src/vr/Framebuffer/Gbuffer.i: src/vr/Framebuffer/Gbuffer.cpp.i
+.PHONY : src/vr/Framebuffer/Gbuffer.i
+
+# target to preprocess a source file
+src/vr/Framebuffer/Gbuffer.cpp.i:
+	cd /home/macemax/University/advanced-computer-graphics && $(MAKE) $(MAKESILENT) -f applications/lab3/CMakeFiles/lab3.dir/build.make applications/lab3/CMakeFiles/lab3.dir/src/vr/Framebuffer/Gbuffer.cpp.i
+.PHONY : src/vr/Framebuffer/Gbuffer.cpp.i
+
+src/vr/Framebuffer/Gbuffer.s: src/vr/Framebuffer/Gbuffer.cpp.s
+.PHONY : src/vr/Framebuffer/Gbuffer.s
+
+# target to generate assembly for a file
+src/vr/Framebuffer/Gbuffer.cpp.s:
+	cd /home/macemax/University/advanced-computer-graphics && $(MAKE) $(MAKESILENT) -f applications/lab3/CMakeFiles/lab3.dir/build.make applications/lab3/CMakeFiles/lab3.dir/src/vr/Framebuffer/Gbuffer.cpp.s
+.PHONY : src/vr/Framebuffer/Gbuffer.cpp.s
+
 src/vr/Nodes/CameraNode.o: src/vr/Nodes/CameraNode.cpp.o
 .PHONY : src/vr/Nodes/CameraNode.o
 
@@ -854,6 +878,9 @@ help:
 	@echo "... src/vr/FileSystem.o"
 	@echo "... src/vr/FileSystem.i"
 	@echo "... src/vr/FileSystem.s"
+	@echo "... src/vr/Framebuffer/Gbuffer.o"
+	@echo "... src/vr/Framebuffer/Gbuffer.i"
+	@echo "... src/vr/Framebuffer/Gbuffer.s"
 	@echo "... src/vr/Nodes/CameraNode.o"
 	@echo "... src/vr/Nodes/CameraNode.i"
 	@echo "... src/vr/Nodes/CameraNode.s"

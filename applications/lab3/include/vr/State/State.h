@@ -42,7 +42,7 @@ class State {
     void setShadowEnabled(bool enabled);
     bool ShadowEnabled();
 
-    void apply();
+    void apply(bool geometryPass);
 
    private:
     int lightingEnabled;

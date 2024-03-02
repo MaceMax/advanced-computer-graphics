@@ -20,14 +20,16 @@ Gbuffer::Gbuffer(unsigned int width, unsigned int height) {
     m_albedo->createFramebufferTexture(G_BUFFER_ALBEDO_SLOT, width, height);
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, GL_TEXTURE_2D, m_albedo->id(), 0);
 
-    GLuint attachments[3] = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2};
-    glDrawBuffers(3, attachments);
+    m_metallicRoughness = std::make_shared<Texture>();
+    m_metallicRoughness->createFramebufferTexture(G_BUFFER_METALLIC_ROUGHNESS, width, height);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT3, GL_TEXTURE_2D, m_metallicRoughness->id(), 0);
 
-    glGenRenderbuffers(1, &depthRbo);
-    glBindRenderbuffer(GL_RENDERBUFFER, depthRbo);
-    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, width, height);
+    GLuint attachments[4] = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3};
+    glDrawBuffers(4, attachments);
 
-    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthRbo);
+    m_depth = std::make_shared<Texture>();
+    m_depth->createFramebufferTexture(G_BUFFER_DEPTH_SLOT, width, height);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, m_depth->id(), 0);
 
     if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
         std::cerr << "Gbuffer framebuffer is not complete" << std::endl;
@@ -38,18 +40,16 @@ Gbuffer::Gbuffer(unsigned int width, unsigned int height) {
 }
 
 void Gbuffer::rescaleFramebuffer(int width, int height) {
+    glBindFramebuffer(GL_FRAMEBUFFER, fbo);
     m_position->rescale(width, height);
     m_normal->rescale(width, height);
     m_albedo->rescale(width, height);
+    m_depth->rescale(width, height);
 
-    glBindRenderbuffer(GL_RENDERBUFFER, depthRbo);
-    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, width, height);
-    glBindRenderbuffer(GL_RENDERBUFFER, 0);
-
-    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
-        std::cerr << "Gbuffer framebuffer is not complete" << std::endl;
-        exit(1);
-    }
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_position->id(), 0);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, m_normal->id(), 0);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, GL_TEXTURE_2D, m_albedo->id(), 0);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, m_depth->id(), 0);
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }

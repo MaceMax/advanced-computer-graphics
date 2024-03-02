@@ -17,7 +17,7 @@
 using namespace vr;
 
 Application::Application(unsigned int width, unsigned height) : m_screenSize(width, height),
-                                                                m_clearColor(0.1, 0.1, 0.1, 1) {
+                                                                m_clearColor(0.0, 0.0, 0.0, 1) {
     m_fpsCounter = std::make_shared<FPSCounter>();
     m_fpsCounter->setFontScale(0.5f);
     m_fpsCounter->setColor(glm::vec4(0.2, 1.0, 1.0, 1.0));
@@ -221,35 +221,67 @@ void Application::changeCamera(int next) {
     getCamera()->setScreenSize(m_screenSize);
 }
 
-void Application::renderToQuad(std::shared_ptr<Texture> texture) {
+void Application::changeDebugTexture(int next) {
+    m_debugTexture += next;
+
+    if (m_debugTexture < 0) {
+        m_debugTexture = GBUFFER_METALLIC_ROUGHNESS;
+    }
+
+    if (m_debugTexture > GBUFFER_METALLIC_ROUGHNESS) {
+        m_debugTexture = GBUFFER_POSITION;
+    }
+}
+
+void Application::toogleDebug() {
+    m_debug = !m_debug;
+}
+
+void Application::renderToQuad(std::shared_ptr<Texture> texture, int x, int y, int width, int height) {
     m_quad_shader->use();
-    glViewport(0, 0, m_screenSize.x, m_screenSize.y);
+
+    glViewport(x, y, width, height);
+
     glBindVertexArray(m_quad_vao);
     glEnableVertexAttribArray(m_attribute_vertex);
     glEnableVertexAttribArray(m_attribute_texcoord);
     glDisable(GL_DEPTH_TEST);
     texture->bind();
-    m_quad_shader->setInt("screenTexture", SCREEN_TEXTURE_SLOT);
+    m_quad_shader->setInt("screenTexture", texture->slot());
+    m_quad_shader->setBool("isDepth", texture->slot() == G_BUFFER_DEPTH_SLOT);
+
     glDrawArrays(GL_TRIANGLES, 0, 6);
+    texture->unbind();
 
     glDisableVertexAttribArray(m_attribute_vertex);
     glDisableVertexAttribArray(m_attribute_texcoord);
     glBindVertexArray(0);
 }
 
+void Application::renderDebug() {
+    if (m_debug) {
+        std::shared_ptr<Texture> texture = m_scene->getGbufferTexture(m_debugTexture);
+        // Render debug window at the top right corner, taking up 1/16 of the screen
+        renderToQuad(texture, m_screenSize.x - m_screenSize.x / 2, m_screenSize.y - m_screenSize.y / 2, m_screenSize.x / 2, m_screenSize.y / 2);
+    }
+}
+
 void Application::render(GLFWwindow* window) {
     glClearColor(m_clearColor[0], m_clearColor[1], m_clearColor[2], m_clearColor[3]);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glDisable(GL_BLEND);
+    glEnable(GL_DEPTH_TEST);
     m_scene->render();
 
-    renderToQuad(m_scene->getActiveSceneTexture());
+    if (m_debug)
+        renderDebug();
 
+    glViewport(0, 0, m_screenSize.x, m_screenSize.y);
     m_fpsCounter->render(window);
-    glEnable(GL_DEPTH_TEST);
 }
 
 void Application::update(GLFWwindow* window) {
     m_scene->useProgram();
-
     render(window);
 }
 
@@ -300,8 +332,7 @@ void Application::toggleShadows() {
 void Application::setScreenSize(unsigned int width, unsigned int height) {
     m_screenSize = glm::uvec2(width, height);
     getCamera()->setScreenSize(glm::uvec2(width, height));
-    m_scene->rescaleFramebufferTexture(width, height);
-    glViewport(0, 0, width, height);
+    m_scene->rescaleGbuffer(width, height);
 }
 
 std::shared_ptr<Camera> Application::getCamera() {

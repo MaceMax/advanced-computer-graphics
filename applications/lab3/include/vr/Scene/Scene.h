@@ -7,6 +7,7 @@
 
 #include "Camera.h"
 #include "Light.h"
+#include "vr/Frambuffer/Gbuffer.h"
 #include "vr/Nodes/Node.h"
 #include "vr/State/Shader.h"
 #include "vr/Visitors/DepthVisitor.h"
@@ -144,14 +145,17 @@ class Scene {
     CameraVector getCameras();
 
     /**
-     * Get texture which contains the rendered scene.
+     * Get a texture from the gbuffer
+     *
+     * @param textureType The type of texture to get from the gbuffer. Can be one of the following: GBUFFER_POSITION, GBUFFER_NORMAL, GBUFFER_ALBEDO, GBUFFER_SPECULAR
+     * @return A shared pointer to the texture
      */
-    std::shared_ptr<Texture> getActiveSceneTexture();
+    std::shared_ptr<Texture> getGbufferTexture(unsigned int textureType);
 
     /**
      * Rescale main framebuffer texture
      */
-    void rescaleFramebufferTexture(int width, int height);
+    void rescaleGbuffer(int width, int height);
 
    private:
     /**
@@ -169,6 +173,9 @@ class Scene {
     CameraVector m_cameras;
     int selectedCamera = 0;
     int selectedLight = 0;
+
+    // Deferred rendering
+    std::shared_ptr<Gbuffer> m_gbuffer;
 
     static std::shared_ptr<Scene> instance;
     std::shared_ptr<vr::Shader> m_shader;
