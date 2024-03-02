@@ -9,7 +9,7 @@
 #include "stb_image.h"
 using namespace vr;
 
-bool Texture::create(const char* image, bool isMaterialTexture, unsigned int slot, GLenum texType, GLenum pixelType) {
+bool Texture::create(const char* image, bool isMaterialTexture, unsigned int slot, GLenum texType, GLenum pixelType, GLint texFormat) {
     if (m_valid)
         cleanup();
 
@@ -48,8 +48,6 @@ bool Texture::create(const char* image, bool isMaterialTexture, unsigned int slo
     // Assigns the type of the texture of the texture object
     m_type = texType;
 
-    GLenum texFormat = GL_RGBA;
-
     // Stores the width, height, and the number of color channels of the image
     int widthImg, heightImg, numColCh;
     // Flips the image so it appears right side up
@@ -63,6 +61,9 @@ bool Texture::create(const char* image, bool isMaterialTexture, unsigned int slo
 
     if (numColCh == 3)
         texFormat = GL_RGB;
+
+    m_texFormat = texFormat;
+    m_pixelType = pixelType;
 
     // Generates an OpenGL texture object
     glGenTextures(1, &m_id);
@@ -96,21 +97,38 @@ bool Texture::create(const char* image, bool isMaterialTexture, unsigned int slo
     return true;
 }
 
-bool Texture::createFramebufferTexture(unsigned int width, unsigned int height, GLenum texType, GLenum pixelType) {
+bool Texture::createFramebufferTexture(unsigned int slot, unsigned int width, unsigned int height, GLenum texType) {
     if (m_valid)
         cleanup();
 
     m_type = texType;
+    m_textureSlot = slot;
 
     glGenTextures(1, &m_id);
 
-    m_textureSlot = SCREEN_TEXTURE_SLOT;
     glActiveTexture(GL_TEXTURE0 + m_textureSlot);
     glBindTexture(m_type, m_id);
 
-    glTexImage2D(m_type, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
-    glTexParameteri(m_type, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(m_type, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    if (slot == SCREEN_TEXTURE_SLOT) {
+        m_texFormat = GL_RGB;
+        m_pixelType = GL_UNSIGNED_BYTE;
+        glTexImage2D(m_type, 0, m_texFormat, width, height, 0, GL_RGB, m_pixelType, NULL);
+    }
+
+    if (slot == G_BUFFER_NORMAL_SLOT || slot == G_BUFFER_POSITION_SLOT) {
+        m_texFormat = GL_RGB16F;
+        m_pixelType = GL_FLOAT;
+        glTexImage2D(m_type, 0, m_texFormat, width, height, 0, GL_RGB, m_pixelType, NULL);
+    }
+
+    if (slot == G_BUFFER_ALBEDO_SLOT) {
+        m_texFormat = GL_RGBA;
+        m_pixelType = GL_UNSIGNED_BYTE;
+        glTexImage2D(m_type, 0, m_texFormat, width, height, 0, GL_RGBA, m_pixelType, NULL);
+    }
+
+    glTexParameteri(m_type, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(m_type, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
     glBindTexture(m_type, 0);
     m_valid = true;
@@ -132,11 +150,14 @@ void Texture::createDepthTexture(unsigned int width, unsigned int height, unsign
     glActiveTexture(GL_TEXTURE0 + m_textureSlot);
     glBindTexture(m_type, m_id);
 
+    m_texFormat = GL_DEPTH_COMPONENT;
+    m_pixelType = GL_FLOAT;
+
     if (isDirectional)
-        glTexImage2D(m_type, 0, GL_DEPTH_COMPONENT, width, height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+        glTexImage2D(m_type, 0, m_texFormat, width, height, 0, GL_DEPTH_COMPONENT, m_pixelType, NULL);
     else
         for (unsigned int i = 0; i < 6; i++) {
-            glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_DEPTH_COMPONENT, width, height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+            glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, m_texFormat, width, height, 0, GL_DEPTH_COMPONENT, m_pixelType, NULL);
         }
 
     glTexParameteri(m_type, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
@@ -162,6 +183,19 @@ Texture::Texture() : m_id(0), m_type(0), m_valid(false), m_textureSlot(0) {
 
 Texture::~Texture() {
     cleanup();
+}
+
+void Texture::rescale(unsigned int width, unsigned int height) {
+    if (m_valid) {
+        glBindTexture(m_type, m_id);
+        if (m_type == GL_TEXTURE_2D)
+            glTexImage2D(m_type, 0, m_texFormat, width, height, 0, m_texFormat, m_pixelType, NULL);
+        if (m_type == GL_TEXTURE_CUBE_MAP)
+            for (unsigned int i = 0; i < 6; i++) {
+                glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, m_texFormat, width, height, 0, m_texFormat, m_pixelType, NULL);
+            }
+        glBindTexture(m_type, 0);
+    }
 }
 
 bool Texture::isValid() {

@@ -16,7 +16,7 @@ RenderVisitor::RenderVisitor(int width, int height) {
     m_matrixStack.push(glm::mat4(1.0f));
 
     texture = std::make_shared<Texture>();
-    texture->createFramebufferTexture(width, height);
+    texture->createFramebufferTexture(SCREEN_TEXTURE_SLOT, width, height);
     glGenFramebuffers(1, &fbo);
     glBindFramebuffer(GL_FRAMEBUFFER, fbo);
 

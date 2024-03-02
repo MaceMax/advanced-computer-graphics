@@ -23,6 +23,9 @@ namespace vr {
 #define DEPTH_TEXTURE_BASE_SLOT 11
 #define MAX_DEPTH_TEXTURES 10
 
+#define G_BUFFER_POSITION_SLOT 22
+#define G_BUFFER_ALBEDO_SLOT 23
+#define G_BUFFER_NORMAL_SLOT 24
 #define SCREEN_TEXTURE_SLOT 32
 
 #define DEPTH_MAP_RESOLUTION 2048
@@ -41,18 +44,19 @@ class Texture {
      * @param pixelType The type of pixel
      * @return bool true if the texture was created successfully, false otherwise
      */
-    bool create(const char* image, bool isMaterialTexture, unsigned int slot = 0, GLenum texType = GL_TEXTURE_2D, GLenum pixelType = GL_UNSIGNED_BYTE);
+    bool create(const char* image, bool isMaterialTexture, unsigned int slot = 0, GLenum texType = GL_TEXTURE_2D, GLenum pixelType = GL_UNSIGNED_BYTE, GLint texFormat = GL_RGBA);
 
     /**
-     * @brief Creates a texture to be used as a framebuffer
+     * @brief Creates a texture that will be used in a framebuffer.
      *
+     * @param width The slot to use
      * @param width The width of the texture
      * @param height The height of the texture
      * @param texType The type of texture
      * @param pixelType The type of pixel
      * @return bool true if the texture was created successfully, false otherwise
      */
-    bool createFramebufferTexture(unsigned int width, unsigned int height, GLenum texType = GL_TEXTURE_2D, GLenum pixelType = GL_UNSIGNED_BYTE);
+    bool createFramebufferTexture(unsigned int slot, unsigned int width, unsigned int height, GLenum texType = GL_TEXTURE_2D);
 
     /**
      * @brief Creates a depth texture
@@ -83,6 +87,8 @@ class Texture {
 
     GLuint id() const { return m_id; }
 
+    void rescale(unsigned int width, unsigned int height);
+
     /// Assigns a texture unit to a texture
     void texUnit(GLuint program, const char* uniform, GLuint unit);
 
@@ -98,6 +104,8 @@ class Texture {
    private:
     GLuint m_id;
     GLenum m_type;
+    GLint m_texFormat;
+    GLenum m_pixelType;
     bool m_valid;
     GLuint m_textureSlot;
 };
