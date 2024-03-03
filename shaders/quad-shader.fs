@@ -3,7 +3,7 @@
 out vec4 color;
 in vec2 texCoord;
 
-const int MaxNumberOfLights = 32;
+const int MaxNumberOfLights = 100; // 22x22
 
 struct LightSource
 {
@@ -17,6 +17,7 @@ struct LightSource
   float linear;
   float quadratic;
   float farPlane;
+  float shadowMapIndex;
 };
 
 uniform bool isDebug; // If true, we will render one of the GBuffer textures.
@@ -34,6 +35,8 @@ uniform sampler2D gNormalAmbient; // xyz = normal, w = ambient g value
 uniform sampler2D gAlbedoAmbient; // rgb = albedo, a = ambient b value
 uniform sampler2D gAoMetallicRoughness; // x = ambient occlusion, yz metallic and roughness factors
                                         // If there is no metallic and roughness textures, y will contain specular factor and z will contain shininess factor
+
+uniform sampler2DArray shadowMaps;
 
 vec4 renderDebug() {
     if (isDepth) {

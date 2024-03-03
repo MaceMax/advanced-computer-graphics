@@ -63,6 +63,7 @@ bool Application::initResources(const std::string& model_filename, const std::st
     m_loadedFilename = model_filename;
 
     m_scene = std::shared_ptr<Scene>(Scene::getInstance());
+    m_scene->cleanup();
     if (!m_scene->initShaders(vshader_filename, fshader_filename))
         return false;
 
