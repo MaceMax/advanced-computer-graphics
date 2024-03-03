@@ -112,7 +112,7 @@ bool Texture::createFramebufferTexture(unsigned int slot, unsigned int width, un
     if (slot == SCREEN_TEXTURE_SLOT) {
         m_texFormat = GL_RGB;
         m_pixelType = GL_UNSIGNED_BYTE;
-        glTexImage2D(m_type, 0, m_texFormat, width, height, 0, GL_RGBA, m_pixelType, NULL);
+        glTexImage2D(m_type, 0, m_texFormat, width, height, 0, GL_RGB, m_pixelType, NULL);
     }
 
     if (slot == G_BUFFER_NORMAL_SLOT || slot == G_BUFFER_POSITION_SLOT) {
@@ -136,7 +136,7 @@ bool Texture::createFramebufferTexture(unsigned int slot, unsigned int width, un
     if (slot == G_BUFFER_METALLIC_ROUGHNESS) {
         m_texFormat = GL_RGBA;
         m_pixelType = GL_FLOAT;
-        glTexImage2D(m_type, 0, m_texFormat, width, height, 0, m_texFormat, m_pixelType, NULL);
+        glTexImage2D(m_type, 0, m_texFormat, width, height, 0, GL_RGBA, m_pixelType, NULL);
     }
 
     glTexParameteri(m_type, GL_TEXTURE_MIN_FILTER, GL_NEAREST);

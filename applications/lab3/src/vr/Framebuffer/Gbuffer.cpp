@@ -44,11 +44,13 @@ void Gbuffer::rescaleFramebuffer(int width, int height) {
     m_position->rescale(width, height);
     m_normal->rescale(width, height);
     m_albedo->rescale(width, height);
+    m_metallicRoughness->rescale(width, height);
     m_depth->rescale(width, height);
 
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_position->id(), 0);
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, m_normal->id(), 0);
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, GL_TEXTURE_2D, m_albedo->id(), 0);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT3, GL_TEXTURE_2D, m_metallicRoughness->id(), 0);
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, m_depth->id(), 0);
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -66,10 +68,12 @@ void Gbuffer::bindTextures() {
     m_position->bind();
     m_normal->bind();
     m_albedo->bind();
+    m_metallicRoughness->bind();
 }
 
 void Gbuffer::unbindTextures() {
     m_position->unbind();
     m_normal->unbind();
     m_albedo->unbind();
+    m_metallicRoughness->unbind();
 }

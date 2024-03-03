@@ -34,7 +34,7 @@ class Application {
 
     void reloadScene();
 
-    void renderToQuad(std::shared_ptr<Texture> texture, int x, int y, int width, int height);
+    void renderToQuad(std::shared_ptr<Texture> texture, int x, int y, int width, int height, bool debug);
 
     void renderDebug();
 

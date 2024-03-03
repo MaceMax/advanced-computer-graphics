@@ -148,12 +148,13 @@ bool State::ShadowEnabled() {
     return shadowEnabled;
 }
 
-void State::apply(bool geometryPass) {
+void State::apply() {
     if (m_shader == nullptr)
         return;
 
-    // m_shader->use();
+    m_shader->use();
 
+    /*
     if (!geometryPass) {
         // Update number of lights
         m_shader->setInt("numberOfLights", m_lights.size());
@@ -168,6 +169,7 @@ void State::apply(bool geometryPass) {
             }
         }
     }
+    */
 
     if (m_material != nullptr)
         m_material->apply(m_shader);

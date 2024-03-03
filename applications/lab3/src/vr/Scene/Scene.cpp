@@ -178,6 +178,10 @@ void Scene::rescaleGbuffer(int width, int height) {
     m_gbuffer->rescaleFramebuffer(width, height);
 }
 
+std::shared_ptr<Gbuffer> Scene::getGbuffer() {
+    return m_gbuffer;
+}
+
 BoundingBox
 Scene::calculateSceneBoundingBox(bool excludeGround) {
     BoundingBox box;

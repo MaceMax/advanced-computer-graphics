@@ -22,7 +22,7 @@ void RenderVisitor::visit(Geometry* geometry) {
     // Geometry always has a state
     state = *(m_stateStack.top()) + *(geometry->getState());
 
-    state->apply(true);
+    state->apply();
     // state->getShader()->setVec3("viewPos", m_activeCamera->getPosition());
     m_activeCamera->apply(state->getShader());
     geometry->draw(state->getShader(), m_matrixStack.top());

@@ -102,12 +102,13 @@ void Light::apply(std::shared_ptr<vr::Shader> shader, size_t idx, bool shadowsEn
     shader->setVec4(prefix + "specular", this->specular);
     shader->setVec4(prefix + "position", world_position);
 
+    /*
     std::string lightSpacePrefix = constructPrefix("lightSpaceMatrix", idx);
     shader->setMat4(lightSpacePrefix, m_projection * m_view);
 
     std::string activeLightprefix = constructPrefix("activeLights", idx);
     shader->setBool(activeLightprefix, enabled);
-
+    */
     if (shadowsEnabled) {
         std::string depthPrefix = position.w == 0 ? constructPrefix("depthMaps", idx) : constructPrefix("cubeDepthMaps", idx);
         shader->setInt(depthPrefix, DEPTH_TEXTURE_BASE_SLOT + idx);
@@ -118,7 +119,7 @@ void Light::apply(std::shared_ptr<vr::Shader> shader, size_t idx, bool shadowsEn
         shader->setFloat(prefix + "constant", this->constant);
         shader->setFloat(prefix + "linear", this->linear);
         shader->setFloat(prefix + "quadratic", this->quadratic);
-        shader->setFloat(prefix + "farPlane", this->m_farPlane);
+        // shader->setFloat(prefix + "farPlane", this->m_farPlane);
     }
     CHECK_GL_ERROR_LINE_FILE();
 }

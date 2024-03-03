@@ -237,7 +237,7 @@ void Application::toogleDebug() {
     m_debug = !m_debug;
 }
 
-void Application::renderToQuad(std::shared_ptr<Texture> texture, int x, int y, int width, int height) {
+void Application::renderToQuad(std::shared_ptr<Texture> texture, int x, int y, int width, int height, bool debug) {
     m_quad_shader->use();
 
     glViewport(x, y, width, height);
@@ -246,12 +246,31 @@ void Application::renderToQuad(std::shared_ptr<Texture> texture, int x, int y, i
     glEnableVertexAttribArray(m_attribute_vertex);
     glEnableVertexAttribArray(m_attribute_texcoord);
     glDisable(GL_DEPTH_TEST);
-    texture->bind();
-    m_quad_shader->setInt("screenTexture", texture->slot());
-    m_quad_shader->setBool("isDepth", texture->slot() == G_BUFFER_DEPTH_SLOT);
+
+    m_quad_shader->setBool("isDebug", debug);
+    if (debug) {
+        texture->bind();
+        m_quad_shader->setInt("screenTexture", texture->slot());
+        m_quad_shader->setBool("isDepth", texture->slot() == G_BUFFER_DEPTH_SLOT);
+    } else {
+        m_scene->getGbuffer()->bindTextures();
+        m_quad_shader->setInt("gPositionAmbient", G_BUFFER_POSITION_SLOT);
+        m_quad_shader->setInt("gNormalAmbient", G_BUFFER_NORMAL_SLOT);
+        m_quad_shader->setInt("gAlbedoAmbient", G_BUFFER_ALBEDO_SLOT);
+        m_quad_shader->setInt("gAoMetallicRoughness", G_BUFFER_METALLIC_ROUGHNESS);
+
+        LightVector lights = m_scene->getLights();
+        for (int i = 0; i < lights.size(); i++) {
+            lights[i]->apply(m_quad_shader, i, false);
+        }
+    }
 
     glDrawArrays(GL_TRIANGLES, 0, 6);
-    texture->unbind();
+
+    if (debug)
+        texture->unbind();
+    else
+        m_scene->getGbuffer()->unbindTextures();
 
     glDisableVertexAttribArray(m_attribute_vertex);
     glDisableVertexAttribArray(m_attribute_texcoord);
@@ -259,11 +278,10 @@ void Application::renderToQuad(std::shared_ptr<Texture> texture, int x, int y, i
 }
 
 void Application::renderDebug() {
-    if (m_debug) {
-        std::shared_ptr<Texture> texture = m_scene->getGbufferTexture(m_debugTexture);
-        // Render debug window at the top right corner, taking up 1/16 of the screen
-        renderToQuad(texture, m_screenSize.x - m_screenSize.x / 2, m_screenSize.y - m_screenSize.y / 2, m_screenSize.x / 2, m_screenSize.y / 2);
-    }
+    std::shared_ptr<Texture> texture = m_scene->getGbufferTexture(m_debugTexture);
+    // Render debug window at the top right corner, taking up 1/16 of the screen
+    renderToQuad(texture, m_screenSize.x - m_screenSize.x / 2, m_screenSize.y - m_screenSize.y / 2, m_screenSize.x / 2, m_screenSize.y / 2, true);
+    glViewport(0, 0, m_screenSize.x, m_screenSize.y);
 }
 
 void Application::render(GLFWwindow* window) {
@@ -273,10 +291,11 @@ void Application::render(GLFWwindow* window) {
     glEnable(GL_DEPTH_TEST);
     m_scene->render();
 
+    renderToQuad(nullptr, 0, 0, m_screenSize.x, m_screenSize.y, false);
+
     if (m_debug)
         renderDebug();
 
-    glViewport(0, 0, m_screenSize.x, m_screenSize.y);
     m_fpsCounter->render(window);
 }
 

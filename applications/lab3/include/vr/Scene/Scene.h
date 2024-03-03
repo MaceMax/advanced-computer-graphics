@@ -157,6 +157,11 @@ class Scene {
      */
     void rescaleGbuffer(int width, int height);
 
+    /**
+     * Get the gbuffer
+     */
+    std::shared_ptr<Gbuffer> getGbuffer();
+
    private:
     /**
      * Private constructor for the scene class.
