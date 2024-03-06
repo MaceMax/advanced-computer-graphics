@@ -34,7 +34,7 @@ namespace vr {
 #define SCREEN_TEXTURE_SLOT 32
 
 #define DEPTH_MAP_RESOLUTION 2048
-#define MAX_LIGHTS 100
+#define MAX_LIGHTS 50
 
 class Texture {
    public:

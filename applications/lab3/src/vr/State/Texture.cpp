@@ -215,10 +215,19 @@ void Texture::createDepthMapArray(unsigned int width, unsigned int height, int n
 
     glTexParameteri(m_type, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(m_type, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexParameteri(m_type, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(m_type, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    if (!isDirectional)
+
+    if (isDirectional) {
+        glTexParameteri(m_type, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+        glTexParameteri(m_type, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+        float borderColor[] = {1.0, 1.0, 1.0, 1.0};
+        glTexParameterfv(m_type, GL_TEXTURE_BORDER_COLOR, borderColor);
+    } else {
+        glTexParameteri(m_type, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameteri(m_type, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
         glTexParameteri(m_type, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+    }
+
+    CHECK_GL_ERROR_LINE_FILE();
 
     glBindTexture(m_type, 0);
     m_valid = true;

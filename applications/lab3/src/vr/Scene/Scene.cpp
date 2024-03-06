@@ -27,19 +27,6 @@ bool Scene::initShaders(const std::string& vshader_filename, const std::string& 
     return true;
 }
 
-void Scene::initDepthMaps() {
-    int pointLightCount = 0;
-    int directionalLightCount = 0;
-    for (auto& light : m_lights) {
-        if (light->getPosition().w == 0)
-            directionalLightCount++;
-        else
-            pointLightCount++;
-    }
-    if (pointLightCount > 0) m_pointShadowMap->createDepthMapArray(DEPTH_MAP_RESOLUTION, DEPTH_MAP_RESOLUTION, pointLightCount, false);
-    if (directionalLightCount > 0) m_directionalShadowMap->createDepthMapArray(DEPTH_MAP_RESOLUTION, DEPTH_MAP_RESOLUTION, directionalLightCount, true);
-}
-
 void Scene::initScene(unsigned int width, unsigned int height) {
     m_lights.clear();
     m_cameras.clear();
@@ -69,6 +56,27 @@ void Scene::initScene(unsigned int width, unsigned int height) {
     state->setLightingEnabled(true);
     state->setShadowEnabled(true);
     m_root->setState(state);
+}
+
+void Scene::initDepthMaps() {
+    int pointLightCount = 0;
+    int directionalLightCount = 0;
+    for (auto& light : m_lights) {
+        if (light->getPosition().w == 0)
+            directionalLightCount++;
+        else
+            pointLightCount++;
+    }
+    if (pointLightCount > 0) m_pointShadowMap->createDepthMapArray(DEPTH_MAP_RESOLUTION, DEPTH_MAP_RESOLUTION, pointLightCount, false);
+    if (directionalLightCount > 0) m_directionalShadowMap->createDepthMapArray(DEPTH_MAP_RESOLUTION, DEPTH_MAP_RESOLUTION, directionalLightCount, true);
+}
+
+std::shared_ptr<Texture> Scene::getPointShadowMap() {
+    return m_pointShadowMap;
+}
+
+std::shared_ptr<Texture> Scene::getDirectionalShadowMap() {
+    return m_directionalShadowMap;
 }
 
 void Scene::add(std::shared_ptr<Light> light) {
@@ -227,6 +235,7 @@ Scene::calculateSceneBoundingBox(bool excludeGround) {
 void Scene::render() {
     m_updateVisitor->visit(m_root.get());
 
+    // IF ground plane is rendered, it covers the depth map texture. WHy?
     if (m_shadowsEnabled)
         renderDepthMaps(m_updateVisitor->sceneChanged());
 

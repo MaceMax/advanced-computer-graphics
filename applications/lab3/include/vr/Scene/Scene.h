@@ -167,6 +167,16 @@ class Scene {
      */
     void initDepthMaps();
 
+    /**
+     * Get the point shadow map
+     */
+    std::shared_ptr<Texture> getPointShadowMap();
+
+    /**
+     * Get the directional shadow map
+     */
+    std::shared_ptr<Texture> getDirectionalShadowMap();
+
    private:
     /**
      * Private constructor for the scene class.

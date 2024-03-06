@@ -3,7 +3,7 @@
 out vec4 color;
 in vec2 texCoord;
 
-const int MaxNumberOfLights = 100; // 22x22
+const int MaxNumberOfLights = 50; // 22x22
 
 struct LightSource
 {
@@ -17,7 +17,8 @@ struct LightSource
   float linear;
   float quadratic;
   float farPlane;
-  float shadowMapIndex;
+  int shadowMapIndex; // Index of the shadow map in the array. If it is a point light, it will be the index of the first face of the cubemap.
+  mat4 lightSpaceMatrix; // Used for shadow mapping
 };
 
 uniform bool isDebug; // If true, we will render one of the GBuffer textures.
@@ -35,6 +36,7 @@ uniform sampler2D gNormalAmbient; // xyz = normal, w = ambient g value
 uniform sampler2D gAlbedoAmbient; // rgb = albedo, a = ambient b value
 uniform sampler2D gAoMetallicRoughness; // x = ambient occlusion, yz metallic and roughness factors
                                         // If there is no metallic and roughness textures, y will contain specular factor and z will contain shininess factor
+uniform sampler2D gDepth;
 
 uniform sampler2DArray directionalShadowMaps;
 uniform samplerCubeArray pointShadowMaps;
@@ -77,6 +79,34 @@ vec3 calculatePointLight(LightSource light, vec3 fragPos, vec3 normal, vec3 albe
     return result;
 }
 
+float calculateDirectionalShadow(vec4 fragPosLightSpace, vec3 lightDirection, vec3 nNormal, int index)
+{
+  vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
+  projCoords = projCoords * 0.5 + 0.5;
+ 
+  if (projCoords.z > 1.0) {
+    return 0.0;
+  }
+
+  float shadow = 0.0;
+  float currentDepth = projCoords.z;
+  float bias = max(0.002 * (1.0 - dot(nNormal, lightDirection)), 0.0001);
+
+  vec2 texelSize = 1.0 / textureSize(directionalShadowMaps, 0).xy;
+
+  int kernelSize = 10;
+  for(int x = -kernelSize; x <= kernelSize; ++x)
+  {
+    for(int y = -kernelSize; y <= kernelSize; ++y)
+    {
+      float pcfDepth = texture(directionalShadowMaps, vec3(projCoords.xy + vec2(x, y) * texelSize, index)).r; 
+      shadow += currentDepth - bias > pcfDepth  ? 0.95 : 0.0;        
+    }
+  }
+  
+  return shadow / ((2 * kernelSize + 1) * (2 * kernelSize + 1));
+}
+
 vec3 calculateDirectionalLight(LightSource light, vec3 fragPos, vec3 normal, vec3 albedo, vec3 viewDir, float ambientOcclusion, float metallic, float roughness) {
     vec3 lightDir = normalize(light.position.xyz);
     // Diffuse shading
@@ -92,8 +122,10 @@ vec3 calculateDirectionalLight(LightSource light, vec3 fragPos, vec3 normal, vec
         specularColor = light.specular.rgb * spec * metallic;
     }
 
+    vec4 fragPosLightSpace = light.lightSpaceMatrix * vec4(fragPos, 1.0);
+    float shadow = calculateDirectionalShadow(fragPosLightSpace, lightDir, normal, light.shadowMapIndex);
     // Combine results
-    vec3 result = (diffuseColor + specularColor);
+    vec3 result =  (diffuseColor + specularColor);
 
     return result;
 }

@@ -25,7 +25,6 @@ void DepthVisitor::setupRenderState(const std::shared_ptr<Light> light, int dept
 
     glViewport(0, 0, DEPTH_MAP_RESOLUTION, DEPTH_MAP_RESOLUTION);
     glBindFramebuffer(GL_FRAMEBUFFER, fbo);
-
     if (m_activeLight->getPosition().w == 0) {
         m_depthShader = m_directionalDepthShader;
 
@@ -42,6 +41,7 @@ void DepthVisitor::setupRenderState(const std::shared_ptr<Light> light, int dept
         std::cerr << "Depth visitor framebuffer is not complete" << std::endl;
         exit(1);
     }
+
     glClear(GL_DEPTH_BUFFER_BIT);
 }
 

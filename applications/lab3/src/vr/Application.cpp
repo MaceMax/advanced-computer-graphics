@@ -262,10 +262,27 @@ void Application::renderToQuad(std::shared_ptr<Texture> texture, int x, int y, i
         m_quad_shader->setInt("gNormalAmbient", G_BUFFER_NORMAL_SLOT);
         m_quad_shader->setInt("gAlbedoAmbient", G_BUFFER_ALBEDO_SLOT);
         m_quad_shader->setInt("gAoMetallicRoughness", G_BUFFER_METALLIC_ROUGHNESS);
+        // m_quad_shader->setInt("gDepth", G_BUFFER_DEPTH_SLOT);
 
         LightVector lights = m_scene->getLights();
+        // Temporary fix for the light uniforms
+        int pointLightCountIndex = 0;
+        int directionalLightIndex = 0;
+
         for (int i = 0; i < lights.size(); i++) {
-            lights[i]->apply(m_quad_shader, i, false);
+            if (lights[i]->getPosition().w == 0.0) {
+                lights[i]->apply(m_quad_shader, i, true);
+                m_scene->getPointShadowMap()->bind();
+                m_quad_shader->setInt("directionalShadowMaps", m_scene->getDirectionalShadowMap()->slot());
+                m_quad_shader->setInt("lights[" + std::to_string(i) + "].shadowMapIndex", directionalLightIndex);
+                directionalLightIndex++;
+            } else {
+                lights[i]->apply(m_quad_shader, i, true);
+                m_scene->getPointShadowMap()->bind();
+                m_quad_shader->setInt("pointShadowMaps", m_scene->getPointShadowMap()->slot());
+                m_quad_shader->setInt("lights[" + std::to_string(i) + "].shadowMapIndex", directionalLightIndex);
+                pointLightCountIndex++;
+            }
         }
     }
 
