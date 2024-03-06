@@ -27,9 +27,9 @@ class DepthVisitor : public NodeVisitor {
      *
      * @param light The light to set up the render state for
      * @param depthMapIndex Index of light in its respective depth map array
-     * @param textureUnit The texture unit to bind the depth map to
+     * @param textureUnit The id of the texture to bind to the framebuffer
      */
-    void setupRenderState(const std::shared_ptr<Light> light, int depthMapIndex, unsigned int textureUnit);
+    void setupRenderState(const std::shared_ptr<Light> light, int depthMapIndex, unsigned int textureID);
 
    private:
     std::stack<glm::mat4> m_matrixStack;

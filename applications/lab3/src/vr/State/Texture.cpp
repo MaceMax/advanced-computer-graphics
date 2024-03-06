@@ -211,6 +211,8 @@ void Texture::createDepthMapArray(unsigned int width, unsigned int height, int n
     else
         glTexImage3D(m_type, 0, m_texFormat, width, height, 6 * numberOfLights, 0, GL_DEPTH_COMPONENT, m_pixelType, NULL);
 
+    CHECK_GL_ERROR_LINE_FILE();
+
     glTexParameteri(m_type, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(m_type, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glTexParameteri(m_type, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
