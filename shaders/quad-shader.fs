@@ -36,7 +36,8 @@ uniform sampler2D gAlbedoAmbient; // rgb = albedo, a = ambient b value
 uniform sampler2D gAoMetallicRoughness; // x = ambient occlusion, yz metallic and roughness factors
                                         // If there is no metallic and roughness textures, y will contain specular factor and z will contain shininess factor
 
-uniform sampler2DArray shadowMaps;
+uniform sampler2DArray directionalShadowMaps;
+uniform samplerCubeArray pointShadowMaps;
 
 vec4 renderDebug() {
     if (isDepth) {

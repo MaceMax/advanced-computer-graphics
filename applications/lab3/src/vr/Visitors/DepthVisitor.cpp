@@ -20,19 +20,22 @@ DepthVisitor::~DepthVisitor() {
     m_activeLight = nullptr;
 }
 
-void DepthVisitor::setupRenderState(const std::shared_ptr<Light> light) {
+void DepthVisitor::setupRenderState(const std::shared_ptr<Light> light, int depthMapIndex, unsigned int textureUnit) {
     m_activeLight = light;
 
-    GLuint texture = light->getDepthMap().id();
     glViewport(0, 0, DEPTH_MAP_RESOLUTION, DEPTH_MAP_RESOLUTION);
     glBindFramebuffer(GL_FRAMEBUFFER, fbo);
 
     if (m_activeLight->getPosition().w == 0) {
         m_depthShader = m_directionalDepthShader;
-        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, texture, 0);
+
+        glFramebufferTextureLayer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, textureUnit, 0, depthMapIndex);
+
     } else {
         m_depthShader = m_pointDepthShader;
-        glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, texture, 0);
+        for (int face = 0; face < 6; face++) {
+            glFramebufferTextureLayer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, textureUnit, 0, depthMapIndex * 6 + face);
+        }
     }
 
     if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {

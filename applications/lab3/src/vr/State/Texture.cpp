@@ -190,6 +190,38 @@ void Texture::createDepthTexture(unsigned int width, unsigned int height, unsign
     m_valid = true;
 }
 
+void Texture::createDepthMapArray(unsigned int width, unsigned int height, int numberOfLights, bool isDirectional) {
+    if (m_valid)
+        cleanup();
+
+    m_type = isDirectional ? GL_TEXTURE_2D_ARRAY : GL_TEXTURE_CUBE_MAP_ARRAY;
+
+    glGenTextures(1, &m_id);
+
+    m_textureSlot = isDirectional ? DEPTH_MAP_DIRECTIONAL_ARRAY_SLOT : DEPTH_MAP_POINT_ARRAY_SLOT;
+
+    glActiveTexture(GL_TEXTURE0 + m_textureSlot);
+    glBindTexture(m_type, m_id);
+
+    m_texFormat = GL_DEPTH_COMPONENT;
+    m_pixelType = GL_FLOAT;
+
+    if (isDirectional)
+        glTexImage3D(m_type, 0, m_texFormat, width, height, numberOfLights, 0, GL_DEPTH_COMPONENT, m_pixelType, NULL);
+    else
+        glTexImage3D(m_type, 0, m_texFormat, width, height, 6 * numberOfLights, 0, GL_DEPTH_COMPONENT, m_pixelType, NULL);
+
+    glTexParameteri(m_type, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(m_type, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(m_type, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(m_type, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    if (!isDirectional)
+        glTexParameteri(m_type, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+
+    glBindTexture(m_type, 0);
+    m_valid = true;
+}
+
 Texture::Texture() : m_id(0), m_type(0), m_valid(false), m_textureSlot(0) {
 }
 

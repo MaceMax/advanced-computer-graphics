@@ -22,6 +22,8 @@ namespace vr {
 #define MAX_MATERIAL_TEXTURES 8
 
 #define DEPTH_TEXTURE_BASE_SLOT 11
+#define DEPTH_MAP_DIRECTIONAL_ARRAY_SLOT 11
+#define DEPTH_MAP_POINT_ARRAY_SLOT 12
 #define MAX_DEPTH_TEXTURES 10
 
 #define G_BUFFER_POSITION_SLOT 22
@@ -32,6 +34,7 @@ namespace vr {
 #define SCREEN_TEXTURE_SLOT 32
 
 #define DEPTH_MAP_RESOLUTION 2048
+#define MAX_LIGHTS 100
 
 class Texture {
    public:
@@ -71,6 +74,15 @@ class Texture {
      */
     void createDepthTexture(unsigned int width, unsigned int height, unsigned int slot, bool isDirectional = true);
 
+    /**
+     * @brief Creates a depth map array
+     *
+     * @param width the width of the texture
+     * @param height the height of the texture
+     * @param numberOfLights the number of lights to create the depth map array for
+     * @param isDirectional boolean indicating if the texture is to be used for a directional light or not.
+     */
+    void createDepthMapArray(unsigned int width, unsigned int height, int numberOfLights, bool isDirectional = true);
     /**
      * @brief Checks if the texture is valid
      *

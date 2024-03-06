@@ -27,9 +27,26 @@ bool Scene::initShaders(const std::string& vshader_filename, const std::string& 
     return true;
 }
 
+void Scene::initDepthMaps() {
+    int pointLightCount = 0;
+    int directionalLightCount = 0;
+    for (auto& light : m_lights) {
+        if (light->getPosition().w == 0)
+            directionalLightCount++;
+        else
+            pointLightCount++;
+    }
+    if (pointLightCount > 0) m_pointShadowMap->createDepthMapArray(DEPTH_MAP_RESOLUTION, DEPTH_MAP_RESOLUTION, pointLightCount, false);
+    if (directionalLightCount > 0) m_directionalShadowMap->createDepthMapArray(DEPTH_MAP_RESOLUTION, DEPTH_MAP_RESOLUTION, directionalLightCount, true);
+}
+
 void Scene::initScene(unsigned int width, unsigned int height) {
     m_lights.clear();
     m_cameras.clear();
+
+    m_pointShadowMap = std::make_shared<Texture>();
+    m_directionalShadowMap = std::make_shared<Texture>();
+
     m_camera = std::make_shared<Camera>();
     m_camera->setScreenSize(glm::uvec2(width, height));
     m_cameras.push_back(m_camera);
@@ -100,6 +117,12 @@ void Scene::cleanup() {
 
     if (m_gbuffer)
         m_gbuffer = nullptr;
+
+    if (m_pointShadowMap)
+        m_pointShadowMap = nullptr;
+
+    if (m_directionalShadowMap)
+        m_directionalShadowMap = nullptr;
 }
 
 void Scene::useProgram() {
@@ -204,8 +227,8 @@ Scene::calculateSceneBoundingBox(bool excludeGround) {
 void Scene::render() {
     m_updateVisitor->visit(m_root.get());
 
-    // if (m_shadowsEnabled)
-    //     renderDepthMaps(m_updateVisitor->sceneChanged());
+    if (m_shadowsEnabled)
+        renderDepthMaps(m_updateVisitor->sceneChanged());
 
     m_updateVisitor->setSceneChanged(false);
 
@@ -222,11 +245,20 @@ void Scene::renderDepthMaps(bool sceneChanged) {
     if (sceneChanged)
         sbox = calculateSceneBoundingBox(true);
 
+    int pointLightIndex = 0;
+    int directionalLightIndex = 0;
     for (auto& light : m_lights) {
         if (sceneChanged)
             light->setShadowParams(sbox.getRadius(), sbox.getCenter(), m_groundRadius);
 
-        m_depthVisitor->setupRenderState(light);
+        if (light->getPosition().w == 0) {
+            m_depthVisitor->setupRenderState(light, directionalLightIndex, m_directionalShadowMap->id());
+            directionalLightIndex++;
+        } else {
+            m_depthVisitor->setupRenderState(light, pointLightIndex, m_pointShadowMap->id());
+            pointLightIndex++;
+        }
+
         m_depthVisitor->visit(m_root.get());
     }
 }

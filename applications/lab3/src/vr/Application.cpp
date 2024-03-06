@@ -153,6 +153,9 @@ bool Application::initResources(const std::string& model_filename, const std::st
     for (int i = 0; i < lights.size(); i++)
         lights[i]->init(i, sceneBox, sceneBounds.getRadius());
 
+    // Initialize the depth map arrays
+    m_scene->initDepthMaps();
+
 #if 0
   std::shared_ptr<Mesh> ground(new Mesh);
 

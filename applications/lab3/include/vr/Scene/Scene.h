@@ -162,6 +162,11 @@ class Scene {
      */
     std::shared_ptr<Gbuffer> getGbuffer();
 
+    /**
+     * Initialize the depth map arrays
+     */
+    void initDepthMaps();
+
    private:
     /**
      * Private constructor for the scene class.
@@ -181,6 +186,8 @@ class Scene {
 
     // Deferred rendering
     std::shared_ptr<Gbuffer> m_gbuffer;
+    std::shared_ptr<Texture> m_pointShadowMap;
+    std::shared_ptr<Texture> m_directionalShadowMap;
 
     static std::shared_ptr<Scene> instance;
     std::shared_ptr<vr::Shader> m_shader;
