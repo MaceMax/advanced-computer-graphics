@@ -136,6 +136,14 @@ namespace vr
      */
     glm::mat4 getProjection() const;
 
+    /**
+     * @brief Set the Aperture of the camera
+     * 
+     * @param aperture  The aperture
+     */
+    void setAperture(float aperture);
+
+
   private:
 
     void handleMouse(GLFWwindow* window, double xpos, double ypos);
@@ -154,6 +162,9 @@ namespace vr
     glm::vec3 m_position;
     glm::vec3 m_direction;
     glm::vec3 m_up;
+
+    // Depth of field
+    float aperture;
 
     bool m_movementEnabled;
     bool m_firstClick;

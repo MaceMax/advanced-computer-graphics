@@ -70,20 +70,16 @@ void main()
         gAoMetallicRoughness.y = texture(material.textures[6], texCoord).r;
     } else if (material.activeTextures[1]) // Specular map
     {
-        vec3 specularColor = texture(material.textures[1], texCoord).rgb;
-        float specularGray = dot(specularColor, vec3(0.299, 0.587, 0.114)); // Convert to grayscale
-        gAoMetallicRoughness.y = specularGray; // Use grayscale value as metallic factor
+        //vec3 specularColor = texture(material.textures[1], texCoord).rgb;
+        //float specularGray = dot(specularColor, vec3(0.299, 0.587, 0.114)); // Convert to grayscale
+        gAoMetallicRoughness.y = texture(material.textures[1], texCoord).r; // Use grayscale value as metallic factor
     }
         
-
+    gAoMetallicRoughness.z = material.shininess;
     if (material.activeTextures[7]) // Roughness
     {
         gAoMetallicRoughness.z = texture(material.textures[7], texCoord).r;
-    } else {
-        // Compute roughness from shininess
-        // See: https://computergraphics.stackexchange.com/questions/1515/what-is-the-accepted-method-of-converting-shininess-to-roughness-and-vice-versa
-        gAoMetallicRoughness.z = material.shininess;// sqrt(2.0 / (material.shininess + 2.0)); 
-    }
+    } 
 
     if (material.activeTextures[4]) // Ambient occlusion
     {

@@ -34,7 +34,9 @@ class Application {
 
     void reloadScene();
 
-    void renderToQuad(std::shared_ptr<Texture> texture, int x, int y, int width, int height, bool debug);
+    void renderToQuad(std::shared_ptr<Texture> texture, int x, int y, int width, int height);
+
+    void drawQuad();
 
     void renderDebug();
 
@@ -52,11 +54,21 @@ class Application {
 
     void toggleShadows();
 
+    void toggleBloom();
+
+    void toggleDOF();
+
+    void changeFocus(float delta);
+
     void selectLight(int idx);
 
     void changeCamera(int next);
 
     void changeDebugTexture(int next);
+
+    void renderToTexture();
+
+    void blurTexture(const std::shared_ptr<Texture> input, std::shared_ptr<Texture> output, float blurAmount);
 
    private:
     // Parent of all to be rendered
@@ -69,9 +81,19 @@ class Application {
     float m_lastFrameTime = 0.0f;
 
     bool m_debug = false;
+    bool m_bloom = false;
+    bool m_dof = false;
     int m_debugTexture = 0;
 
-    std::shared_ptr<Shader> m_quad_shader;
+    float m_focus = 0.5f;
+    float m_aperture = 0.5f;
+
+    std::shared_ptr<Shader> m_quad_shader, m_scene_shader, m_gaussian_shader;
+
+    GLuint m_fbo, m_pingpongFBO[2];
+    std::shared_ptr<Texture> m_pingpongTextures[2];
+    std::shared_ptr<Texture> m_sceneTexture, m_bloomTexture, m_brightTexture, m_blurTexture;
+
     GLuint m_attribute_vertex, m_attribute_texcoord;
     GLuint m_quad_vao, m_quad_vbo_vertices, m_quad_vbo_texcoords;
 

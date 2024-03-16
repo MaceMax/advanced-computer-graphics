@@ -28,7 +28,7 @@ void DepthVisitor::setupRenderState(const std::shared_ptr<Light> light, int dept
     if (m_activeLight->getPosition().w == 0) {
         m_depthShader = m_directionalDepthShader;
 
-        glFramebufferTextureLayer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, textureID, 0, depthMapIndex);
+        glFramebufferTextureLayer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, textureID, 0, 0);
 
     } else {
         m_depthShader = m_pointDepthShader;

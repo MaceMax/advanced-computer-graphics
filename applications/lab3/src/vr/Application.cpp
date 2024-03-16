@@ -6,6 +6,7 @@
 #include <vr/Nodes/Transform.h>
 #include <vr/Scene/Loader.h>
 #include <vr/Scene/Scene.h>
+#include <vr/glErrorUtil.h>
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -23,6 +24,46 @@ Application::Application(unsigned int width, unsigned height) : m_screenSize(wid
     m_fpsCounter->setColor(glm::vec4(0.2, 1.0, 1.0, 1.0));
 
     m_quad_shader = std::make_shared<Shader>("shaders/quad-shader.vs", "shaders/quad-shader.fs");
+    m_gaussian_shader = std::make_shared<Shader>("shaders/gaussian-shader.vs", "shaders/gaussian-shader.fs");
+
+    m_sceneTexture = std::make_shared<Texture>();
+    m_brightTexture = std::make_shared<Texture>();
+    m_bloomTexture = std::make_shared<Texture>();
+    m_blurTexture = std::make_shared<Texture>();
+
+    m_sceneTexture->createFramebufferTexture(SCREEN_TEXTURE_SLOT, m_screenSize.x, m_screenSize.y);
+    m_brightTexture->createFramebufferTexture(BLOOM_TEXTURE_SLOT, m_screenSize.x, m_screenSize.y);
+    m_bloomTexture->createFramebufferTexture(BLOOM_TEXTURE_SLOT, m_screenSize.x, m_screenSize.y);
+    m_blurTexture->createFramebufferTexture(BLUR_TEXTURE_SLOT, m_screenSize.x, m_screenSize.y);
+
+    // Create framebuffer for scene and bright textures
+    glGenFramebuffers(1, &m_fbo);
+    glBindFramebuffer(GL_FRAMEBUFFER, m_fbo);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_sceneTexture->id(), 0);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, m_brightTexture->id(), 0);
+
+    GLenum attachments[2] = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1};
+    glDrawBuffers(2, attachments);
+
+    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
+        std::cerr << "Framebuffer is not complete" << std::endl;
+        exit(1);
+    }
+
+    // Create framebuffers for gaussian blur
+    glGenFramebuffers(2, m_pingpongFBO);
+    m_pingpongTextures[0] = std::make_shared<Texture>();
+    m_pingpongTextures[1] = std::make_shared<Texture>();
+    m_pingpongTextures[0]->createFramebufferTexture(PING_PONG_TEXTURE_SLOT, m_screenSize.x, m_screenSize.y);
+    m_pingpongTextures[1]->createFramebufferTexture(PING_PONG_TEXTURE_SLOT, m_screenSize.x, m_screenSize.y);
+
+    glBindFramebuffer(GL_FRAMEBUFFER, m_pingpongFBO[0]);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_pingpongTextures[0]->id(), 0);
+
+    glBindFramebuffer(GL_FRAMEBUFFER, m_pingpongFBO[1]);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_pingpongTextures[1]->id(), 0);
+
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
     const char* attribs[] = {"vertex_position", "vertex_texCoord"};
     m_attribute_vertex = m_quad_shader->getAttribute(attribs[0]);
@@ -61,6 +102,15 @@ bool Application::initResources(const std::string& model_filename, const std::st
     m_loadedVShader = vshader_filename;
     m_loadedFShader = fshader_filename;
     m_loadedFilename = model_filename;
+
+    m_scene_shader = std::make_shared<Shader>("shaders/scene-shader.vs", "shaders/scene-shader.fs");
+    m_quad_shader = std::make_shared<Shader>("shaders/quad-shader.vs", "shaders/quad-shader.fs");
+    m_gaussian_shader = std::make_shared<Shader>("shaders/gaussian-shader.vs", "shaders/gaussian-shader.fs");
+
+    if (!m_quad_shader->valid() || !m_scene_shader->valid() || !m_gaussian_shader->valid()) {
+        std::cerr << "Error: Could not load shaders" << std::endl;
+        return false;
+    }
 
     m_scene = std::shared_ptr<Scene>(Scene::getInstance());
     m_scene->cleanup();
@@ -220,89 +270,138 @@ void Application::initView() {
     glCullFace(GL_BACK);
 }
 
-void Application::changeCamera(int next) {
-    m_scene->setActiveCamera(next);
-    getCamera()->setScreenSize(m_screenSize);
-}
-
-void Application::changeDebugTexture(int next) {
-    m_debugTexture += next;
-
-    if (m_debugTexture < 0) {
-        m_debugTexture = GBUFFER_METALLIC_ROUGHNESS;
-    }
-
-    if (m_debugTexture > GBUFFER_METALLIC_ROUGHNESS) {
-        m_debugTexture = GBUFFER_POSITION;
-    }
-}
-
-void Application::toogleDebug() {
-    m_debug = !m_debug;
-}
-
-void Application::renderToQuad(std::shared_ptr<Texture> texture, int x, int y, int width, int height, bool debug) {
-    m_quad_shader->use();
-
-    glViewport(x, y, width, height);
-
+void Application::drawQuad() {
     glBindVertexArray(m_quad_vao);
     glEnableVertexAttribArray(m_attribute_vertex);
     glEnableVertexAttribArray(m_attribute_texcoord);
-    glDisable(GL_DEPTH_TEST);
-
-    m_quad_shader->setBool("isDebug", debug);
-    if (debug) {
-        texture->bind();
-        m_quad_shader->setInt("screenTexture", texture->slot());
-        m_quad_shader->setBool("isDepth", texture->slot() == G_BUFFER_DEPTH_SLOT);
-    } else {
-        m_scene->getGbuffer()->bindTextures();
-        m_quad_shader->setInt("gPositionAmbient", G_BUFFER_POSITION_SLOT);
-        m_quad_shader->setInt("gNormalAmbient", G_BUFFER_NORMAL_SLOT);
-        m_quad_shader->setInt("gAlbedoAmbient", G_BUFFER_ALBEDO_SLOT);
-        m_quad_shader->setInt("gAoMetallicRoughness", G_BUFFER_METALLIC_ROUGHNESS);
-        // m_quad_shader->setInt("gDepth", G_BUFFER_DEPTH_SLOT);
-
-        LightVector lights = m_scene->getLights();
-        // Temporary fix for the light uniforms
-        int pointLightCountIndex = 0;
-        int directionalLightIndex = 0;
-
-        for (int i = 0; i < lights.size(); i++) {
-            if (lights[i]->getPosition().w == 0.0) {
-                lights[i]->apply(m_quad_shader, i, true);
-                m_scene->getPointShadowMap()->bind();
-                m_quad_shader->setInt("directionalShadowMaps", m_scene->getDirectionalShadowMap()->slot());
-                m_quad_shader->setInt("lights[" + std::to_string(i) + "].shadowMapIndex", directionalLightIndex);
-                directionalLightIndex++;
-            } else {
-                lights[i]->apply(m_quad_shader, i, true);
-                m_scene->getPointShadowMap()->bind();
-                m_quad_shader->setInt("pointShadowMaps", m_scene->getPointShadowMap()->slot());
-                m_quad_shader->setInt("lights[" + std::to_string(i) + "].shadowMapIndex", directionalLightIndex);
-                pointLightCountIndex++;
-            }
-        }
-    }
-
     glDrawArrays(GL_TRIANGLES, 0, 6);
-
-    if (debug)
-        texture->unbind();
-    else
-        m_scene->getGbuffer()->unbindTextures();
-
     glDisableVertexAttribArray(m_attribute_vertex);
     glDisableVertexAttribArray(m_attribute_texcoord);
     glBindVertexArray(0);
 }
 
+void Application::blurTexture(const std::shared_ptr<Texture> input, std::shared_ptr<Texture> output, float blurAmount) {
+    bool horizontal = true, first_iteration = true;
+    int iter = 10;  // Amount of gaussian blur iterations
+
+    m_pingpongTextures[!horizontal] = output;
+    glBindFramebuffer(GL_FRAMEBUFFER, m_pingpongFBO[!horizontal]);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_pingpongTextures[!horizontal]->id(), 0);
+
+    m_gaussian_shader->use();
+    for (int i = 0; i < iter; i++) {
+        glBindFramebuffer(GL_FRAMEBUFFER, m_pingpongFBO[horizontal]);
+        if (first_iteration)
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        m_gaussian_shader->setBool("horizontal", horizontal);
+
+        first_iteration ? input->bind() : m_pingpongTextures[!horizontal]->bind();
+        first_iteration ? m_gaussian_shader->setInt("image", input->slot()) : m_gaussian_shader->setInt("image", m_pingpongTextures[!horizontal]->slot());
+
+        drawQuad();
+
+        m_pingpongTextures[!horizontal]->unbind();
+
+        horizontal = !horizontal;
+        if (first_iteration)
+            first_iteration = false;
+    }
+
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
+void Application::renderToQuad(std::shared_ptr<Texture> texture, int x, int y, int width, int height) {
+    glViewport(x, y, width, height);
+    m_quad_shader->use();
+
+    m_quad_shader->setBool("bloomEnabled", m_bloom && texture->slot() == SCREEN_TEXTURE_SLOT);
+    if (m_bloom && texture->slot() == SCREEN_TEXTURE_SLOT) {
+        blurTexture(m_brightTexture, m_bloomTexture, 10.0f);
+        m_quad_shader->use();
+        m_quad_shader->setInt("bloomTexture", m_bloomTexture->slot());
+        m_bloomTexture->bind();
+    }
+
+    m_quad_shader->setBool("dofEnabled", m_dof && texture->slot() == SCREEN_TEXTURE_SLOT);
+    if (m_dof && texture->slot() == SCREEN_TEXTURE_SLOT) {
+        blurTexture(m_sceneTexture, m_blurTexture, 10.0f);
+        m_quad_shader->use();
+        m_quad_shader->setFloat("focusDistance", m_focus);
+        m_quad_shader->setFloat("aperture", m_aperture);
+        m_quad_shader->setInt("blurTexture", m_blurTexture->slot());
+        m_quad_shader->setInt("depthTexture", m_scene->getGbufferTexture(GBUFFER_DEPTH)->slot());
+        m_blurTexture->bind();
+        m_scene->getGbufferTexture(GBUFFER_DEPTH)->bind();
+    }
+
+    m_quad_shader->setInt("screenTexture", texture->slot());
+    m_quad_shader->setBool("isDepth", texture->slot() == G_BUFFER_DEPTH_SLOT);
+    texture->bind();
+
+    drawQuad();
+
+    if (m_bloom && texture->slot() == SCREEN_TEXTURE_SLOT)
+        m_bloomTexture->unbind();
+
+    if (m_dof && texture->slot() == SCREEN_TEXTURE_SLOT) {
+        m_blurTexture->unbind();
+        m_scene->getGbufferTexture(GBUFFER_DEPTH)->unbind();
+    }
+
+    texture->unbind();
+}
+
 void Application::renderDebug() {
     std::shared_ptr<Texture> texture = m_scene->getGbufferTexture(m_debugTexture);
-    // Render debug window at the top right corner, taking up 1/16 of the screen
-    renderToQuad(texture, m_screenSize.x - m_screenSize.x / 2, m_screenSize.y - m_screenSize.y / 2, m_screenSize.x / 2, m_screenSize.y / 2, true);
+    // Render debug window at the top right corner
+    renderToQuad(texture, m_screenSize.x - m_screenSize.x / 2, m_screenSize.y - m_screenSize.y / 2, m_screenSize.x / 2, m_screenSize.y / 2);
     glViewport(0, 0, m_screenSize.x, m_screenSize.y);
+}
+
+void Application::renderToTexture() {
+    m_scene_shader->use();
+    glViewport(0, 0, m_screenSize.x, m_screenSize.y);
+
+    glBindFramebuffer(GL_FRAMEBUFFER, m_fbo);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    glDisable(GL_DEPTH_TEST);
+
+    m_scene->getGbuffer()->bindTextures();
+    m_scene_shader->setInt("gPositionAmbient", G_BUFFER_POSITION_SLOT);
+    m_scene_shader->setInt("gNormalAmbient", G_BUFFER_NORMAL_SLOT);
+    m_scene_shader->setInt("gAlbedoAmbient", G_BUFFER_ALBEDO_SLOT);
+    m_scene_shader->setInt("gAoMetallicRoughness", G_BUFFER_METALLIC_ROUGHNESS);
+    m_scene_shader->setVec3("viewPos", getCamera()->getPosition());
+    // m_quad_shader->setInt("gDepth", G_BUFFER_DEPTH_SLOT);
+
+    LightVector lights = m_scene->getLights();
+    // Temporary fix for the light uniforms
+    int pointLightCountIndex = 0;
+    int directionalLightIndex = 0;
+
+    for (int i = 0; i < lights.size(); i++) {
+        if (lights[i]->getPosition().w == 0.0) {
+            lights[i]->apply(m_scene_shader, i, true);
+            m_scene->getPointShadowMap()->bind();
+            m_scene_shader->setInt("directionalShadowMaps", m_scene->getDirectionalShadowMap()->slot());
+            m_scene_shader->setInt("lights[" + std::to_string(i) + "].shadowMapIndex", directionalLightIndex);
+            directionalLightIndex++;
+        } else {
+            lights[i]->apply(m_scene_shader, i, true);
+            m_scene->getPointShadowMap()->bind();
+            m_scene_shader->setInt("pointShadowMaps", m_scene->getPointShadowMap()->slot());
+            m_scene_shader->setInt("lights[" + std::to_string(i) + "].shadowMapIndex", directionalLightIndex);
+            pointLightCountIndex++;
+        }
+    }
+
+    drawQuad();
+
+    m_scene->getGbuffer()->unbindTextures();
+
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
 void Application::render(GLFWwindow* window) {
@@ -312,7 +411,9 @@ void Application::render(GLFWwindow* window) {
     glEnable(GL_DEPTH_TEST);
     m_scene->render();
 
-    renderToQuad(nullptr, 0, 0, m_screenSize.x, m_screenSize.y, false);
+    renderToTexture();
+
+    renderToQuad(m_sceneTexture, 0, 0, m_screenSize.x, m_screenSize.y);
 
     if (m_debug)
         renderDebug();
@@ -323,10 +424,6 @@ void Application::render(GLFWwindow* window) {
 void Application::update(GLFWwindow* window) {
     m_scene->useProgram();
     render(window);
-}
-
-void Application::selectLight(int idx) {
-    m_scene->setSelectedLight(idx);
 }
 
 void Application::processInput(GLFWwindow* window) {
@@ -359,9 +456,36 @@ void Application::processInput(GLFWwindow* window) {
     if (glfwGetKey(window, GLFW_KEY_O) == GLFW_PRESS)
         deltaPosition.z += TRANSLATION_SPEED * deltaTime;  // Move light source along the positive z-axis
 
+    if (glfwGetKey(window, GLFW_KEY_M) == GLFW_PRESS)
+        m_focus += deltaTime * 0.1f;
+
+    if (glfwGetKey(window, GLFW_KEY_N) == GLFW_PRESS)
+        if (m_focus - deltaTime * 0.1f > 0.0f) m_focus -= deltaTime * 0.1f;
+
     if (glm::length(deltaPosition) > 0.0f) {
         position += deltaPosition;
         light->setPosition(position);
+    }
+}
+
+void Application::selectLight(int idx) {
+    m_scene->setSelectedLight(idx);
+}
+
+void Application::changeCamera(int next) {
+    m_scene->setActiveCamera(next);
+    getCamera()->setScreenSize(m_screenSize);
+}
+
+void Application::changeDebugTexture(int next) {
+    m_debugTexture += next;
+
+    if (m_debugTexture < 0) {
+        m_debugTexture = GBUFFER_METALLIC_ROUGHNESS;
+    }
+
+    if (m_debugTexture > GBUFFER_METALLIC_ROUGHNESS) {
+        m_debugTexture = GBUFFER_POSITION;
     }
 }
 
@@ -369,10 +493,23 @@ void Application::toggleShadows() {
     m_scene->toggleShadows();
 }
 
+void Application::toggleBloom() {
+    m_bloom = !m_bloom;
+}
+
+void Application::toggleDOF() {
+    m_dof = !m_dof;
+}
+
+void Application::toogleDebug() {
+    m_debug = !m_debug;
+}
+
 void Application::setScreenSize(unsigned int width, unsigned int height) {
     m_screenSize = glm::uvec2(width, height);
     getCamera()->setScreenSize(glm::uvec2(width, height));
     m_scene->rescaleGbuffer(width, height);
+    m_sceneTexture->rescale(width, height);
 }
 
 std::shared_ptr<Camera> Application::getCamera() {
@@ -381,6 +518,10 @@ std::shared_ptr<Camera> Application::getCamera() {
 
 std::shared_ptr<Geometry> Application::createDefaultGeometry(const std::shared_ptr<Shader>& shader) {
     std::shared_ptr<Geometry> geometry = std::make_shared<Geometry>();
+    std::shared_ptr<Material> material = std::make_shared<Material>();
+    std::shared_ptr<State> state = std::make_shared<State>(shader);
+    state->setMaterial(material);
+
     geometry->setState(std::make_shared<State>(shader));
 
     // Should implement so that geometry can be created manually in the xml scene file

@@ -109,13 +109,13 @@ bool Texture::createFramebufferTexture(unsigned int slot, unsigned int width, un
     glActiveTexture(GL_TEXTURE0 + m_textureSlot);
     glBindTexture(m_type, m_id);
 
-    if (slot == SCREEN_TEXTURE_SLOT) {
+    if (slot == SCREEN_TEXTURE_SLOT || slot == BLOOM_TEXTURE_SLOT) {
         m_texFormat = GL_RGB;
         m_pixelType = GL_UNSIGNED_BYTE;
         glTexImage2D(m_type, 0, m_texFormat, width, height, 0, GL_RGB, m_pixelType, NULL);
     }
 
-    if (slot == G_BUFFER_NORMAL_SLOT || slot == G_BUFFER_POSITION_SLOT) {
+    if (slot == G_BUFFER_NORMAL_SLOT || slot == G_BUFFER_POSITION_SLOT || slot == PING_PONG_TEXTURE_SLOT || BLUR_TEXTURE_SLOT) {
         m_texFormat = GL_RGBA16F;
         m_pixelType = GL_FLOAT;
         glTexImage2D(m_type, 0, m_texFormat, width, height, 0, GL_RGBA, m_pixelType, NULL);
@@ -217,10 +217,8 @@ void Texture::createDepthMapArray(unsigned int width, unsigned int height, int n
     glTexParameteri(m_type, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
     if (isDirectional) {
-        glTexParameteri(m_type, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
-        glTexParameteri(m_type, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
-        float borderColor[] = {1.0, 1.0, 1.0, 1.0};
-        glTexParameterfv(m_type, GL_TEXTURE_BORDER_COLOR, borderColor);
+        glTexParameteri(m_type, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameteri(m_type, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     } else {
         glTexParameteri(m_type, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
         glTexParameteri(m_type, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);

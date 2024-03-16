@@ -93,6 +93,16 @@ void keyboard_callback(GLFWwindow* window, int key, int scancode, int action, in
             app->changeDebugTexture(-1);
     }
 
+    if (key == GLFW_KEY_B && action == GLFW_PRESS) {
+        if (auto app = g_applicationPtr.lock())
+            app->toggleBloom();
+    }
+
+    if (key == GLFW_KEY_F && action == GLFW_PRESS) {
+        if (auto app = g_applicationPtr.lock())
+            app->toggleDOF();
+    }
+
 }
 
 void window_size_callback(GLFWwindow* window, int width, int height) {

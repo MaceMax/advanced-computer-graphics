@@ -246,6 +246,7 @@ void Scene::render() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     m_renderVisitor->visit(m_root.get());
+
     m_gbuffer->unbindFBO();
 }
 
