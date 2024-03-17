@@ -28,13 +28,13 @@ void DepthVisitor::setupRenderState(const std::shared_ptr<Light> light, int dept
     if (m_activeLight->getPosition().w == 0) {
         m_depthShader = m_directionalDepthShader;
 
-        glFramebufferTextureLayer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, textureID, 0, 0);
+        glFramebufferTextureLayer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, textureID, 0, depthMapIndex);
 
     } else {
         m_depthShader = m_pointDepthShader;
-        for (int face = 0; face < 6; face++) {
-            glFramebufferTextureLayer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, textureID, 0, depthMapIndex * 6 + face);
-        }
+        this->depthMapIndex = depthMapIndex;
+
+        glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, textureID, 0);
     }
 
     if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
@@ -57,6 +57,7 @@ void DepthVisitor::visit(Geometry* geometry) {
         }
         m_depthShader->setFloat("farPlane", m_activeLight->getFarPlane());
         m_depthShader->setVec3("lightPos", glm::vec3(m_activeLight->getTransform() * m_activeLight->getPosition()));
+        m_depthShader->setInt("depthMapIndex", this->depthMapIndex);
     }
 
     geometry->draw(m_depthShader, m_matrixStack.top(), true);

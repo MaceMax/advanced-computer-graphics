@@ -36,6 +36,7 @@ class DepthVisitor : public NodeVisitor {
     std::shared_ptr<Light> m_activeLight;
     GLuint fbo;
 
+    int depthMapIndex;
     std::shared_ptr<Shader> m_directionalDepthShader;
     std::shared_ptr<Shader> m_pointDepthShader;
     std::shared_ptr<Shader> m_depthShader;

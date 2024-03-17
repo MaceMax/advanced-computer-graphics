@@ -91,6 +91,10 @@ void Light::setAttenuation(float constant, float linear, float quadratic) {
     this->quadratic = quadratic;
 }
 
+void Light::toggleEnabled() {
+    enabled = !enabled;
+}
+
 void Light::apply(std::shared_ptr<vr::Shader> shader, size_t idx, bool shadowsEnabled) {
     std::string prefix = constructPrefix("lights", idx, ".");
     glm::vec4 world_position = m_model * position;
@@ -117,7 +121,7 @@ void Light::apply(std::shared_ptr<vr::Shader> shader, size_t idx, bool shadowsEn
         shader->setFloat(prefix + "constant", this->constant);
         shader->setFloat(prefix + "linear", this->linear);
         shader->setFloat(prefix + "quadratic", this->quadratic);
-        // shader->setFloat(prefix + "farPlane", this->m_farPlane);
+        shader->setFloat(prefix + "farPlane", this->m_farPlane);
     }
     CHECK_GL_ERROR_LINE_FILE();
 }

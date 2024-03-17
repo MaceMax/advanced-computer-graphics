@@ -177,6 +177,12 @@ class Scene {
      */
     std::shared_ptr<Texture> getDirectionalShadowMap();
 
+    /**
+     * Checks if shadows are enabled
+     *
+     */
+    bool shadowsEnabled();
+
    private:
     /**
      * Private constructor for the scene class.

@@ -58,6 +58,8 @@ class Application {
 
     void toggleDOF();
 
+    void toggleLight();
+
     void changeFocus(float delta);
 
     void selectLight(int idx);

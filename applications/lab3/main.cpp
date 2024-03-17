@@ -68,6 +68,11 @@ void keyboard_callback(GLFWwindow* window, int key, int scancode, int action, in
         }
     }
 
+    if (key == GLFW_KEY_Y && action == GLFW_PRESS) {
+        if (auto app = g_applicationPtr.lock())
+            app->toggleLight();
+    }
+
     if (key == GLFW_KEY_RIGHT && action == GLFW_PRESS) {
         if (auto app = g_applicationPtr.lock())
             app->changeCamera(1);

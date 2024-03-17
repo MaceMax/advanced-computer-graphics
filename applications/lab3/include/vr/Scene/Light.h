@@ -97,6 +97,11 @@ class Light {
     const Texture& getDepthMap();
 
     /**
+     * @brief Toggle the enabled state of the light
+     */
+    void toggleEnabled();
+
+    /**
      * @brief Initilize the depth map texture for the light and
      *  the view and projection matrices for shadow mapping
      *

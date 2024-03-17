@@ -113,8 +113,6 @@ bool Texture::createFramebufferTexture(unsigned int slot, unsigned int width, un
         m_texFormat = GL_RGB;
         m_pixelType = GL_UNSIGNED_BYTE;
         glTexImage2D(m_type, 0, m_texFormat, width, height, 0, GL_RGB, m_pixelType, NULL);
-        glTexParameteri(m_type, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-        glTexParameteri(m_type, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     }
 
     if (slot == G_BUFFER_NORMAL_SLOT || slot == G_BUFFER_POSITION_SLOT || slot == PING_PONG_TEXTURE_SLOT || BLUR_TEXTURE_SLOT) {
@@ -143,6 +141,8 @@ bool Texture::createFramebufferTexture(unsigned int slot, unsigned int width, un
 
     glTexParameteri(m_type, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(m_type, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(m_type, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(m_type, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
     glBindTexture(m_type, 0);
     m_valid = true;
@@ -219,8 +219,11 @@ void Texture::createDepthMapArray(unsigned int width, unsigned int height, int n
     glTexParameteri(m_type, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
     if (isDirectional) {
-        glTexParameteri(m_type, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-        glTexParameteri(m_type, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        glTexParameteri(m_type, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+        glTexParameteri(m_type, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+        glTexParameteri(m_type, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_BORDER);
+        float borderColor[] = {1.0, 1.0, 1.0, 1.0};
+        glTexParameterfv(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_BORDER_COLOR, borderColor);
     } else {
         glTexParameteri(m_type, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
         glTexParameteri(m_type, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);

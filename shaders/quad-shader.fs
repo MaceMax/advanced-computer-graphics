@@ -18,7 +18,7 @@ uniform float near;
 uniform float far;
 
 const float gamma = 0.6;
-const float exposure = 2.4;
+const float exposure = 2.8;
 
 void main() {
     if (isDepth) {

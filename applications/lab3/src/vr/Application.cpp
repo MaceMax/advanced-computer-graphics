@@ -328,8 +328,6 @@ void Application::renderToQuad(std::shared_ptr<Texture> texture, int x, int y, i
         blurTexture(m_sceneTexture, m_blurTexture, 10.0f);
         m_quad_shader->use();
         m_quad_shader->setFloat("focusDistance", m_focus);
-        m_quad_shader->setFloat("near", getCamera()->getNear());
-        m_quad_shader->setFloat("far", getCamera()->getFar());
         m_quad_shader->setFloat("aperture", m_aperture);
         m_quad_shader->setInt("blurTexture", m_blurTexture->slot());
         m_quad_shader->setInt("depthTexture", m_scene->getGbufferTexture(GBUFFER_DEPTH)->slot());
@@ -337,6 +335,8 @@ void Application::renderToQuad(std::shared_ptr<Texture> texture, int x, int y, i
         m_scene->getGbufferTexture(GBUFFER_DEPTH)->bind();
     }
 
+    m_quad_shader->setFloat("near", getCamera()->getNear());
+    m_quad_shader->setFloat("far", getCamera()->getFar());
     m_quad_shader->setInt("screenTexture", texture->slot());
     m_quad_shader->setBool("isDepth", texture->slot() == G_BUFFER_DEPTH_SLOT);
     texture->bind();
@@ -376,7 +376,7 @@ void Application::renderToTexture() {
     m_scene_shader->setInt("gAlbedoAmbient", G_BUFFER_ALBEDO_SLOT);
     m_scene_shader->setInt("gAoMetallicRoughness", G_BUFFER_METALLIC_ROUGHNESS);
     m_scene_shader->setVec3("viewPos", getCamera()->getPosition());
-    // m_quad_shader->setInt("gDepth", G_BUFFER_DEPTH_SLOT);
+    m_scene_shader->setBool("shadowsEnabled", m_scene->shadowsEnabled());
 
     LightVector lights = m_scene->getLights();
     // Temporary fix for the light uniforms
@@ -385,16 +385,16 @@ void Application::renderToTexture() {
 
     for (int i = 0; i < lights.size(); i++) {
         if (lights[i]->getPosition().w == 0.0) {
-            lights[i]->apply(m_scene_shader, i, true);
-            m_scene->getPointShadowMap()->bind();
+            lights[i]->apply(m_scene_shader, i, m_scene->shadowsEnabled());
+            m_scene->getDirectionalShadowMap()->bind();
             m_scene_shader->setInt("directionalShadowMaps", m_scene->getDirectionalShadowMap()->slot());
             m_scene_shader->setInt("lights[" + std::to_string(i) + "].shadowMapIndex", directionalLightIndex);
             directionalLightIndex++;
         } else {
-            lights[i]->apply(m_scene_shader, i, true);
+            lights[i]->apply(m_scene_shader, i, m_scene->shadowsEnabled());
             m_scene->getPointShadowMap()->bind();
             m_scene_shader->setInt("pointShadowMaps", m_scene->getPointShadowMap()->slot());
-            m_scene_shader->setInt("lights[" + std::to_string(i) + "].shadowMapIndex", directionalLightIndex);
+            m_scene_shader->setInt("lights[" + std::to_string(i) + "].shadowMapIndex", pointLightCountIndex);
             pointLightCountIndex++;
         }
     }
@@ -468,7 +468,7 @@ void Application::processInput(GLFWwindow* window) {
         if (m_aperture + deltaTime * 0.1f < 1.0f) m_aperture += deltaTime * 0.1f;  // Higher aperture value means more blur
 
     if (glfwGetKey(window, GLFW_KEY_C) == GLFW_PRESS)
-        if (m_aperture - deltaTime * 0.1f > 0.05f) m_aperture -= deltaTime * 0.1f;  // Lower aperture value means less blur
+        if (m_aperture - deltaTime * 0.1f > 0.01f) m_aperture -= deltaTime * 0.1f;  // Lower aperture value means less blur
 
     if (glm::length(deltaPosition) > 0.0f) {
         position += deltaPosition;
@@ -477,7 +477,7 @@ void Application::processInput(GLFWwindow* window) {
 }
 
 void Application::selectLight(int idx) {
-    m_scene->setSelectedLight(idx);
+    m_scene->setSelectedLight(idx - 1);
 }
 
 void Application::changeCamera(int next) {
@@ -513,11 +513,32 @@ void Application::toogleDebug() {
     m_debug = !m_debug;
 }
 
+void Application::toggleLight() {
+    m_scene->getSelectedLight()->toggleEnabled();
+}
+
 void Application::setScreenSize(unsigned int width, unsigned int height) {
     m_screenSize = glm::uvec2(width, height);
     getCamera()->setScreenSize(glm::uvec2(width, height));
     m_scene->rescaleGbuffer(width, height);
     m_sceneTexture->rescale(width, height);
+    m_brightTexture->rescale(width, height);
+    m_bloomTexture->rescale(width, height);
+    m_blurTexture->rescale(width, height);
+    m_pingpongTextures[0]->rescale(width, height);
+    m_pingpongTextures[1]->rescale(width, height);
+
+    glBindFramebuffer(GL_FRAMEBUFFER, m_fbo);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_sceneTexture->id(), 0);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, m_brightTexture->id(), 0);
+
+    glBindFramebuffer(GL_FRAMEBUFFER, m_pingpongFBO[0]);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_pingpongTextures[0]->id(), 0);
+
+    glBindFramebuffer(GL_FRAMEBUFFER, m_pingpongFBO[1]);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_pingpongTextures[1]->id(), 0);
+
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
 std::shared_ptr<Camera> Application::getCamera() {

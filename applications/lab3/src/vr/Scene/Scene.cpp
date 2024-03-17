@@ -146,6 +146,10 @@ void Scene::toggleShadows() {
     m_root->getState()->setShadowEnabled(m_shadowsEnabled);
 }
 
+bool Scene::shadowsEnabled() {
+    return m_shadowsEnabled;
+}
+
 void Scene::setSelectedLight(int index) {
     selectedLight = index;
     if (index < 0 || index >= m_lights.size()) {
