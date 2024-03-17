@@ -85,7 +85,7 @@ class Application {
     bool m_dof = false;
     int m_debugTexture = 0;
 
-    float m_focus = 0.5f;
+    float m_focus = 0.01f;
     float m_aperture = 0.5f;
 
     std::shared_ptr<Shader> m_quad_shader, m_scene_shader, m_gaussian_shader;

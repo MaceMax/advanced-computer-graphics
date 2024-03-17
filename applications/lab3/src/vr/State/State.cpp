@@ -1,5 +1,9 @@
+
 #include <vr/State/State.h>
 #include <vr/glErrorUtil.h>
+
+// clang-format off
+#include <GLFW/glfw3.h>
 
 #include <iostream>
 
@@ -154,23 +158,6 @@ void State::apply() {
 
     m_shader->use();
 
-    /*
-    if (!geometryPass) {
-        // Update number of lights
-        m_shader->setInt("numberOfLights", m_lights.size());
-        m_shader->setInt("lightingEnabled", lightingEnabled);
-        m_shader->setInt("shadowsEnabled", shadowEnabled);
-        // Apply lightsources
-        size_t i = 0;
-        if (m_lights.size() != 0 && lightingEnabled) {
-            for (auto l : m_lights) {
-                l->apply(m_shader, i, shadowEnabled);
-                i++;
-            }
-        }
-    }
-    */
-
     if (m_material != nullptr)
         m_material->apply(m_shader);
 
@@ -180,17 +167,26 @@ void State::apply() {
         glDisable(GL_CULL_FACE);
     }
 
-    /**
     std::vector<int> slotActive;
     std::vector<int> slots;
     slotActive.resize(m_textures.size());
     slots.resize(m_textures.size());
     if (m_textures.size() != 0) {
         for (int i = 0; i < m_textures.size(); i++) {
-            slots[i] = TEXTURES_BASE_SLOT + i;
-            slotActive[i] = m_textures[i] != nullptr;
-            if (m_textures[i])
-                m_textures[i]->bind();
+            m_shader->setBool("textureLayers.procedural", m_textures[i]->isProcedural());
+            if (m_textures[i]->isProcedural()) {
+                m_shader->setBool("textureLayers.animated", m_textures[i]->isAnimated());
+                m_shader->setFloat("textureLayers.time", glfwGetTime());
+            
+                m_shader->setInt("textureLayers.proceduralType", m_textures[i]->proceduralType());
+                
+                slotActive[i] = 1;
+            } else {
+                slots[i] = TEXTURES_BASE_SLOT + i;
+                slotActive[i] = m_textures[i] != nullptr;
+                if (m_textures[i])
+                    m_textures[i]->bind();
+            }
         }
 
         m_shader->setIntVector("textureLayers.textures", slots);
@@ -204,5 +200,4 @@ void State::apply() {
         }
         m_shader->setIntVector("textureLayers.activeTextures", slotActive);
     }
-    */
 }

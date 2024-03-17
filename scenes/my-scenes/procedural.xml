@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Scene>
+<Geometry name="Sphere" filepath="models/sphere.obj">
+    <State>
+        <!-- Textures get blended equally -->
+        <Textures>
+            <Texture procedural="true" animated="true" type="checkerboard"/>
+        </Textures>
+    </State>    
+ </Geometry>
+
+<Transform name="Transform 1" translate="-2 0 0">
+     <Geometry name="cow1" filepath="models/suzanne.obj">
+        <State>
+            <Textures>
+                <Texture procedural="true" animated="true" type="cow"/>
+            </Textures>
+        </State>    
+    </Geometry>
+</Transform>
+<Transform name="Transform 1" translate="0 1.5 -1">
+     <Geometry name="cow1" filepath="models/suzanne.obj">
+        <State>
+            <Textures>
+                <Texture procedural="true" animated="false" type="checkerboard"/>
+            </Textures>
+        </State>    
+    </Geometry>
+</Transform>
+<Transform name="Transform 1" translate="1.5 -1 0" scale="3 3 3">
+     <Geometry name="cow1" filepath="models/Bust/marble_bust_01_2k.gltf">
+        <State>
+            <Textures>
+                <Texture procedural="true" animated="true" type="perlin"/>
+            </Textures>
+        </State>    
+    </Geometry>
+</Transform>
+
+</Scene>

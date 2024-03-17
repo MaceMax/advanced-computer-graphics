@@ -113,6 +113,8 @@ bool Texture::createFramebufferTexture(unsigned int slot, unsigned int width, un
         m_texFormat = GL_RGB;
         m_pixelType = GL_UNSIGNED_BYTE;
         glTexImage2D(m_type, 0, m_texFormat, width, height, 0, GL_RGB, m_pixelType, NULL);
+        glTexParameteri(m_type, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameteri(m_type, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     }
 
     if (slot == G_BUFFER_NORMAL_SLOT || slot == G_BUFFER_POSITION_SLOT || slot == PING_PONG_TEXTURE_SLOT || BLUR_TEXTURE_SLOT) {
@@ -231,7 +233,7 @@ void Texture::createDepthMapArray(unsigned int width, unsigned int height, int n
     m_valid = true;
 }
 
-Texture::Texture() : m_id(0), m_type(0), m_valid(false), m_textureSlot(0) {
+Texture::Texture(bool isProcedural, bool isAnimated, std::string type) : m_id(0), m_type(0), m_valid(false), m_textureSlot(0), m_isProcedural(isProcedural), m_isAnimated(isAnimated), m_proceduralType(type) {
 }
 
 Texture::~Texture() {
@@ -243,6 +245,16 @@ void Texture::rescale(unsigned int width, unsigned int height) {
         cleanup();
 
     createFramebufferTexture(m_textureSlot, width, height, m_type);
+}
+
+int Texture::proceduralType() const {
+    if (m_proceduralType == "checkerboard")
+        return 0;
+    if (m_proceduralType == "perlin")
+        return 1;
+    if (m_proceduralType == "cow")
+        return 2;
+    return -1;
 }
 
 bool Texture::isValid() {

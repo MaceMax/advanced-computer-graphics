@@ -425,12 +425,41 @@ TextureVector parseTextures(std::vector<std::string> xmlpath, rapidxml::xml_node
         if (name != "Texture")
             throw std::runtime_error("Node (" + name + ") Textures node can only contain Texture nodes: " + pathToString(xmlpath));
 
+        bool isProcedural = false;
+        bool isAnimated = false;
+        std::string procedural;
+        if (child->first_attribute("procedural"))
+            procedural = child->first_attribute("procedural")->value();
+
+        if (!procedural.empty())
+            isProcedural = readValue<bool>(procedural);
+
+        std::string type;
+        if (isProcedural)  // Check for type
+        {
+            if (child->first_attribute("type"))
+                type = child->first_attribute("type")->value();
+
+            if (type.empty())
+                throw std::runtime_error("Node (" + name + ") No type specified for Procedural Texture: " + pathToString(xmlpath));
+
+            if (type != "checkerboard" && type != "perlin" && type != "cow")
+                throw std::runtime_error("Node (" + name + ") Invalid type specified for Procedural Texture: " + pathToString(xmlpath));
+
+            std::string animated;
+            if (child->first_attribute("animated"))
+                animated = child->first_attribute("animated")->value();
+
+            if (!animated.empty())
+                isAnimated = readValue<bool>(animated);
+        }
+
         std::string filepath = getAttribute(child, "filepath");
-        if (filepath.empty())
+        if (filepath.empty() && !isProcedural)
             throw std::runtime_error("Node (" + name + ") No filepath specified for Texture: " + pathToString(xmlpath));
 
-        std::shared_ptr<Texture> texture = std::make_shared<Texture>();
-        if (!texture->create(filepath.c_str(), false, slot))
+        std::shared_ptr<Texture> texture = std::make_shared<Texture>(isProcedural, isAnimated, type);
+        if (!isProcedural && !texture->create(filepath.c_str(), false, slot))
             throw std::runtime_error("Node (" + name + ") Error creating texture: " + filepath);
 
         textures.push_back(texture);

@@ -13,7 +13,7 @@
 
 using namespace vr;
 
-Camera::Camera() : m_movementEnabled(true), m_firstClick(true), m_speed(3.0f), m_fov(50), m_horizontalAngle(glm::pi<float>()), m_verticalAngle(0.0f), m_mouseSpeed(1), m_lastTime(0), m_speedup(1), aperture(0.0f) {
+Camera::Camera() : m_movementEnabled(true), m_firstClick(true), m_speed(3.0f), m_fov(50), m_horizontalAngle(glm::pi<float>()), m_verticalAngle(0.0f), m_mouseSpeed(1), m_lastTime(0), m_speedup(1) {
     m_direction = glm::vec3(0.0f, 0.0f, -1.0f);
     m_up = glm::vec3(0.0f, 1.0f, 0.0f);
     m_position = glm::vec3(0.0f, -1.0f, 0.0f);
@@ -243,6 +243,10 @@ glm::mat4 Camera::getProjection() const {
     return m_projection;
 }
 
-void Camera::setAperture(float aperture) {
-    this->aperture = aperture;
+float Camera::getNear() const {
+    return m_nearFar[0];
+}
+
+float Camera::getFar() const {
+    return m_nearFar[1];
 }

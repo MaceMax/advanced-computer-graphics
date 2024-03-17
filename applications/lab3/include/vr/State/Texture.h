@@ -42,7 +42,7 @@ namespace vr {
 
 class Texture {
    public:
-    Texture();
+    Texture(bool isProcedural = false, bool isAnimated = false, std::string type = "");
 
     /**
      * @brief Creates a texture from an image file
@@ -108,6 +108,12 @@ class Texture {
 
     GLuint slot() const { return m_textureSlot; }
 
+    bool isProcedural() const { return m_isProcedural; }
+
+    bool isAnimated() const { return m_isAnimated; }
+
+    int proceduralType() const;
+
     /// Assigns a texture unit to a texture
     void texUnit(GLuint program, const char* uniform, GLuint unit);
 
@@ -121,6 +127,10 @@ class Texture {
     void cleanup();
 
    private:
+    bool m_isProcedural;
+    bool m_isAnimated;
+    std::string m_proceduralType;
+
     GLuint m_id;
     GLenum m_type;
     GLint m_texFormat;

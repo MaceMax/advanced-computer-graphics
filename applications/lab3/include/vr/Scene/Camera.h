@@ -137,11 +137,18 @@ namespace vr
     glm::mat4 getProjection() const;
 
     /**
-     * @brief Set the Aperture of the camera
+     * @brief Get the near plane
      * 
-     * @param aperture  The aperture
+     * @return float  The near plane
      */
-    void setAperture(float aperture);
+    float getNear() const;
+
+    /**
+     * @brief Get the far plane
+     * 
+     * @return float  The far plane
+     */
+    float getFar() const;
 
 
   private:
@@ -162,9 +169,6 @@ namespace vr
     glm::vec3 m_position;
     glm::vec3 m_direction;
     glm::vec3 m_up;
-
-    // Depth of field
-    float aperture;
 
     bool m_movementEnabled;
     bool m_firstClick;

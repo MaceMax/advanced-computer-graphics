@@ -328,6 +328,8 @@ void Application::renderToQuad(std::shared_ptr<Texture> texture, int x, int y, i
         blurTexture(m_sceneTexture, m_blurTexture, 10.0f);
         m_quad_shader->use();
         m_quad_shader->setFloat("focusDistance", m_focus);
+        m_quad_shader->setFloat("near", getCamera()->getNear());
+        m_quad_shader->setFloat("far", getCamera()->getFar());
         m_quad_shader->setFloat("aperture", m_aperture);
         m_quad_shader->setInt("blurTexture", m_blurTexture->slot());
         m_quad_shader->setInt("depthTexture", m_scene->getGbufferTexture(GBUFFER_DEPTH)->slot());
@@ -457,10 +459,16 @@ void Application::processInput(GLFWwindow* window) {
         deltaPosition.z += TRANSLATION_SPEED * deltaTime;  // Move light source along the positive z-axis
 
     if (glfwGetKey(window, GLFW_KEY_M) == GLFW_PRESS)
-        m_focus += deltaTime * 0.1f;
+        if (m_focus + deltaTime * 0.1f < 1.0f) m_focus += deltaTime * 0.1f;
 
     if (glfwGetKey(window, GLFW_KEY_N) == GLFW_PRESS)
         if (m_focus - deltaTime * 0.1f > 0.0f) m_focus -= deltaTime * 0.1f;
+
+    if (glfwGetKey(window, GLFW_KEY_V) == GLFW_PRESS)
+        if (m_aperture + deltaTime * 0.1f < 1.0f) m_aperture += deltaTime * 0.1f;  // Higher aperture value means more blur
+
+    if (glfwGetKey(window, GLFW_KEY_C) == GLFW_PRESS)
+        if (m_aperture - deltaTime * 0.1f > 0.05f) m_aperture -= deltaTime * 0.1f;  // Lower aperture value means less blur
 
     if (glm::length(deltaPosition) > 0.0f) {
         position += deltaPosition;

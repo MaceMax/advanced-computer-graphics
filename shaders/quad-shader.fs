@@ -14,9 +14,11 @@ uniform bool isDepth;
 
 uniform float focusDistance;
 uniform float aperture;
+uniform float near;
+uniform float far;
 
-const float gamma = 0.8;
-const float exposure = 3.0;
+const float gamma = 0.6;
+const float exposure = 2.4;
 
 void main() {
     if (isDepth) {
@@ -25,25 +27,25 @@ void main() {
     } else {
         vec3 screenColor = texture(screenTexture, texCoord).rgb;
 
+        if (dofEnabled) {
+            float focusRange = (1.0 / aperture) * 0.01; // 0.01 is just to make the effect more visible
+            float depth = texture(depthTexture, texCoord).r;
+            float linearDepth = near / (far - depth * (far - near));
+            float dist = abs(focusDistance - linearDepth);
+            float blurAmount = clamp(dist / focusRange, 0.0, 1.0);
+            screenColor = mix(screenColor, texture(blurTexture, texCoord).rgb, blurAmount);
+        }
+
         if (bloomEnabled) {
             vec3 bloomColor = texture(bloomTexture, texCoord).rgb;
             screenColor += texture(bloomTexture, texCoord).rgb;
 
-            screenColor += bloomColor;
-
-            vec3 result = vec3(1.0) - exp(-screenColor * exposure); // tone mapping
-            screenColor = pow(result, vec3(1.0 / gamma)); // gamma correction
+            screenColor += bloomColor;   
         }
 
-        if (dofEnabled) {
-            vec3 focusPoint = texture(depthTexture, texCoord).rgb;
-            float depth = focusPoint.r;
-            float dist = abs(depth - focusDistance);
-            float blur = 1.0 - smoothstep(0.0, 1.0, dist / (aperture * 2));
-            screenColor = mix(screenColor, texture(blurTexture, texCoord).rgb, blur);
-
-        }
-
+        vec3 result = vec3(1.0) - exp(-screenColor * exposure); // tone mapping
+        screenColor = pow(result, vec3(1.0 / gamma)); // gamma correction
+        
         color = vec4(screenColor, 1.0);
     }
     
