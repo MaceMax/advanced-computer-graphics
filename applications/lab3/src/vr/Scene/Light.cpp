@@ -24,6 +24,7 @@ void Light::init(BoundingBox sceneBounds, float groundRadius) {
     m_sceneCenter = sceneBounds.getCenter();
     m_sceneRadius = sceneBounds.getRadius();
     m_farPlane = groundRadius;
+
     updateShadowMatrices();
 }
 
@@ -38,7 +39,7 @@ void Light::updateShadowMatrices() {
         m_view = view;
         m_projection = proj;
     } else {
-        float aspect = (float)DEPTH_MAP_RESOLUTION / (float)DEPTH_MAP_RESOLUTION;  // 1:1 aspect ratio, but this allows for flexibility
+        float aspect = (float)DEPTH_MAP_RESOLUTION / (float)DEPTH_MAP_RESOLUTION;
         glm::mat4 proj = glm::perspective(glm::radians(90.0f), aspect, 1.0f, 100.0f);
         m_shadowMatrices.clear();
         m_shadowMatrices.push_back(proj * glm::lookAt(glm::vec3(world_position), glm::vec3(world_position) + glm::vec3(1.0, 0.0, 0.0), glm::vec3(0.0, -1.0, 0.0)));
@@ -66,6 +67,13 @@ void Light::setEnabled(bool enabled) {
 void Light::setPosition(glm::vec4 position) {
     this->position = position;
     updateShadowMatrices();
+}
+
+void Light::setTransform(glm::mat4 model) {
+    if (m_model != model) {
+        m_model = model;
+        updateShadowMatrices();
+    }
 }
 
 void Light::setAmbient(glm::vec4 ambient) {
@@ -101,13 +109,6 @@ void Light::apply(std::shared_ptr<vr::Shader> shader, size_t idx, bool shadowsEn
     shader->setVec4(prefix + "specular", this->specular);
     shader->setVec4(prefix + "position", world_position);
 
-    /*
-    std::string lightSpacePrefix = constructPrefix("lightSpaceMatrix", idx);
-    shader->setMat4(lightSpacePrefix, m_projection * m_view);
-
-    std::string activeLightprefix = constructPrefix("activeLights", idx);
-    shader->setBool(activeLightprefix, enabled);
-    */
     if (shadowsEnabled) {
         shader->setMat4(prefix + "lightSpaceMatrix", m_projection * m_view);
     }

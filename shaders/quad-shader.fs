@@ -28,7 +28,7 @@ void main() {
         vec3 screenColor = texture(screenTexture, texCoord).rgb;
 
         if (dofEnabled) {
-            float focusRange = (1.0 / aperture) * 0.01; // 0.01 is just to make the effect more visible
+            float focusRange = (1.0 / (aperture * 2)) * 0.001; // 0.01 is just to make the effect more visible
             float depth = texture(depthTexture, texCoord).r;
             float linearDepth = near / (far - depth * (far - near));
             float dist = abs(focusDistance - linearDepth);
@@ -38,9 +38,7 @@ void main() {
 
         if (bloomEnabled) {
             vec3 bloomColor = texture(bloomTexture, texCoord).rgb;
-            screenColor += texture(bloomTexture, texCoord).rgb;
-
-            screenColor += bloomColor;   
+            screenColor += texture(bloomTexture, texCoord).rgb;   
         }
 
         vec3 result = vec3(1.0) - exp(-screenColor * exposure); // tone mapping

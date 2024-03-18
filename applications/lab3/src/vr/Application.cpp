@@ -378,7 +378,7 @@ void Application::renderToQuad(std::shared_ptr<Texture> texture, int x, int y, i
 void Application::renderDebug() {
     std::shared_ptr<Texture> texture = m_scene->getGbufferTexture(m_debugTexture);
     // Render debug window at the top right corner
-    renderToQuad(texture, m_screenSize.x - m_screenSize.x / 2, m_screenSize.y - m_screenSize.y / 2, m_screenSize.x / 2, m_screenSize.y / 2);
+    renderToQuad(texture, m_screenSize.x - m_screenSize.x / 3, m_screenSize.y - m_screenSize.y / 3, m_screenSize.x / 3, m_screenSize.y / 3);
     glViewport(0, 0, m_screenSize.x, m_screenSize.y);
 }
 
@@ -404,7 +404,6 @@ void Application::renderSSAO() {
 
     drawQuad();
 
-    // unbind textures
     m_scene->getGbufferTexture(GBUFFER_POSITION)->unbind();
     m_scene->getGbufferTexture(GBUFFER_NORMAL)->unbind();
     m_ssaoNoiseTexture->unbind();
@@ -430,8 +429,8 @@ void Application::renderToTexture() {
     m_scene_shader->setBool("shadowsEnabled", m_scene->shadowsEnabled());
 
     LightVector lights = m_scene->getLights();
-    // Temporary fix for the light uniforms
-    int pointLightCountIndex = 0;
+
+    int pointLightIndex = 0;
     int directionalLightIndex = 0;
 
     for (int i = 0; i < lights.size(); i++) {
@@ -445,8 +444,8 @@ void Application::renderToTexture() {
             lights[i]->apply(m_scene_shader, i, m_scene->shadowsEnabled());
             m_scene->getPointShadowMap()->bind();
             m_scene_shader->setInt("pointShadowMaps", m_scene->getPointShadowMap()->slot());
-            m_scene_shader->setInt("lights[" + std::to_string(i) + "].shadowMapIndex", pointLightCountIndex);
-            pointLightCountIndex++;
+            m_scene_shader->setInt("lights[" + std::to_string(i) + "].shadowMapIndex", pointLightIndex);
+            pointLightIndex++;
         }
     }
 

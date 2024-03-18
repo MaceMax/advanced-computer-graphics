@@ -145,8 +145,8 @@ bool Texture::createFramebufferTexture(unsigned int slot, unsigned int width, un
         glTexImage2D(m_type, 0, m_texFormat, width, height, 0, GL_RED, m_pixelType, NULL);
     }
 
-    glTexParameteri(m_type, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(m_type, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(m_type, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(m_type, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(m_type, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(m_type, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 

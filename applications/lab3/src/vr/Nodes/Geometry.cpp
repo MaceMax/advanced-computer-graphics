@@ -455,7 +455,7 @@ void Geometry::draw_bbox(std::shared_ptr<vr::Shader> shader) {
 BoundingBox Geometry::calculateBoundingBox(glm::mat4 t_mat) {
     BoundingBox box;
     for (auto v : m_vertices) {
-        glm::vec3 vTransformed = m_object2world * t_mat * v;
+        glm::vec3 vTransformed = t_mat * m_object2world * v;
         box.expand(vTransformed);
     }
     return box;

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <Scene groundPlane="true">
-    <Light position="2 2 0 1" diffuse="1 1 1 1" specular="1 1 1 1"/>
+    <Light position="1 1 0 0" diffuse="1 1 1 1" specular="1 1 1 1"/>
     <Transform name="Transform1" translate="0 0 0" rotate="0 0 0" scale="1 1 1">
         <Geometry name="Cars1" filepath="models/porsche_911_gt3.glb"/>
     </Transform>

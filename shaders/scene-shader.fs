@@ -113,7 +113,7 @@ float calculateDirectionalShadow(vec4 fragPosLightSpace, vec3 lightDirection, ve
 
   float shadow = 0.0;
   float currentDepth = projCoords.z;
-  float bias = max(0.002 * (1.0 - dot(nNormal, lightDirection)), 0.0001);
+  float bias = max(0.002 * (1.0 - dot(nNormal, lightDirection)), 0.001);
 
   vec2 texelSize = 1.0 / textureSize(directionalShadowMaps, 0).xy;
 
@@ -182,8 +182,12 @@ vec4 renderFinal() {
             }
         }
     }
-
+    
     lighting += ambient * ambientColor;
+
+    if (albedo == vec3(0.0)) {
+        lighting = vec3(0.0);
+    }
 
     return vec4(lighting, 1.0);
 }

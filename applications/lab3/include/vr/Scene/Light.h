@@ -45,7 +45,7 @@ class Light {
      *
      * @param model The transform matrix
      */
-    void setTransform(glm::mat4 model) { m_model = model; }
+    void setTransform(glm::mat4 model);
 
     /**
      * @brief Get the Transform matrix of the light
