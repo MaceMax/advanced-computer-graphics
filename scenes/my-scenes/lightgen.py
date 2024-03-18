@@ -1,7 +1,7 @@
 from xml.etree import ElementTree as ET
 
 # Define grid dimensions and spacing
-grid_size = 10
+grid_size = 7
 spacing = 25
 
 # Create the root element with indentation

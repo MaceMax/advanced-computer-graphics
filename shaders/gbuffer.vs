@@ -17,7 +17,7 @@ uniform mat3 m_3x3_inv_transp; // Inverse transpose of model matrix for transfor
 void main()
 {
     vec4 world_position = m * vertex_position;
-    position = world_position; // should i multiply by view matrix?
+    position = world_position;
     texCoord = vertex_texCoord;
 
     normal = m_3x3_inv_transp * vertex_normal;

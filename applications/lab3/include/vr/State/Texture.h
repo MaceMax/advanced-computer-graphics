@@ -21,10 +21,8 @@ namespace vr {
 #define MAX_TEXTURES 2
 #define MAX_MATERIAL_TEXTURES 8
 
-#define DEPTH_TEXTURE_BASE_SLOT 11
 #define DEPTH_MAP_DIRECTIONAL_ARRAY_SLOT 11
 #define DEPTH_MAP_POINT_ARRAY_SLOT 12
-#define MAX_DEPTH_TEXTURES 10
 
 #define G_BUFFER_POSITION_SLOT 22
 #define G_BUFFER_ALBEDO_SLOT 23
@@ -33,8 +31,12 @@ namespace vr {
 #define G_BUFFER_METALLIC_ROUGHNESS 26
 #define BLOOM_TEXTURE_SLOT 27
 #define BLUR_TEXTURE_SLOT 28
-
+#define NOISE_TEXTURE_SLOT 29
 #define PING_PONG_TEXTURE_SLOT 28
+
+#define SSAO_COLOR_TEXTURE_SLOT 30
+#define SSAO_BLUR_TEXTURE_SLOT 31
+
 #define SCREEN_TEXTURE_SLOT 32
 
 #define DEPTH_MAP_RESOLUTION 2048
@@ -69,16 +71,6 @@ class Texture {
     bool createFramebufferTexture(unsigned int slot, unsigned int width, unsigned int height, GLenum texType = GL_TEXTURE_2D);
 
     /**
-     * @brief Creates a depth texture
-     *
-     * @param width the width of the texture
-     * @param height the height of the texture
-     * @param slot the texture slot to use
-     * @param isDirectional boolean indicating if the texture is to be used for a directional light or not.
-     */
-    void createDepthTexture(unsigned int width, unsigned int height, unsigned int slot, bool isDirectional = true);
-
-    /**
      * @brief Creates a depth map array
      *
      * @param width the width of the texture
@@ -87,6 +79,16 @@ class Texture {
      * @param isDirectional boolean indicating if the texture is to be used for a directional light or not.
      */
     void createDepthMapArray(unsigned int width, unsigned int height, int numberOfLights, bool isDirectional = true);
+
+    /**
+     * @brief Creates a noise texture
+     *
+     * @param width The width of the texture
+     * @param height The height of the texture
+     * @param noise The noise to use
+     */
+    void createNoiseTexture(unsigned int width, unsigned int height, std::vector<glm::vec3> noise);
+
     /**
      * @brief Checks if the texture is valid
      *

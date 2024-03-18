@@ -90,13 +90,6 @@ class Light {
     void setSpecular(glm::vec4 specular);
 
     /**
-     * @brief Get the depth map of the light
-     *
-     * @return const Texture& The depth map
-     */
-    const Texture& getDepthMap();
-
-    /**
      * @brief Toggle the enabled state of the light
      */
     void toggleEnabled();
@@ -105,11 +98,10 @@ class Light {
      * @brief Initilize the depth map texture for the light and
      *  the view and projection matrices for shadow mapping
      *
-     * @param slot The texture slot to bind the depth map to
      * @param sceneBounds The bounding box of the scene. Does not include the ground plane.
      * @param groundRadius The radius of the scene bounding box which includes the ground plane.
      */
-    void init(unsigned int slot, BoundingBox sceneBounds, float groundRadius);
+    void init(BoundingBox sceneBounds, float groundRadius);
 
     /**
      * @brief Set the attenuation of the light
@@ -174,7 +166,6 @@ class Light {
     glm::mat4 m_view;
     // Used for point lights
     std::vector<glm::mat4> m_shadowMatrices;
-    Texture m_depthMap;
 
     std::string constructPrefix(const std::string& prefix, size_t idx, const std::string& suffix = "");
 

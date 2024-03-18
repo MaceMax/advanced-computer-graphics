@@ -139,6 +139,12 @@ bool Texture::createFramebufferTexture(unsigned int slot, unsigned int width, un
         glTexImage2D(m_type, 0, m_texFormat, width, height, 0, GL_RGBA, m_pixelType, NULL);
     }
 
+    if (slot == SSAO_COLOR_TEXTURE_SLOT || slot == SSAO_BLUR_TEXTURE_SLOT) {
+        m_texFormat = GL_RED;
+        m_pixelType = GL_FLOAT;
+        glTexImage2D(m_type, 0, m_texFormat, width, height, 0, GL_RED, m_pixelType, NULL);
+    }
+
     glTexParameteri(m_type, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(m_type, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glTexParameteri(m_type, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
@@ -147,49 +153,6 @@ bool Texture::createFramebufferTexture(unsigned int slot, unsigned int width, un
     glBindTexture(m_type, 0);
     m_valid = true;
     return true;
-}
-
-void Texture::createDepthTexture(unsigned int width, unsigned int height, unsigned int slot, bool isDirectional) {
-    if (m_valid)
-        cleanup();
-
-    if (isDirectional)
-        m_type = GL_TEXTURE_2D;
-    else
-        m_type = GL_TEXTURE_CUBE_MAP;
-
-    glGenTextures(1, &m_id);
-
-    m_textureSlot = DEPTH_TEXTURE_BASE_SLOT + slot;
-    glActiveTexture(GL_TEXTURE0 + m_textureSlot);
-    glBindTexture(m_type, m_id);
-
-    m_texFormat = GL_DEPTH_COMPONENT;
-    m_pixelType = GL_FLOAT;
-
-    if (isDirectional)
-        glTexImage2D(m_type, 0, m_texFormat, width, height, 0, GL_DEPTH_COMPONENT, m_pixelType, NULL);
-    else
-        for (unsigned int i = 0; i < 6; i++) {
-            glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, m_texFormat, width, height, 0, GL_DEPTH_COMPONENT, m_pixelType, NULL);
-        }
-
-    glTexParameteri(m_type, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(m_type, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-
-    if (isDirectional) {
-        glTexParameteri(m_type, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
-        glTexParameteri(m_type, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
-        float borderColor[] = {1.0, 1.0, 1.0, 1.0};
-        glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
-    } else {
-        glTexParameteri(m_type, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-        glTexParameteri(m_type, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-        glTexParameteri(m_type, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-    }
-
-    glBindTexture(m_type, 0);
-    m_valid = true;
 }
 
 void Texture::createDepthMapArray(unsigned int width, unsigned int height, int numberOfLights, bool isDirectional) {
@@ -231,6 +194,33 @@ void Texture::createDepthMapArray(unsigned int width, unsigned int height, int n
     }
 
     CHECK_GL_ERROR_LINE_FILE();
+
+    glBindTexture(m_type, 0);
+    m_valid = true;
+}
+
+void Texture::createNoiseTexture(unsigned int width, unsigned int height, std::vector<glm::vec3> noise) {
+    if (m_valid)
+        cleanup();
+
+    m_type = GL_TEXTURE_2D;
+
+    glGenTextures(1, &m_id);
+
+    m_textureSlot = NOISE_TEXTURE_SLOT;
+
+    glActiveTexture(GL_TEXTURE0 + m_textureSlot);
+    glBindTexture(m_type, m_id);
+
+    m_texFormat = GL_RGBA16F;
+    m_pixelType = GL_FLOAT;
+
+    glTexImage2D(m_type, 0, m_texFormat, width, height, 0, GL_RGB, m_pixelType, &noise[0]);
+
+    glTexParameteri(m_type, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(m_type, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(m_type, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(m_type, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
     glBindTexture(m_type, 0);
     m_valid = true;

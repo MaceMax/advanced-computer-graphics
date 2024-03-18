@@ -20,8 +20,7 @@ Light::Light(glm::vec4 position, glm::vec4 ambient, glm::vec4 diffuse, glm::vec4
     this->quadratic = 1.8f;
 }
 
-void Light::init(unsigned int slot, BoundingBox sceneBounds, float groundRadius) {
-    m_depthMap.createDepthTexture(DEPTH_MAP_RESOLUTION, DEPTH_MAP_RESOLUTION, slot, position.w == 0);
+void Light::init(BoundingBox sceneBounds, float groundRadius) {
     m_sceneCenter = sceneBounds.getCenter();
     m_sceneRadius = sceneBounds.getRadius();
     m_farPlane = groundRadius;
@@ -58,10 +57,6 @@ void Light::setShadowParams(float sceneRadius, glm::vec3 sceneCenter, float farP
     m_sceneCenter = sceneCenter;
     m_farPlane = farPlane == 0.0f ? 2 * m_sceneRadius : farPlane;
     updateShadowMatrices();
-}
-
-const Texture& Light::getDepthMap() {
-    return m_depthMap;
 }
 
 void Light::setEnabled(bool enabled) {

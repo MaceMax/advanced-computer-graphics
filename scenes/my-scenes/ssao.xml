@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Scene groundPlane="true">
+    <Transform name="Transform1" scale="1 1 1" translate="0 0.5 0.5" rotate="0 0 0">
+        <Geometry name="ball" filepath="models/sphere.obj"/>
+    </Transform>
+    <Transform name="Transform1" scale="1 1 1" translate="1 0.5 1" rotate="0 0 0">
+        <Geometry name="Bust" filepath="models/sphere.obj"/>
+    </Transform>
+    <Transform name="Transform1" scale="1 1 1" translate="1 0.5 0" rotate="0 0 0">
+        <Geometry name="Chess" filepath="models/sphere.obj"/>
+    </Transform>
+    <Transform name="Transform1" scale="1 1 1" translate="2 0.5 0.5" rotate="0 0 0">
+        <Geometry name="ball" filepath="models/sphere.obj"/>
+    </Transform>
+    <Transform name="Transform1" scale="1 1 1" translate="3 0.5 1" rotate="0 0 0">
+        <Geometry name="Bust" filepath="models/sphere.obj"/>
+    </Transform>
+    <Transform name="Transform1" scale="1 1 1" translate="3 0.5 0" rotate="0 0 0">
+        <Geometry name="Chess" filepath="models/sphere.obj"/>
+    </Transform>
+</Scene>

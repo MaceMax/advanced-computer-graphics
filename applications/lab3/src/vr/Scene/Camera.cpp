@@ -81,6 +81,10 @@ glm::vec3 Camera::getPosition() const {
     return m_position;
 }
 
+glm::vec3 Camera::getDirection() const {
+    return m_direction;
+}
+
 void Camera::handleMouse(GLFWwindow* window, double xpos, double ypos) {
     if (!m_movementEnabled)
         return;

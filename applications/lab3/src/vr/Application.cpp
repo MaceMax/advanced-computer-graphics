@@ -14,6 +14,7 @@
 #include <glm/vec3.hpp>
 #include <glm/vec4.hpp>
 #include <iostream>
+#include <random>
 
 using namespace vr;
 
@@ -24,17 +25,8 @@ Application::Application(unsigned int width, unsigned height) : m_screenSize(wid
     m_fpsCounter->setColor(glm::vec4(0.2, 1.0, 1.0, 1.0));
 
     m_quad_shader = std::make_shared<Shader>("shaders/quad-shader.vs", "shaders/quad-shader.fs");
-    m_gaussian_shader = std::make_shared<Shader>("shaders/gaussian-shader.vs", "shaders/gaussian-shader.fs");
 
-    m_sceneTexture = std::make_shared<Texture>();
-    m_brightTexture = std::make_shared<Texture>();
-    m_bloomTexture = std::make_shared<Texture>();
-    m_blurTexture = std::make_shared<Texture>();
-
-    m_sceneTexture->createFramebufferTexture(SCREEN_TEXTURE_SLOT, m_screenSize.x, m_screenSize.y);
-    m_brightTexture->createFramebufferTexture(BLOOM_TEXTURE_SLOT, m_screenSize.x, m_screenSize.y);
-    m_bloomTexture->createFramebufferTexture(BLOOM_TEXTURE_SLOT, m_screenSize.x, m_screenSize.y);
-    m_blurTexture->createFramebufferTexture(BLUR_TEXTURE_SLOT, m_screenSize.x, m_screenSize.y);
+    initTextureBuffers();
 
     // Create framebuffer for scene and bright textures
     glGenFramebuffers(1, &m_fbo);
@@ -52,18 +44,19 @@ Application::Application(unsigned int width, unsigned height) : m_screenSize(wid
 
     // Create framebuffers for gaussian blur
     glGenFramebuffers(2, m_pingpongFBO);
-    m_pingpongTextures[0] = std::make_shared<Texture>();
-    m_pingpongTextures[1] = std::make_shared<Texture>();
-    m_pingpongTextures[0]->createFramebufferTexture(PING_PONG_TEXTURE_SLOT, m_screenSize.x, m_screenSize.y);
-    m_pingpongTextures[1]->createFramebufferTexture(PING_PONG_TEXTURE_SLOT, m_screenSize.x, m_screenSize.y);
-
     glBindFramebuffer(GL_FRAMEBUFFER, m_pingpongFBO[0]);
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_pingpongTextures[0]->id(), 0);
 
     glBindFramebuffer(GL_FRAMEBUFFER, m_pingpongFBO[1]);
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_pingpongTextures[1]->id(), 0);
 
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    // Create framebuffers for SSAO
+    glGenFramebuffers(2, m_ssaoFBO);
+    glBindFramebuffer(GL_FRAMEBUFFER, m_ssaoFBO[0]);  // Color buffer
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_ssaoBuffer->id(), 0);
+
+    glBindFramebuffer(GL_FRAMEBUFFER, m_ssaoFBO[1]);  // Blur Color buffer
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_ssaoBlurBuffer->id(), 0);
 
     const char* attribs[] = {"vertex_position", "vertex_texCoord"};
     m_attribute_vertex = m_quad_shader->getAttribute(attribs[0]);
@@ -98,6 +91,30 @@ Application::Application(unsigned int width, unsigned height) : m_screenSize(wid
     glBindVertexArray(0);
 }
 
+void Application::initTextureBuffers() {
+    m_sceneTexture = std::make_shared<Texture>();
+    m_brightTexture = std::make_shared<Texture>();
+    m_bloomTexture = std::make_shared<Texture>();
+    m_blurTexture = std::make_shared<Texture>();
+    m_pingpongTextures[0] = std::make_shared<Texture>();
+    m_pingpongTextures[1] = std::make_shared<Texture>();
+    m_ssaoBuffer = std::make_shared<Texture>();
+    m_ssaoBlurBuffer = std::make_shared<Texture>();
+    m_ssaoNoiseTexture = std::make_shared<Texture>();
+
+    m_sceneTexture->createFramebufferTexture(SCREEN_TEXTURE_SLOT, m_screenSize.x, m_screenSize.y);
+    m_brightTexture->createFramebufferTexture(BLOOM_TEXTURE_SLOT, m_screenSize.x, m_screenSize.y);
+    m_bloomTexture->createFramebufferTexture(BLOOM_TEXTURE_SLOT, m_screenSize.x, m_screenSize.y);
+    m_blurTexture->createFramebufferTexture(BLUR_TEXTURE_SLOT, m_screenSize.x, m_screenSize.y);
+    m_ssaoBuffer->createFramebufferTexture(SSAO_COLOR_TEXTURE_SLOT, m_screenSize.x, m_screenSize.y);
+    m_ssaoBlurBuffer->createFramebufferTexture(SSAO_BLUR_TEXTURE_SLOT, m_screenSize.x, m_screenSize.y);
+
+    m_ssaoNoiseTexture->createNoiseTexture(4, 4, generateSSAONoise(16));
+
+    m_pingpongTextures[0]->createFramebufferTexture(PING_PONG_TEXTURE_SLOT, m_screenSize.x, m_screenSize.y);
+    m_pingpongTextures[1]->createFramebufferTexture(PING_PONG_TEXTURE_SLOT, m_screenSize.x, m_screenSize.y);
+}
+
 bool Application::initResources(const std::string& model_filename, const std::string& vshader_filename, std::string& fshader_filename) {
     m_loadedVShader = vshader_filename;
     m_loadedFShader = fshader_filename;
@@ -106,8 +123,12 @@ bool Application::initResources(const std::string& model_filename, const std::st
     m_scene_shader = std::make_shared<Shader>("shaders/scene-shader.vs", "shaders/scene-shader.fs");
     m_quad_shader = std::make_shared<Shader>("shaders/quad-shader.vs", "shaders/quad-shader.fs");
     m_gaussian_shader = std::make_shared<Shader>("shaders/gaussian-shader.vs", "shaders/gaussian-shader.fs");
+    m_ssao_shader = std::make_shared<Shader>("shaders/ssao-shader.vs", "shaders/ssao-shader.fs");
+    m_ssao_blur_shader = std::make_shared<Shader>("shaders/ssao-shader.vs", "shaders/ssao-blur-shader.fs");
 
-    if (!m_quad_shader->valid() || !m_scene_shader->valid() || !m_gaussian_shader->valid()) {
+    m_ssaoKernel = generateSSAOKernel(64);
+
+    if (!m_quad_shader->valid() || !m_scene_shader->valid() || !m_gaussian_shader->valid() || !m_ssao_shader->valid() || !m_ssao_blur_shader->valid()) {
         std::cerr << "Error: Could not load shaders" << std::endl;
         return false;
     }
@@ -198,10 +219,10 @@ bool Application::initResources(const std::string& model_filename, const std::st
     BoundingBox sceneBox = m_scene->calculateSceneBoundingBox(true);
     BoundingBox sceneBounds = m_scene->calculateSceneBoundingBox(false);
 
-    // Initialize the depth maps for all lights
+    // Initialize the view and projection matrices for the lights
     LightVector lights = m_scene->getLights();
     for (int i = 0; i < lights.size(); i++)
-        lights[i]->init(i, sceneBox, sceneBounds.getRadius());
+        lights[i]->init(sceneBox, sceneBounds.getRadius());
 
     // Initialize the depth map arrays
     m_scene->initDepthMaps();
@@ -361,6 +382,36 @@ void Application::renderDebug() {
     glViewport(0, 0, m_screenSize.x, m_screenSize.y);
 }
 
+void Application::renderSSAO() {
+    glBindFramebuffer(GL_FRAMEBUFFER, m_ssaoFBO[0]);
+    glClear(GL_COLOR_BUFFER_BIT);
+    m_ssao_shader->use();
+    for (int i = 0; i < m_ssaoKernel.size(); i++) {
+        m_ssao_shader->setVec3("samples[" + std::to_string(i) + "]", m_ssaoKernel[i]);
+    }
+    m_ssao_shader->setMat4("p", getCamera()->getProjection());
+    m_ssao_shader->setMat4("v", getCamera()->getView());
+    m_ssao_shader->setInt("kernelSize", m_ssaoKernel.size());
+    m_ssao_shader->setFloat("screenX", m_screenSize.x);
+    m_ssao_shader->setFloat("screenY", m_screenSize.y);
+
+    m_scene->getGbufferTexture(GBUFFER_POSITION)->bind();
+    m_scene->getGbufferTexture(GBUFFER_NORMAL)->bind();
+    m_ssaoNoiseTexture->bind();
+    m_ssao_shader->setInt("gPosition", G_BUFFER_POSITION_SLOT);
+    m_ssao_shader->setInt("gNormal", G_BUFFER_NORMAL_SLOT);
+    m_ssao_shader->setInt("noiseTexture", m_ssaoNoiseTexture->slot());
+
+    drawQuad();
+
+    // unbind textures
+    m_scene->getGbufferTexture(GBUFFER_POSITION)->unbind();
+    m_scene->getGbufferTexture(GBUFFER_NORMAL)->unbind();
+    m_ssaoNoiseTexture->unbind();
+
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
 void Application::renderToTexture() {
     m_scene_shader->use();
     glViewport(0, 0, m_screenSize.x, m_screenSize.y);
@@ -404,6 +455,8 @@ void Application::renderToTexture() {
     m_scene->getGbuffer()->unbindTextures();
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+    // renderSSAO();
 }
 
 void Application::render(GLFWwindow* window) {
@@ -602,6 +655,47 @@ std::shared_ptr<Geometry> Application::createDefaultGeometry(const std::shared_p
     geometry->upload();
 
     return geometry;
+}
+
+std::vector<glm::vec3> Application::generateSSAOKernel(int kernelSize) {
+    std::uniform_real_distribution<float> randomFloats(0.0, 1.0);
+    std::default_random_engine generator;
+    std::vector<glm::vec3> ssaoKernel;
+    for (int i = 0; i < kernelSize; i++) {
+        glm::vec3 sample(
+            randomFloats(generator) * 2.0 - 1.0,
+            randomFloats(generator) * 2.0 - 1.0,
+            randomFloats(generator));
+        sample = glm::normalize(sample);
+        sample *= randomFloats(generator);
+        float scale = (float)i / kernelSize;
+
+        scale = lerp(0.1f, 1.0f, scale * scale);
+        sample *= scale;
+        ssaoKernel.push_back(sample);
+    }
+
+    return ssaoKernel;
+}
+
+std::vector<glm::vec3> Application::generateSSAONoise(int noiseSize) {
+    std::uniform_real_distribution<float> randomFloats(0.0, 1.0);
+    std::default_random_engine generator;
+
+    std::vector<glm::vec3> ssaoNoise;
+    for (int i = 0; i < noiseSize; i++) {
+        glm::vec3 noise(
+            randomFloats(generator) * 2.0 - 1.0,
+            randomFloats(generator) * 2.0 - 1.0,
+            0.0f);
+        ssaoNoise.push_back(noise);
+    }
+
+    return ssaoNoise;
+}
+
+float Application::lerp(float a, float b, float f) {
+    return a + f * (b - a);
 }
 
 Application::~Application() {

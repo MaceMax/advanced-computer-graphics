@@ -95,6 +95,13 @@ namespace vr
     glm::vec3 getPosition() const;
 
     /**
+     * @brief get the direction of the camera
+     * 
+     * @return glm::vec3  The direction of the camera
+     */
+    glm::vec3 getDirection() const;
+
+    /**
     Set the mouse speed when changing direction.
     Higher value means faster rotation. Default is 1.
 
