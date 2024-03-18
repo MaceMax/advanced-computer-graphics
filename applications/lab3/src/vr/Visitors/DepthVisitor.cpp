@@ -34,9 +34,8 @@ void DepthVisitor::setupRenderState(const std::shared_ptr<Light> light, int dept
         m_depthShader = m_pointDepthShader;
         this->depthMapIndex = depthMapIndex;
 
-        if (depthMapIndex == 0) {
+        if (depthMapIndex == 0)
             glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, textureID, 0);
-        }
     }
 
     if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {

@@ -52,7 +52,7 @@ float calculatePointShadow(vec3 fragPos, vec3 lightPos, vec3 viewDir, float farP
 
     // PCF
     float shadow = 0.0;
-    float bias = 0.15;
+    float bias = 0.20;
     int samples = 10;
     float viewDistance = length(fragPos - viewPos);
     float diskRadius = (1.0 + (viewDistance / farPlane)) / 25.0;

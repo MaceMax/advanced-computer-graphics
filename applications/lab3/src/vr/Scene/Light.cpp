@@ -16,8 +16,8 @@ Light::Light(glm::vec4 position, glm::vec4 ambient, glm::vec4 diffuse, glm::vec4
     this->m_model = glm::mat4(1.0f);
 
     this->constant = 1.0f;
-    this->linear = 0.7f;
-    this->quadratic = 1.8f;
+    this->linear = 0.22f;
+    this->quadratic = 0.20f;
 }
 
 void Light::init(BoundingBox sceneBounds, float groundRadius) {
