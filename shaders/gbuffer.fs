@@ -238,7 +238,7 @@ void main()
     {
         gAoMetallicRoughness.x = texture(material.textures[4], texCoord).r;
     } else {
-        gAoMetallicRoughness.x = 0.0;
+        gAoMetallicRoughness.x = 1.0;
     }
 
     

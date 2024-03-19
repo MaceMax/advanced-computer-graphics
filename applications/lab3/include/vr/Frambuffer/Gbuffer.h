@@ -16,8 +16,20 @@ namespace vr {
 
 class Gbuffer {
    public:
+    /**
+     * @brief Create a new Gbuffer
+     *
+     * @param width the width of the framebuffer textures
+     * @param height the height of the framebuffer textures
+     */
     Gbuffer(unsigned int width, unsigned int height);
 
+    /**
+     * @brief Rescale the framebuffer textures
+     *
+     * @param width the new width of the framebuffer textures
+     * @param height the new height of the framebuffer textures
+     */
     void rescaleFramebuffer(int width, int height);
 
     void bindFBO();

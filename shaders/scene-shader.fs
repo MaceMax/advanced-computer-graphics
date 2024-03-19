@@ -185,10 +185,6 @@ vec4 renderFinal() {
     
     lighting += ambient * ambientColor;
 
-    if (albedo == vec3(0.0)) {
-        lighting = vec3(0.0);
-    }
-
     return vec4(lighting, 1.0);
 }
 

@@ -205,6 +205,24 @@ size_t ExtractMaterials(const aiScene* scene, MaterialVector& materials, const s
             }
         }
 
+        if (ai_material->GetTextureCount(aiTextureType_AMBIENT_OCCLUSION) > 0) {
+            aiString res("res\\");
+            path.Clear();
+            ai_material->GetTexture(aiTextureType_AMBIENT_OCCLUSION, 0, &path);
+
+            std::string texturePath = findTexture(path.C_Str(), modelPath);
+
+            if (texturePath.empty()) {
+                std::cerr << "Unable to find ambient occlusion texture: " << path.C_Str() << std::endl;
+            } else {
+                std::shared_ptr<vr::Texture> texture = std::make_shared<vr::Texture>();
+                if (!texture->create(texturePath.c_str(), true, AMBIENT_OCCLUSION_TEXTURE))
+                    std::cerr << "Error creating ambient occlusion texture: " << texturePath << std::endl;
+                else
+                    material->setTexture(texture, AMBIENT_OCCLUSION_TEXTURE);
+            }
+        }
+
         materials.push_back(material);
     }
 
