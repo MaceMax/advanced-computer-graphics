@@ -162,19 +162,6 @@ depend:
 .PHONY : depend
 
 #=============================================================================
-# Target rules for targets named lab2
-
-# Build rule for target.
-lab2: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 lab2
-.PHONY : lab2
-
-# fast build rule for target.
-lab2/fast:
-	$(MAKE) $(MAKESILENT) -f applications/lab2/CMakeFiles/lab2.dir/build.make applications/lab2/CMakeFiles/lab2.dir/build
-.PHONY : lab2/fast
-
-#=============================================================================
 # Target rules for targets named lab3
 
 # Build rule for target.
@@ -212,7 +199,6 @@ help:
 	@echo "... install/strip"
 	@echo "... list_install_components"
 	@echo "... rebuild_cache"
-	@echo "... lab2"
 	@echo "... lab3"
 	@echo "... viewer"
 .PHONY : help
